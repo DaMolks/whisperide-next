@@ -1,42 +1,33 @@
-import { app, BrowserWindow, ipcMain } from 'electron';
+import { app, BrowserWindow } from 'electron';
+import * as path from 'path';
 
 class WhisperIDEApp {
   private mainWindow: BrowserWindow | null = null;
 
   constructor() {
-    this.setupIPC();
+    app.on('ready', this.createWindow);
+    app.on('window-all-closed', this.handleWindowsClosed);
   }
 
-  private setupIPC() {
-    ipcMain.on('window-close', () => {
-      this.mainWindow?.close();
-    });
-
-    ipcMain.on('window-minimize', () => {
-      this.mainWindow?.minimize();
-    });
-
-    ipcMain.on('window-maximize', () => {
-      if (this.mainWindow?.isMaximized()) {
-        this.mainWindow.unmaximize();
-      } else {
-        this.mainWindow?.maximize();
-      }
-    });
-  }
-
-  private createMainWindow() {
+  private createWindow = () => {
     this.mainWindow = new BrowserWindow({
       width: 1200,
       height: 800,
       frame: false,
       webPreferences: {
-        nodeIntegration: false,
-        contextIsolation: true,
-        preload: path.join(__dirname, 'preload.js')
+        nodeIntegration: true,
+        contextIsolation: false
       }
     });
+
+    this.mainWindow.loadFile(path.join(__dirname, '../index.html'));
+  }
+
+  private handleWindowsClosed = () => {
+    if (process.platform !== 'darwin') {
+      app.quit();
+    }
   }
 }
 
-app.whenReady().then(() => new WhisperIDEApp());
+new WhisperIDEApp();
