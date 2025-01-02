@@ -2,41 +2,33 @@ const { execSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
 
-// Configuration
-const CONFIG = {
-  appName: 'WhisperIDE',
-  version: '0.1.0',
-  outputDir: 'dist'
-};
-
 function build() {
-  console.log('🚀 Starting build process...');
+  console.log('🚀 Démarrage de la compilation...');
 
-  // Clean output directory
-  console.log('\n🧹 Cleaning output directory...');
-  if (fs.existsSync(CONFIG.outputDir)) {
-    fs.rmSync(CONFIG.outputDir, { recursive: true });
+  // Nettoyage
+  console.log('\n🧹 Nettoyage des dossiers de build...');
+  if (fs.existsSync('dist')) {
+    fs.rmSync('dist', { recursive: true });
   }
-  fs.mkdirSync(CONFIG.outputDir);
 
-  // Build React app
-  console.log('\n🏗️  Building React application...');
+  // Build React
+  console.log('\n🏗️  Compilation React...');
   execSync('npm run build:react', { stdio: 'inherit' });
 
-  // Build Electron main process
-  console.log('\n🔧 Building Electron main process...');
+  // Build Electron
+  console.log('\n🔧 Compilation Electron...');
   execSync('npm run build:electron', { stdio: 'inherit' });
 
-  // Package application
-  console.log('\n📦 Packaging application...');
-  execSync('electron-builder', { stdio: 'inherit' });
+  // Packaging
+  console.log('\n📦 Packaging de l\'application...');
+  execSync('electron-builder build --win', { stdio: 'inherit' });
 
-  console.log('\n✅ Build complete!');
+  console.log('\n✅ Build terminée!');
 }
 
 try {
   build();
 } catch (error) {
-  console.error('\n❌ Build failed:', error);
+  console.error('\n❌ Erreur de build:', error);
   process.exit(1);
 }

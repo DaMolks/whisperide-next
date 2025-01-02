@@ -1,6 +1,7 @@
 {
   "name": "whisperide-next",
   "version": "0.1.0",
+  "main": "dist/electron/main.js",
   "scripts": {
     "postinstall": "node scripts/install.js",
     "start": "electron .",
@@ -31,4 +32,18 @@
     "css-loader": "^6.8.1",
     "style-loader": "^3.3.3",
     "html-webpack-plugin": "^5.5.0"
-  }}
+  },
+  "build": {
+    "appId": "com.whisperide.app",
+    "directories": {
+      "output": "dist",
+      "buildResources": "build"
+    },
+    "files": [
+      "dist/**/*",
+      "package.json"
+    ],
+    "win": {
+      "target": "nsis"
+    }
+  }
