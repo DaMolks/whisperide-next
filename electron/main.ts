@@ -1,6 +1,6 @@
 import { app, BrowserWindow, ipcMain, screen } from 'electron';
 import * as path from 'path';
-import * as url from 'url';
+import * as fs from 'fs';
 
 class WhisperIDEApp {
   private mainWindow: BrowserWindow | null = null;
@@ -26,18 +26,29 @@ class WhisperIDEApp {
       }
     });
 
-    const startUrl = process.env.NODE_ENV === 'development' 
-      ? 'http://localhost:8080' 
-      : url.format({
-          pathname: path.join(__dirname, '../dist/index.html'),
-          protocol: 'file:',
-          slashes: true
-        });
+    const devIndexPath = path.join(__dirname, '../../dist/index.html');
+    const prodIndexPath = path.join(__dirname, '../dist/index.html');
 
-    this.mainWindow.loadURL(startUrl);
+    let loadPath;
+    if (fs.existsSync(devIndexPath)) {
+      loadPath = `file://${devIndexPath}`;
+    } else if (fs.existsSync(prodIndexPath)) {
+      loadPath = `file://${prodIndexPath}`;
+    } else {
+      console.error('No index.html found');
+      app.quit();
+      return;
+    }
+
+    this.mainWindow.loadURL(loadPath);
 
     this.mainWindow.webContents.on('did-fail-load', (event, errorCode, errorDescription) => {
       console.error('Failed to load page', errorDescription);
+      app.quit();
+    });
+
+    this.mainWindow.webContents.on('did-finish-load', () => {
+      this.mainWindow?.show();
     });
   }
 
