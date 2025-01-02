@@ -1,16 +1,16 @@
 import React from 'react';
 import { Box, Typography } from '@mui/material';
 
-// Placeholder component - will be implemented fully in next commit
 const AIChat: React.FC = () => {
   return (
     <Box
       sx={{
-        width: '300px',
+        height: '100%',
         bgcolor: 'background.paper',
-        borderTop: 1,
         borderLeft: 1,
         borderColor: 'divider',
+        display: 'flex',
+        flexDirection: 'column',
         p: 2
       }}
     >
