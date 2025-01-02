@@ -3,16 +3,13 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
   mode: 'development',
-  entry: {
-    app: './src/index.tsx',
-    splash: './src/splash/index.tsx'
-  },
+  entry: './src/index.tsx',
   output: {
-    filename: '[name].js',
+    filename: 'bundle.js',
     path: path.resolve(__dirname, 'dist'),
-    publicPath: './'
+    publicPath: ''
   },
-  target: 'electron-renderer',
+  devtool: 'source-map',
   module: {
     rules: [
       {
@@ -42,13 +39,15 @@ module.exports = {
   plugins: [
     new HtmlWebpackPlugin({
       template: 'src/index.html',
-      filename: 'index.html',
-      chunks: ['app']
-    }),
-    new HtmlWebpackPlugin({
-      template: 'src/splash/splash.html',
-      filename: 'splash.html',
-      chunks: ['splash']
+      filename: 'index.html'
     })
-  ]
+  ],
+  devServer: {
+    static: {
+      directory: path.join(__dirname, 'dist')
+    },
+    port: 8080,
+    hot: true,
+    open: false
+  }
 };
