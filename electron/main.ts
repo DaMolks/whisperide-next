@@ -1,6 +1,5 @@
 import { app, BrowserWindow, ipcMain, screen } from 'electron';
 import * as path from 'path';
-import * as fs from 'fs';
 
 class WhisperIDEApp {
   private mainWindow: BrowserWindow | null = null;
@@ -16,24 +15,6 @@ class WhisperIDEApp {
   private init = () => {
     this.createSplashWindow();
     this.createMainWindow();
-  }
-
-  private findIndexFile(filename: string) {
-    const possiblePaths = [
-      path.join(__dirname, '../dist/' + filename),
-      path.join(__dirname, '../dist/dist/' + filename),
-      path.join(process.cwd(), 'dist/' + filename),
-      path.join(process.cwd(), 'dist/dist/' + filename)
-    ];
-
-    for (const filePath of possiblePaths) {
-      if (fs.existsSync(filePath)) {
-        return filePath;
-      }
-    }
-
-    console.error(`Could not find ${filename} in any expected location`);
-    return null;
   }
 
   private createSplashWindow = () => {
@@ -55,12 +36,7 @@ class WhisperIDEApp {
       }
     });
 
-    const splashPath = this.findIndexFile('splash.html');
-    if (splashPath) {
-      this.splashWindow.loadFile(splashPath);
-    } else {
-      console.error('Could not load splash screen');
-    }
+    this.splashWindow.loadFile(path.join(__dirname, '../../src/splash/splash.html'));
   }
 
   private createMainWindow = () => {
@@ -77,12 +53,7 @@ class WhisperIDEApp {
       }
     });
 
-    const indexPath = this.findIndexFile('index.html');
-    if (indexPath) {
-      this.mainWindow.loadFile(indexPath);
-    } else {
-      console.error('Could not load main window');
-    }
+    this.mainWindow.loadFile(path.join(__dirname, '../../src/index.html'));
 
     this.mainWindow.once('ready-to-show', () => {
       this.splashWindow?.close();
