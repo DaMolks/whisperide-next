@@ -23,12 +23,18 @@ class WhisperIDEApp {
       height: 300,
       frame: false,
       transparent: true,
+      alwaysOnTop: true,
       backgroundColor: '#00000000',
       webPreferences: {
         nodeIntegration: true,
         contextIsolation: false
       }
     });
+
+    this.splashWindow.setPosition(
+      (require('electron').screen.getPrimaryDisplay().bounds.width - 400) / 2,
+      (require('electron').screen.getPrimaryDisplay().bounds.height - 300) / 2
+    );
 
     if (process.env.NODE_ENV === 'development') {
       this.splashWindow.loadURL('http://localhost:8080/splash.html');
