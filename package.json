@@ -5,8 +5,8 @@
   "scripts": {
     "postinstall": "electron-builder install-app-deps",
     "dev": "concurrently \"npm run dev:webpack\" \"npm run dev:electron\"",
-    "dev:webpack": "webpack --mode development",
-    "dev:electron": "tsc -p electron/tsconfig.json && wait-on tcp:8080 && cross-env NODE_ENV=development electron .",
+    "dev:webpack": "webpack --mode development --watch",
+    "dev:electron": "tsc -p electron/tsconfig.json && wait-on ./dist/index.html && cross-env NODE_ENV=development electron .",
     "start": "electron .",
     "build": "webpack --mode production && tsc -p electron/tsconfig.json",
     "build:react": "webpack --mode production",

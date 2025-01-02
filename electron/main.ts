@@ -56,10 +56,8 @@ class WhisperIDEApp {
     this.mainWindow.loadFile(path.join(__dirname, '../dist/index.html'));
 
     this.mainWindow.once('ready-to-show', () => {
-      setTimeout(() => {
-        this.splashWindow?.close();
-        this.mainWindow?.show();
-      }, 2000);
+      this.splashWindow?.close();
+      this.mainWindow?.show();
     });
   }
 
@@ -95,5 +93,7 @@ class WhisperIDEApp {
     }
   }
 }
+
+app.commandLine.appendSwitch('enable-logging');
 
 new WhisperIDEApp();
