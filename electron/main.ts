@@ -77,7 +77,11 @@ class WhisperIDEApp {
 
     if (indexPath) {
       console.log('Loading main window from:', indexPath);
-      this.mainWindow.loadFile(indexPath);
+      if (process.env.NODE_ENV === 'development') {
+        this.mainWindow.loadURL('http://localhost:8080');
+      } else {
+        this.mainWindow.loadFile(indexPath);
+      }
     } else {
       console.error('Index HTML not found in any of these locations:', possiblePaths);
     }
@@ -85,6 +89,11 @@ class WhisperIDEApp {
     this.mainWindow.once('ready-to-show', () => {
       this.splashWindow?.close();
       this.mainWindow?.show();
+    });
+
+    // Debugging
+    this.mainWindow.webContents.on('did-fail-load', (event, errorCode, errorDescription) => {
+      console.error('Failed to load page', errorCode, errorDescription);
     });
   }
 
