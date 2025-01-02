@@ -3,7 +3,6 @@ import * as path from 'path';
 
 class WhisperIDEApp {
   private mainWindow: BrowserWindow | null = null;
-  private splashWindow: BrowserWindow | null = null;
 
   constructor() {
     app.on('ready', this.createWindow);
@@ -12,7 +11,8 @@ class WhisperIDEApp {
   }
 
   private setupIPC() {
-    ipcMain.on('window-control', (_, command: string) => {
+    ipcMain.on('window-control', (_, command) => {
+      console.log('Received command:', command); // Debug log
       switch (command) {
         case 'minimize':
           this.mainWindow?.minimize();
@@ -38,13 +38,15 @@ class WhisperIDEApp {
       frame: false,
       webPreferences: {
         nodeIntegration: true,
-        contextIsolation: false,
+        contextIsolation: true,
         preload: path.join(__dirname, 'preload.js')
       }
     });
 
     if (process.env.NODE_ENV === 'development') {
+      console.log('Loading development URL');
       this.mainWindow.loadURL('http://localhost:8080');
+      this.mainWindow.webContents.openDevTools();
     } else {
       this.mainWindow.loadFile(path.join(__dirname, '../index.html'));
     }

@@ -13,7 +13,8 @@
     "esModuleInterop": true
   },
   "include": [
-    "**/*"
+    "main.ts",
+    "preload.ts"
   ],
   "exclude": [
     "node_modules"
