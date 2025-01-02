@@ -1,5 +1,6 @@
 import { app, BrowserWindow, ipcMain, screen } from 'electron';
 import * as path from 'path';
+import * as fs from 'fs';
 
 class WhisperIDEApp {
   private mainWindow: BrowserWindow | null = null;
@@ -36,7 +37,20 @@ class WhisperIDEApp {
       }
     });
 
-    this.splashWindow.loadFile(path.join(__dirname, '../dist/splash.html'));
+    const possiblePaths = [
+      path.join(__dirname, '../../src/splash/splash.html'),
+      path.join(__dirname, '../dist/splash.html'),
+      path.join(__dirname, '../dist/dist/splash.html')
+    ];
+
+    const splashPath = possiblePaths.find(p => fs.existsSync(p));
+
+    if (splashPath) {
+      console.log('Loading splash screen from:', splashPath);
+      this.splashWindow.loadFile(splashPath);
+    } else {
+      console.error('Splash screen HTML not found in any of these locations:', possiblePaths);
+    }
   }
 
   private createMainWindow = () => {
@@ -47,34 +61,35 @@ class WhisperIDEApp {
       show: false,
       backgroundColor: '#1a1a1a',
       webPreferences: {
-        nodeIntegration: false,  // Important change
-        contextIsolation: true,  // Important change
+        nodeIntegration: false,
+        contextIsolation: true,
         preload: path.join(__dirname, 'preload.js')
       }
     });
 
-    console.log('Preload script path:', path.join(__dirname, 'preload.js'));
+    const possiblePaths = [
+      path.join(__dirname, '../../src/index.html'),
+      path.join(__dirname, '../dist/index.html'),
+      path.join(__dirname, '../dist/dist/index.html')
+    ];
 
-    if (process.env.NODE_ENV === 'development') {
-      this.mainWindow.loadURL('http://localhost:8080');
+    const indexPath = possiblePaths.find(p => fs.existsSync(p));
+
+    if (indexPath) {
+      console.log('Loading main window from:', indexPath);
+      this.mainWindow.loadFile(indexPath);
     } else {
-      this.mainWindow.loadFile(path.join(__dirname, '../dist/index.html'));
+      console.error('Index HTML not found in any of these locations:', possiblePaths);
     }
 
     this.mainWindow.once('ready-to-show', () => {
       this.splashWindow?.close();
       this.mainWindow?.show();
     });
-
-    // Add error logging
-    this.mainWindow.webContents.on('did-fail-load', (event, errorCode, errorDescription) => {
-      console.error('Failed to load page', errorCode, errorDescription);
-    });
   }
 
   private setupIPC() {
     ipcMain.on('window-control', (event, command: string) => {
-      console.log('Received window control command:', command);
       switch (command) {
         case 'minimize':
           this.mainWindow?.minimize();
