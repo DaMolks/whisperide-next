@@ -1,7 +1,11 @@
-interface Window {
-  electron: {
-    close: () => void;
-    minimize: () => void;
-    maximize: () => void;
-  };
+export interface IElectron {
+  minimize: () => void;
+  maximize: () => void;
+  close: () => void;
+}
+
+declare global {
+  interface Window {
+    electron: IElectron;
+  }
 }
