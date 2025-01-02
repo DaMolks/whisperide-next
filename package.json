@@ -5,8 +5,8 @@
   "scripts": {
     "postinstall": "node scripts/install.js",
     "dev": "concurrently \"npm run dev:webpack\" \"npm run dev:electron\"",
-    "dev:webpack": "webpack serve --mode development --hot",
-    "dev:electron": "wait-on http://localhost:8080 && electron .",
+    "dev:webpack": "webpack serve --mode development",
+    "dev:electron": "wait-on tcp:8080 && electron .",
     "start": "electron .",
     "build": "node scripts/build.js",
     "build:react": "webpack --mode production",
@@ -36,19 +36,5 @@
     "html-webpack-plugin": "^5.5.0",
     "concurrently": "^8.2.0",
     "wait-on": "^7.0.1"
-  },
-  "build": {
-    "appId": "com.whisperide.app",
-    "directories": {
-      "output": "dist",
-      "buildResources": "build"
-    },
-    "files": [
-      "dist/**/*",
-      "package.json"
-    ],
-    "win": {
-      "target": "nsis"
-    }
   }
 }

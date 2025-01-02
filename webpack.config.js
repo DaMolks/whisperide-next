@@ -30,7 +30,10 @@ module.exports = {
     })
   ],
   devServer: {
-    contentBase: './dist',
+    static: {
+      directory: path.join(__dirname, 'dist'),
+    },
+    port: 8080,
     hot: true
   }
-}
+};
