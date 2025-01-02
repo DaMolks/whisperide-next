@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain } from 'electron';
+import { app, BrowserWindow, ipcMain, screen } from 'electron';
 import * as path from 'path';
 
 class WhisperIDEApp {
@@ -18,9 +18,14 @@ class WhisperIDEApp {
   }
 
   private createSplashWindow = () => {
+    const primaryDisplay = screen.getPrimaryDisplay();
+    const { width, height } = primaryDisplay.workAreaSize;
+
     this.splashWindow = new BrowserWindow({
       width: 400,
       height: 300,
+      x: Math.round((width - 400) / 2),
+      y: Math.round((height - 300) / 2),
       frame: false,
       transparent: true,
       alwaysOnTop: true,
@@ -30,11 +35,6 @@ class WhisperIDEApp {
         contextIsolation: false
       }
     });
-
-    this.splashWindow.setPosition(
-      (require('electron').screen.getPrimaryDisplay().bounds.width - 400) / 2,
-      (require('electron').screen.getPrimaryDisplay().bounds.height - 300) / 2
-    );
 
     if (process.env.NODE_ENV === 'development') {
       this.splashWindow.loadURL('http://localhost:8080/splash.html');
