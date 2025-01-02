@@ -3,17 +3,30 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
   mode: 'development',
-  entry: './src/index.tsx',
+  entry: {
+    app: './src/index.tsx',
+    splash: './src/splash/index.tsx'
+  },
   output: {
-    filename: 'bundle.js',
+    filename: '[name].js',
     path: path.resolve(__dirname, 'dist')
   },
   module: {
     rules: [
       {
-        test: /\.tsx?$/,
-        use: 'ts-loader',
-        exclude: /node_modules/
+        test: /\.(ts|tsx)$/,
+        exclude: /node_modules/,
+        use: [
+          {
+            loader: 'babel-loader',
+            options: {
+              presets: [
+                '@babel/preset-react',
+                '@babel/preset-typescript'
+              ]
+            }
+          }
+        ]
       },
       {
         test: /\.css$/,
@@ -26,14 +39,21 @@ module.exports = {
   },
   plugins: [
     new HtmlWebpackPlugin({
-      template: 'src/index.html'
+      template: 'src/index.html',
+      filename: 'index.html',
+      chunks: ['app']
+    }),
+    new HtmlWebpackPlugin({
+      template: 'src/splash/splash.html',
+      filename: 'splash.html',
+      chunks: ['splash']
     })
   ],
   devServer: {
     static: {
-      directory: path.join(__dirname, 'dist'),
+      directory: path.join(__dirname, 'dist')
     },
     port: 8080,
     hot: true
   }
-};
+}
