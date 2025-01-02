@@ -1,5 +1,6 @@
-import { app, BrowserWindow, ipcMain, screen } from 'electron';
+import { app, BrowserWindow, ipcMain, screen, protocol } from 'electron';
 import * as path from 'path';
+import * as url from 'url';
 
 class WhisperIDEApp {
   private mainWindow: BrowserWindow | null = null;
@@ -37,7 +38,13 @@ class WhisperIDEApp {
       }
     });
 
-    this.splashWindow.loadFile(path.join(__dirname, '../dist/splash.html'));
+    const splashPath = url.format({
+      pathname: path.join(__dirname, '../dist/splash.html'),
+      protocol: 'file:',
+      slashes: true
+    });
+
+    this.splashWindow.loadURL(splashPath);
   }
 
   private createMainWindow = () => {
@@ -54,7 +61,13 @@ class WhisperIDEApp {
       }
     });
 
-    this.mainWindow.loadFile(path.join(__dirname, '../dist/index.html'));
+    const indexPath = url.format({
+      pathname: path.join(__dirname, '../dist/index.html'),
+      protocol: 'file:',
+      slashes: true
+    });
+
+    this.mainWindow.loadURL(indexPath);
 
     this.mainWindow.once('ready-to-show', () => {
       this.splashWindow?.close();
@@ -96,4 +109,6 @@ class WhisperIDEApp {
 }
 
 app.commandLine.appendSwitch('enable-logging');
-new WhisperIDEApp();
+app.whenReady().then(() => {
+  new WhisperIDEApp();
+});

@@ -10,9 +10,9 @@ module.exports = {
   output: {
     filename: '[name].js',
     path: path.resolve(__dirname, 'dist'),
-    publicPath: ''
+    publicPath: './'
   },
-  target: 'web',
+  target: 'electron-renderer',
   module: {
     rules: [
       {
@@ -50,12 +50,5 @@ module.exports = {
       filename: 'splash.html',
       chunks: ['splash']
     })
-  ],
-  devServer: {
-    static: {
-      directory: path.join(__dirname, 'dist')
-    },
-    port: 8080,
-    hot: true
-  }
+  ]
 };
