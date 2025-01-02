@@ -1,0 +1,22 @@
+{
+  "appId": "com.whisperide.app",
+  "productName": "WhisperIDE",
+  "directories": {
+    "output": "dist",
+    "buildResources": "resources"
+  },
+  "files": [
+    "build/**/*",
+    "package.json"
+  ],
+  "win": {
+    "target": "nsis",
+    "icon": "resources/icon.ico"
+  },
+  "nsis": {
+    "oneClick": false,
+    "allowToChangeInstallationDirectory": true,
+    "createDesktopShortcut": true,
+    "runAfterFinish": true
+  }
+}

@@ -1,13 +1,12 @@
 {
-  "devDependencies": {
-    "html-webpack-plugin": "^5.5.0",
-    "ts-loader": "^9.4.0",
-    "webpack": "^5.88.0",
-    "webpack-cli": "^5.1.0",
-    "webpack-dev-server": "^4.15.0"
-  },
   "scripts": {
-    "build": "webpack --mode production",
+    "start": "electron .",
+    "build": "node scripts/build.js",
+    "build:react": "webpack --mode production",
+    "build:electron": "tsc -p electron/tsconfig.json",
     "dev": "webpack serve --mode development"
+  },
+  "devDependencies": {
+    "electron-builder": "^24.6.0"
   }
 }
