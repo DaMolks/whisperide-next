@@ -6,64 +6,37 @@ class WhisperIDEApp {
   private splashWindow: BrowserWindow | null = null;
 
   constructor() {
-    app.on('ready', this.createSplash);
+    app.on('ready', this.init);
     app.on('window-all-closed', this.handleWindowsClosed);
     this.setupIPC();
   }
 
-  private createSplash = async () => {
-    this.splashWindow = new BrowserWindow({
-      width: 400,
-      height: 300,
-      frame: false,
-      transparent: true,
-      resizable: false,
-      webPreferences: {
-        nodeIntegration: true,
-        contextIsolation: true,
-        preload: path.join(__dirname, 'preload.js')
-      }
-    });
-
-    if (process.env.NODE_ENV === 'development') {
-      await this.splashWindow.loadURL('http://localhost:8080/splash.html');
-    } else {
-      await this.splashWindow.loadFile(path.join(__dirname, '../splash.html'));
-    }
-    
-    // Simule le chargement
-    setTimeout(() => {
-      this.createMainWindow();
-    }, 3000);
+  private init = () => {
+    this.createMainWindow();
   }
 
-  private createMainWindow = async () => {
+  private createMainWindow = () => {
     this.mainWindow = new BrowserWindow({
       width: 1200,
       height: 800,
-      show: false,
       frame: false,
+      backgroundColor: '#1a1a1a',
       webPreferences: {
         nodeIntegration: true,
-        contextIsolation: true,
+        contextIsolation: false,
         preload: path.join(__dirname, 'preload.js')
       }
     });
 
     if (process.env.NODE_ENV === 'development') {
-      await this.mainWindow.loadURL('http://localhost:8080');
+      this.mainWindow.loadURL('http://localhost:8080');
     } else {
-      await this.mainWindow.loadFile(path.join(__dirname, '../index.html'));
-    }
-
-    this.mainWindow.show();
-    if (this.splashWindow) {
-      this.splashWindow.close();
+      this.mainWindow.loadFile(path.join(__dirname, '../index.html'));
     }
   }
 
   private setupIPC() {
-    ipcMain.on('window-control', (_, command) => {
+    ipcMain.on('window-control', (_, command: string) => {
       switch (command) {
         case 'minimize':
           this.mainWindow?.minimize();
