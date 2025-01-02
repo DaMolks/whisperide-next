@@ -3,16 +3,24 @@
 ## 🎯 Overview
 Modern IDE focused on LLM integration with professional development capabilities.
 
-## 🏗️ Foundation (Current)
+## 🏗️ Phase 0: Setup (Current)
 - [x] Project initialization
 - [x] Documentation setup
-- [ ] Core dependencies setup
-  - Electron
+- [ ] Custom window management
+  - Frameless window
+  - Custom title bar
+  - Modern splash screen
+- [ ] Core dependencies
+  - Electron + nativefier
   - React + Material UI
   - TypeScript config
 
 ## 🌟 Phase 1: Core UI
-- [ ] Base layout structure
+- [ ] Splash Screen
+  - Animated loading
+  - Dependencies check
+  - Progress indication
+- [ ] Base layout
   - File explorer (left)
   - Code editor (center)
   - LLM chat (right/bottom)
