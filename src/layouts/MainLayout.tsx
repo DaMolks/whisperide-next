@@ -1,11 +1,13 @@
-import React from 'react';
-import { Box } from '@mui/material';
+import React, { Suspense } from 'react';
+import { Box, CircularProgress } from '@mui/material';
 import TitleBar from '../components/TitleBar/TitleBar';
-import SplitPane from '../components/layout/SplitPane';
-import FileExplorer from '../components/FileExplorer/FileExplorer';
-import Editor from '../components/Editor/Editor';
-import Terminal from '../components/Terminal/Terminal';
-import AIChat from '../components/AIChat/AIChat';
+
+// Dynamically import components to reduce initial load
+const SplitPane = React.lazy(() => import('../components/layout/SplitPane'));
+const FileExplorer = React.lazy(() => import('../components/FileExplorer/FileExplorer'));
+const Editor = React.lazy(() => import('../components/Editor/Editor'));
+const Terminal = React.lazy(() => import('../components/Terminal/Terminal'));
+const AIChat = React.lazy(() => import('../components/AIChat/AIChat'));
 
 const MainLayout: React.FC = () => {
   return (
@@ -20,27 +22,38 @@ const MainLayout: React.FC = () => {
     >
       <TitleBar />
       
-      <Box sx={{ flex: 1, overflow: 'hidden' }}>
-        <SplitPane
-          left={<FileExplorer />}
-          right={
-            <Box sx={{ display: 'flex', height: '100%' }}>
-              <SplitPane
-                direction="vertical"
-                defaultSplit={0.7}
-                left={
-                  <SplitPane
-                    defaultSplit={0.7}
-                    left={<Editor />}
-                    right={<AIChat />}
-                  />
-                }
-                right={<Terminal />}
-              />
-            </Box>
-          }
-        />
-      </Box>
+      <Suspense fallback={
+        <Box sx={{ 
+          display: 'flex', 
+          justifyContent: 'center', 
+          alignItems: 'center', 
+          height: '100%'
+        }}>
+          <CircularProgress />
+        </Box>
+      }>
+        <Box sx={{ flex: 1, overflow: 'hidden' }}>
+          <SplitPane
+            left={<FileExplorer />}
+            right={
+              <Box sx={{ display: 'flex', height: '100%' }}>
+                <SplitPane
+                  direction="vertical"
+                  defaultSplit={0.7}
+                  left={
+                    <SplitPane
+                      defaultSplit={0.7}
+                      left={<Editor />}
+                      right={<AIChat />}
+                    />
+                  }
+                  right={<Terminal />}
+                />
+              </Box>
+            }
+          />
+        </Box>
+      </Suspense>
     </Box>
   );
 };
