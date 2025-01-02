@@ -1,79 +1,79 @@
-# 🚀 WhisperIDE Development Roadmap
+# 🚀 Feuille de Route WhisperIDE
 
-## 🎯 Overview
-Modern IDE focused on LLM integration with professional development capabilities.
+## 🎯 Vue d'ensemble
+IDE moderne centré sur l'intégration IA avec des capacités de développement professionnelles.
 
-## 🏗️ Phase 0: Setup (Current)
-- [x] Project initialization
-- [x] Documentation setup
-- [ ] Custom window management
-  - Frameless window
-  - Custom title bar
-  - Modern splash screen
-- [ ] Core dependencies
+## 🏗️ Phase 0 : Installation (En cours)
+- [x] Initialisation du projet
+- [x] Configuration documentation
+- [ ] Gestion des fenêtres personnalisée
+  - Fenêtre sans bordure
+  - Barre de titre personnalisée
+  - Écran de démarrage moderne
+- [ ] Dépendances principales
   - Electron + nativefier
   - React + Material UI
-  - TypeScript config
+  - Configuration TypeScript
 
-## 🌟 Phase 1: Core UI
-- [ ] Splash Screen
-  - Animated loading
-  - Dependencies check
-  - Progress indication
-- [ ] Base layout
-  - File explorer (left)
-  - Code editor (center)
-  - LLM chat (right/bottom)
-  - Terminal (bottom)
-- [ ] Theme system
-  - Dark theme (default)
-  - Light theme
-  - Theme toggle
-- [ ] Responsive layout
-  - Resizable panels
-  - Collapsible sidebar
-  - Dockable chat
+## 🌟 Phase 1 : Interface de base
+- [ ] Écran de démarrage
+  - Chargement animé
+  - Vérification des dépendances
+  - Indicateur de progression
+- [ ] Structure principale
+  - Explorateur de fichiers (gauche)
+  - Éditeur de code (centre)
+  - Chat IA (droite/bas)
+  - Terminal (bas)
+- [ ] Système de thèmes
+  - Thème sombre (défaut)
+  - Thème clair
+  - Bascule thème
+- [ ] Interface adaptative
+  - Panneaux redimensionnables
+  - Barre latérale rétractable
+  - Chat ancrable
 
-## 🤖 Phase 2: LLM Integration
-- [ ] Multi-LLM support
-  - Ollama integration
-  - ChatGPT compatibility
-  - Claude integration
-- [ ] Auto-installation
-  - Ollama setup
-  - Dependencies check
-  - Environment configuration
-- [ ] LLM Training
-  - IDE command documentation
-  - Context management
-  - Command history
+## 🤖 Phase 2 : Intégration IA
+- [ ] Support multi-IA
+  - Intégration Ollama
+  - Compatibilité ChatGPT
+  - Intégration Claude
+- [ ] Installation automatique
+  - Configuration Ollama
+  - Vérification dépendances
+  - Configuration environnement
+- [ ] Apprentissage IA
+  - Documentation commandes IDE
+  - Gestion du contexte
+  - Historique commandes
 
-## 💻 Phase 3: IDE Features
-- [ ] File Management
-  - Project explorer
-  - File operations
-  - Search/replace
-- [ ] Git Integration
-  - Basic operations
-  - Repository sync
-  - Commit management
-- [ ] Editor Features
-  - Syntax highlighting
-  - Auto-completion
-  - Error detection
+## 💻 Phase 3 : Fonctionnalités IDE
+- [ ] Gestion fichiers
+  - Explorateur projet
+  - Opérations fichiers
+  - Rechercher/remplacer
+- [ ] Intégration Git
+  - Opérations basiques
+  - Synchronisation dépôt
+  - Gestion commits
+- [ ] Fonctionnalités éditeur
+  - Coloration syntaxique
+  - Auto-complétion
+  - Détection erreurs
 
-## 🔧 Phase 4: Advanced Features
-- [ ] Plugin System
-  - Plugin architecture
-  - Extension API
-  - Package management
-- [ ] Terminal Integration
-  - Command execution
-  - Process management
-  - Output streaming
+## 🔧 Phase 4 : Fonctionnalités avancées
+- [ ] Système plugins
+  - Architecture plugin
+  - API extension
+  - Gestion paquets
+- [ ] Intégration terminal
+  - Exécution commandes
+  - Gestion processus
+  - Streaming sortie
 
-## 📈 Future Enhancements
-- Performance optimization
-- Additional language support
-- Enhanced LLM capabilities
-- Community features
+## 📈 Améliorations futures
+- Optimisation performances
+- Support langages supplémentaires
+- Capacités IA améliorées
+- Fonctionnalités communautaires

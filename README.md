@@ -2,7 +2,7 @@
 
 <div align="center">
 
-*A modern, LLM-powered development environment*
+*Un environnement de développement moderne propulsé par l'IA*
 
 [![Electron](https://img.shields.io/badge/Electron-47848F?style=for-the-badge&logo=electron&logoColor=white)](https://www.electronjs.org/)
 [![React](https://img.shields.io/badge/React-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://reactjs.org/)
@@ -10,40 +10,40 @@
 
 </div>
 
-## ✨ Features
+## ✨ Fonctionnalités
 
-- 🤖 Integrated LLM support (Ollama, ChatGPT, Claude)
-- 💻 Modern IDE capabilities
-- 🔄 Real-time Git synchronization
-- 🎨 Sleek dark theme (with light option)
-- 🚀 Auto-dependency management
+- 🤖 Support IA intégré (Ollama, ChatGPT, Claude)
+- 💻 Capacités IDE modernes
+- 🔄 Synchronisation Git en temps réel
+- 🎨 Thème sombre élégant (option claire disponible)
+- 🚀 Gestion automatique des dépendances
 
-## 🛠️ Development
+## 🛠️ Développement
 
 ```bash
-# Clone repository
+# Cloner le dépôt
 git clone https://github.com/DaMolks/whisperide-next.git
 
-# Install dependencies
+# Installer les dépendances
 npm install
 
-# Start development server
+# Lancer le serveur de développement
 npm run dev
 
-# Build application
+# Compiler l'application
 npm run build
 ```
 
 ## 📚 Documentation
 
-- [Development Roadmap](ROADMAP.md)
-- [Contributing Guidelines](CONTRIBUTING.md)
-- [Architecture Overview](docs/ARCHITECTURE.md)
+- [Feuille de route](ROADMAP.md)
+- [Guide de contribution](CONTRIBUTING.md)
+- [Architecture](docs/ARCHITECTURE.md)
 
-## 🤝 Contributing
+## 🤝 Contribution
 
-Contributions are welcome! See our contributing guidelines for details.
+Les contributions sont les bienvenues ! Consultez notre guide de contribution.
 
-## 📝 License
+## 📝 Licence
 
 MIT
