@@ -1,16 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { Box, LinearProgress, Typography, keyframes } from '@mui/material';
+import '../styles/Splash.css';
 
-const fadeIn = keyframes`
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
-`;
-
-const Steps = [
-  'Vérification de l\'environnement...',
-  'Chargement des configurations...',
-  'Initialisation...',
-  'Démarrage de WhisperIDE...'
+const steps = [
+  'Initialisation de l\'environnement...',
+  'Vérification des dépendances...',
+  'Chargement des plugins...',
+  'Configuration de l\'IA...',
+  'Préparation de l\'interface...'
 ];
 
 const Splash: React.FC = () => {
@@ -18,74 +14,55 @@ const Splash: React.FC = () => {
   const [progress, setProgress] = useState(0);
 
   useEffect(() => {
-    let currentProgress = 0;
-    const interval = setInterval(() => {
-      if (currentProgress >= 100) {
-        clearInterval(interval);
-        return;
-      }
+    const incrementProgress = () => {
+      setProgress(prev => {
+        if (prev >= 100) return prev;
+        const next = prev + 1;
+        const stepIndex = Math.floor((next / 100) * steps.length);
+        if (stepIndex !== currentStep) {
+          setCurrentStep(stepIndex);
+        }
+        return next;
+      });
+    };
 
-      currentProgress += 2;
-      setProgress(currentProgress);
-      setCurrentStep(Math.floor((currentProgress / 100) * Steps.length));
-    }, 50);
-
+    const interval = setInterval(incrementProgress, 30);
     return () => clearInterval(interval);
-  }, []);
+  }, [currentStep]);
 
   return (
-    <Box
-      sx={{
-        height: '100vh',
-        background: 'radial-gradient(circle at center, #2c3e50 0%, #1a1a1a 100%)',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: 4,
-        color: 'white',
-        animation: `${fadeIn} 0.5s ease-out`
-      }}
-    >
-      <Typography 
-        variant="h3" 
-        sx={{ 
-          mb: 4,
-          fontWeight: 'bold',
-          letterSpacing: 2,
-          textShadow: '0 2px 4px rgba(0,0,0,0.2)'
-        }}
-      >
-        WhisperIDE
-      </Typography>
+    <div className="splash-container">
+      <div className="logo">
+        <svg width="80" height="80" viewBox="0 0 100 100">
+          <circle cx="50" cy="50" r="45" fill="none" stroke="white" strokeWidth="2" />
+          <text x="50" y="55" textAnchor="middle" fill="white" fontSize="20">W</text>
+        </svg>
+      </div>
       
-      <Box sx={{ width: '80%', maxWidth: 400 }}>
-        <LinearProgress
-          variant="determinate"
-          value={progress}
-          sx={{
-            height: 6,
-            borderRadius: 3,
-            backgroundColor: 'rgba(255,255,255,0.1)',
-            '.MuiLinearProgress-bar': {
-              backgroundColor: '#3498db',
-              transition: 'transform 0.2s linear'
-            }
-          }}
-        />
-      </Box>
+      <h1 style={{
+        fontSize: '2rem',
+        margin: '0 0 2rem 0',
+        fontWeight: 300,
+        letterSpacing: '0.1em'
+      }}>
+        WhisperIDE
+      </h1>
 
-      <Typography 
-        sx={{ 
-          mt: 2,
-          opacity: 0.8,
-          minHeight: 24,
-          textAlign: 'center'
-        }}
-      >
-        {Steps[currentStep]}
-      </Typography>
-    </Box>
+      <div className="progress-container">
+        <div 
+          className="progress-bar"
+          style={{ width: `${progress}%` }}
+        >
+          <div className="progress-glow" />
+        </div>
+      </div>
+
+      <div className="status-text" style={{
+        animationDelay: '0.3s'
+      }}>
+        {steps[currentStep]}
+      </div>
+    </div>
   );
 };
 
