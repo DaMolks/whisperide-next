@@ -9,8 +9,10 @@ module.exports = {
   },
   output: {
     filename: '[name].js',
-    path: path.resolve(__dirname, 'dist')
+    path: path.resolve(__dirname, 'dist'),
+    publicPath: './' // Important pour Electron
   },
+  target: 'electron-renderer', // Spécifique à Electron
   module: {
     rules: [
       {
@@ -56,4 +58,4 @@ module.exports = {
     port: 8080,
     hot: true
   }
-}
+};

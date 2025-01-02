@@ -29,18 +29,14 @@ class WhisperIDEApp {
       frame: false,
       transparent: true,
       alwaysOnTop: true,
-      backgroundColor: '#00000000',
+      show: true,
       webPreferences: {
         nodeIntegration: true,
         contextIsolation: false
       }
     });
 
-    if (process.env.NODE_ENV === 'development') {
-      this.splashWindow.loadURL('http://localhost:8080/splash.html');
-    } else {
-      this.splashWindow.loadFile(path.join(__dirname, '../dist/splash.html'));
-    }
+    this.splashWindow.loadFile(path.join(__dirname, '../dist/splash.html'));
   }
 
   private createMainWindow = () => {
@@ -57,20 +53,18 @@ class WhisperIDEApp {
       }
     });
 
-    if (process.env.NODE_ENV === 'development') {
-      this.mainWindow.loadURL('http://localhost:8080');
-    } else {
-      this.mainWindow.loadFile(path.join(__dirname, '../dist/index.html'));
-    }
+    this.mainWindow.loadFile(path.join(__dirname, '../dist/index.html'));
 
     this.mainWindow.once('ready-to-show', () => {
-      this.splashWindow?.close();
-      this.mainWindow?.show();
+      setTimeout(() => {
+        this.splashWindow?.close();
+        this.mainWindow?.show();
+      }, 2000);
     });
   }
 
   private setupIPC() {
-    ipcMain.on('window-control', (_, command: string) => {
+    ipcMain.on('window-control', (event, command: string) => {
       switch (command) {
         case 'minimize':
           this.mainWindow?.minimize();

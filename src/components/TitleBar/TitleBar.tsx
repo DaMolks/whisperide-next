@@ -5,15 +5,15 @@ import './TitleBar.css';
 
 const TitleBar = () => {
   const handleClose = () => {
-    if (window.electron) window.electron.close();
+    (window as any).electron.send('window-control', 'close');
   };
 
   const handleMinimize = () => {
-    if (window.electron) window.electron.minimize();
+    (window as any).electron.send('window-control', 'minimize');
   };
 
   const handleMaximize = () => {
-    if (window.electron) window.electron.maximize();
+    (window as any).electron.send('window-control', 'maximize');
   };
 
   return (
