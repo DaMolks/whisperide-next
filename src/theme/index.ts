@@ -1,51 +1,43 @@
-import { createTheme } from '@mui/material';
+import { createTheme, Theme } from '@mui/material';
 
 const baseTheme = {
   typography: {
-    fontFamily: '"Inter", sans-serif',
-  },
-  shape: {
-    borderRadius: 8
+    fontFamily: '"Inter", sans-serif'
   },
   components: {
     MuiButton: {
+      defaultProps: {
+        disableRipple: true
+      },
       styleOverrides: {
         root: {
-          textTransform: 'none'
+          textTransform: 'none' as const
         }
       }
     }
   }
 };
 
-export const darkTheme = createTheme({
+export const darkTheme: Theme = createTheme({
   ...baseTheme,
   palette: {
     mode: 'dark',
     primary: {
-      main: '#3498db',
-      light: '#5dade2',
-      dark: '#2980b9'
+      main: '#3498db'
     },
     background: {
       default: '#1a1a1a',
       paper: '#2d2d2d'
-    },
-    text: {
-      primary: '#ffffff',
-      secondary: 'rgba(255, 255, 255, 0.7)'
     }
   }
 });
 
-export const lightTheme = createTheme({
+export const lightTheme: Theme = createTheme({
   ...baseTheme,
   palette: {
     mode: 'light',
     primary: {
-      main: '#3498db',
-      light: '#5dade2',
-      dark: '#2980b9'
+      main: '#3498db'
     },
     background: {
       default: '#f5f5f5',

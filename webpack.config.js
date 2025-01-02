@@ -3,8 +3,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
   entry: {
-    app: './src/index.tsx',
-    splash: './src/splash/index.tsx'
+    app: './src/index.tsx'
   },
   output: {
     path: path.resolve(__dirname, 'dist'),
@@ -20,33 +19,16 @@ module.exports = {
       {
         test: /\.css$/,
         use: ['style-loader', 'css-loader']
-      },
-      {
-        test: /\.(png|svg|jpg|jpeg|gif)$/i,
-        type: 'asset/resource'
       }
     ]
   },
   resolve: {
-    extensions: ['.ts', '.tsx', '.js'],
-    alias: {
-      '@': path.resolve(__dirname, 'src')
-    }
+    extensions: ['.ts', '.tsx', '.js']
   },
   plugins: [
     new HtmlWebpackPlugin({
       template: 'src/index.html',
-      filename: 'index.html',
-      chunks: ['app']
-    }),
-    new HtmlWebpackPlugin({
-      template: 'src/splash/index.html',
-      filename: 'splash.html',
-      chunks: ['splash']
+      filename: 'index.html'
     })
-  ],
-  devServer: {
-    contentBase: './dist',
-    hot: true
-  }
-};
+  ]
+}
