@@ -1,10 +1,32 @@
 import React, { useState } from 'react';
 import { Box, Typography, IconButton, List } from '@mui/material';
 import { Refresh } from '@mui/icons-material';
-// ... rest of the imports
+import FileTreeItem, { FileTreeNode } from './FileTreeItem';
+
+// Mock data for initial development
+const mockData: FileTreeNode = {
+  name: 'Projet WhisperIDE',
+  type: 'folder',
+  children: [
+    { name: 'src', type: 'folder', children: [
+      { name: 'components', type: 'folder', children: [
+        { name: 'FileExplorer', type: 'file' },
+        { name: 'Editor', type: 'file' }
+      ]},
+      { name: 'index.tsx', type: 'file' }
+    ]},
+    { name: 'package.json', type: 'file' },
+    { name: 'README.md', type: 'file' }
+  ]
+};
 
 const FileExplorer: React.FC = () => {
-  // ... existing code
+  const [selectedNode, setSelectedNode] = useState<FileTreeNode | null>(null);
+
+  const handleSelect = (node: FileTreeNode) => {
+    setSelectedNode(node);
+    console.log('Selected:', node);
+  };
 
   return (
     <Box
