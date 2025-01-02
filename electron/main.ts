@@ -25,9 +25,13 @@ class WhisperIDEApp {
       }
     });
 
-    await this.splashWindow.loadFile(path.join(__dirname, '../splash.html'));
+    if (process.env.NODE_ENV === 'development') {
+      await this.splashWindow.loadURL('http://localhost:8080/splash.html');
+    } else {
+      await this.splashWindow.loadFile(path.join(__dirname, '../splash.html'));
+    }
     
-    // Simuler des vérifications
+    // Simule le chargement
     setTimeout(() => {
       this.createMainWindow();
     }, 3000);
