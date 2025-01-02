@@ -1,12 +1,34 @@
-import { app, BrowserWindow } from 'electron';
+import { app, BrowserWindow, ipcMain } from 'electron';
 import * as path from 'path';
 
 class WhisperIDEApp {
   private mainWindow: BrowserWindow | null = null;
+  private splashWindow: BrowserWindow | null = null;
 
   constructor() {
     app.on('ready', this.createWindow);
     app.on('window-all-closed', this.handleWindowsClosed);
+    this.setupIPC();
+  }
+
+  private setupIPC() {
+    ipcMain.on('window-control', (_, command: string) => {
+      switch (command) {
+        case 'minimize':
+          this.mainWindow?.minimize();
+          break;
+        case 'maximize':
+          if (this.mainWindow?.isMaximized()) {
+            this.mainWindow.unmaximize();
+          } else {
+            this.mainWindow?.maximize();
+          }
+          break;
+        case 'close':
+          this.mainWindow?.close();
+          break;
+      }
+    });
   }
 
   private createWindow = () => {
@@ -16,11 +38,16 @@ class WhisperIDEApp {
       frame: false,
       webPreferences: {
         nodeIntegration: true,
-        contextIsolation: false
+        contextIsolation: false,
+        preload: path.join(__dirname, 'preload.js')
       }
     });
 
-    this.mainWindow.loadFile(path.join(__dirname, '../index.html'));
+    if (process.env.NODE_ENV === 'development') {
+      this.mainWindow.loadURL('http://localhost:8080');
+    } else {
+      this.mainWindow.loadFile(path.join(__dirname, '../index.html'));
+    }
   }
 
   private handleWindowsClosed = () => {
