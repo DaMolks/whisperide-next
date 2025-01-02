@@ -3,16 +3,63 @@ import * as path from 'path';
 
 class WhisperIDEApp {
   private mainWindow: BrowserWindow | null = null;
+  private splashWindow: BrowserWindow | null = null;
 
   constructor() {
-    app.on('ready', this.createWindow);
+    app.on('ready', this.createSplash);
     app.on('window-all-closed', this.handleWindowsClosed);
     this.setupIPC();
   }
 
+  private createSplash = async () => {
+    this.splashWindow = new BrowserWindow({
+      width: 400,
+      height: 300,
+      frame: false,
+      transparent: true,
+      resizable: false,
+      webPreferences: {
+        nodeIntegration: true,
+        contextIsolation: true,
+        preload: path.join(__dirname, 'preload.js')
+      }
+    });
+
+    await this.splashWindow.loadFile(path.join(__dirname, '../splash.html'));
+    
+    // Simuler des vérifications
+    setTimeout(() => {
+      this.createMainWindow();
+    }, 3000);
+  }
+
+  private createMainWindow = async () => {
+    this.mainWindow = new BrowserWindow({
+      width: 1200,
+      height: 800,
+      show: false,
+      frame: false,
+      webPreferences: {
+        nodeIntegration: true,
+        contextIsolation: true,
+        preload: path.join(__dirname, 'preload.js')
+      }
+    });
+
+    if (process.env.NODE_ENV === 'development') {
+      await this.mainWindow.loadURL('http://localhost:8080');
+    } else {
+      await this.mainWindow.loadFile(path.join(__dirname, '../index.html'));
+    }
+
+    this.mainWindow.show();
+    if (this.splashWindow) {
+      this.splashWindow.close();
+    }
+  }
+
   private setupIPC() {
     ipcMain.on('window-control', (_, command) => {
-      console.log('Received command:', command); // Debug log
       switch (command) {
         case 'minimize':
           this.mainWindow?.minimize();
@@ -29,27 +76,6 @@ class WhisperIDEApp {
           break;
       }
     });
-  }
-
-  private createWindow = () => {
-    this.mainWindow = new BrowserWindow({
-      width: 1200,
-      height: 800,
-      frame: false,
-      webPreferences: {
-        nodeIntegration: true,
-        contextIsolation: true,
-        preload: path.join(__dirname, 'preload.js')
-      }
-    });
-
-    if (process.env.NODE_ENV === 'development') {
-      console.log('Loading development URL');
-      this.mainWindow.loadURL('http://localhost:8080');
-      this.mainWindow.webContents.openDevTools();
-    } else {
-      this.mainWindow.loadFile(path.join(__dirname, '../index.html'));
-    }
   }
 
   private handleWindowsClosed = () => {
