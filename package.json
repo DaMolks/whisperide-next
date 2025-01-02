@@ -1,12 +1,6 @@
 {
   "scripts": {
-    "start": "electron .",
-    "build": "node scripts/build.js",
-    "build:react": "webpack --mode production",
-    "build:electron": "tsc -p electron/tsconfig.json",
-    "dev": "webpack serve --mode development"
-  },
-  "devDependencies": {
-    "electron-builder": "^24.6.0"
+    "postinstall": "node scripts/install.js",
+    "start": "electron ."
   }
 }
