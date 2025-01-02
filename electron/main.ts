@@ -47,11 +47,13 @@ class WhisperIDEApp {
       show: false,
       backgroundColor: '#1a1a1a',
       webPreferences: {
-        nodeIntegration: true,
-        contextIsolation: false,
+        nodeIntegration: false,  // Important change
+        contextIsolation: true,  // Important change
         preload: path.join(__dirname, 'preload.js')
       }
     });
+
+    console.log('Preload script path:', path.join(__dirname, 'preload.js'));
 
     if (process.env.NODE_ENV === 'development') {
       this.mainWindow.loadURL('http://localhost:8080');
@@ -63,10 +65,16 @@ class WhisperIDEApp {
       this.splashWindow?.close();
       this.mainWindow?.show();
     });
+
+    // Add error logging
+    this.mainWindow.webContents.on('did-fail-load', (event, errorCode, errorDescription) => {
+      console.error('Failed to load page', errorCode, errorDescription);
+    });
   }
 
   private setupIPC() {
     ipcMain.on('window-control', (event, command: string) => {
+      console.log('Received window control command:', command);
       switch (command) {
         case 'minimize':
           this.mainWindow?.minimize();
