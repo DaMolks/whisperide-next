@@ -36,7 +36,7 @@ class WhisperIDEApp {
       }
     });
 
-    this.splashWindow.loadFile(path.join(__dirname, '../../src/splash/splash.html'));
+    this.splashWindow.loadFile(path.join(__dirname, '../dist/splash.html'));
   }
 
   private createMainWindow = () => {
@@ -53,7 +53,11 @@ class WhisperIDEApp {
       }
     });
 
-    this.mainWindow.loadFile(path.join(__dirname, '../../src/index.html'));
+    if (process.env.NODE_ENV === 'development') {
+      this.mainWindow.loadURL('http://localhost:8080');
+    } else {
+      this.mainWindow.loadFile(path.join(__dirname, '../dist/index.html'));
+    }
 
     this.mainWindow.once('ready-to-show', () => {
       this.splashWindow?.close();
