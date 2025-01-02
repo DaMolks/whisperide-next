@@ -31,8 +31,9 @@ class WhisperIDEApp {
       alwaysOnTop: true,
       show: true,
       webPreferences: {
-        nodeIntegration: true,
-        contextIsolation: false
+        nodeIntegration: false,
+        contextIsolation: true,
+        preload: path.join(__dirname, 'splash-preload.js')
       }
     });
 
@@ -47,8 +48,8 @@ class WhisperIDEApp {
       show: false,
       backgroundColor: '#1a1a1a',
       webPreferences: {
-        nodeIntegration: true,
-        contextIsolation: false,
+        nodeIntegration: false,
+        contextIsolation: true,
         preload: path.join(__dirname, 'preload.js')
       }
     });
@@ -95,5 +96,4 @@ class WhisperIDEApp {
 }
 
 app.commandLine.appendSwitch('enable-logging');
-
 new WhisperIDEApp();

@@ -10,9 +10,9 @@ module.exports = {
   output: {
     filename: '[name].js',
     path: path.resolve(__dirname, 'dist'),
-    publicPath: './' // Important pour Electron
+    publicPath: ''
   },
-  target: 'electron-renderer', // Spécifique à Electron
+  target: 'web',
   module: {
     rules: [
       {

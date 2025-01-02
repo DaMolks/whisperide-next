@@ -14,7 +14,8 @@
   },
   "include": [
     "main.ts",
-    "preload.ts"
+    "preload.ts",
+    "splash-preload.ts"
   ],
   "exclude": [
     "node_modules"
