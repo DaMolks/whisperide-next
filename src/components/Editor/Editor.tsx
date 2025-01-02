@@ -1,7 +1,6 @@
 import React from 'react';
 import { Box, Typography } from '@mui/material';
 
-// Placeholder component - will be implemented fully in next commit
 const Editor: React.FC = () => {
   return (
     <Box
@@ -11,7 +10,7 @@ const Editor: React.FC = () => {
         p: 2
       }}
     >
-      <Typography variant="subtitle2" sx={{ mb: 2 }}>
+      <Typography variant="subtitle2">
         Éditeur
       </Typography>
     </Box>
