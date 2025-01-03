@@ -73,3 +73,5 @@ const RepoList: React.FC<RepoListProps> = ({ repositories, onSelect }) => {
     </List>
   );
 };
+
+export default RepoList;
