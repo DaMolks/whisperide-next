@@ -1,16 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { Box, Typography, IconButton, Button, CircularProgress } from '@mui/material';
 import { Close, Remove, Folder, GitHub, Refresh } from '@mui/icons-material';
+import { GithubAPI, GithubRepository } from '../../services/github/api';
+import RepoList from '../../components/RepoList/RepoList';
 import './ProjectSelect.css';
 import '../../styles/shared.css';
-
-export interface Repository {
-  id: number;
-  name: string;
-  description?: string;
-  isPrivate: boolean;
-  updatedAt: string;
-}
 
 interface ProjectSelectProps {
   mode: 'github' | 'local';
@@ -24,7 +18,25 @@ const ProjectSelect: React.FC<ProjectSelectProps> = ({
   onProjectSelect 
 }) => {
   const [loading, setLoading] = useState(true);
-  const [repositories, setRepositories] = useState<Repository[]>([]);
+  const [error, setError] = useState<string | null>(null);
+  const [repositories, setRepositories] = useState<GithubRepository[]>([]);
+
+  const loadGitHubRepositories = async () => {
+    if (!githubToken) return;
+    
+    setLoading(true);
+    setError(null);
+    
+    try {
+      const repos = await GithubAPI.getUserRepositories(githubToken);
+      setRepositories(repos);
+    } catch (err) {
+      setError('Erreur lors du chargement des dépôts');
+      console.error('Failed to load repositories:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
     if (mode === 'github' && githubToken) {
@@ -32,13 +44,20 @@ const ProjectSelect: React.FC<ProjectSelectProps> = ({
     }
   }, [mode, githubToken]);
 
-  const loadGitHubRepositories = async () => {
-    setLoading(true);
+  const handleCreateRepo = async () => {
+    if (!githubToken) return;
+    
     try {
-      // TODO: Implémenter la récupération des repos
-      setRepositories([]);
-    } catch (error) {
-      console.error('Failed to load repositories:', error);
+      const repoName = prompt('Nom du nouveau dépôt:');
+      if (!repoName) return;
+
+      setLoading(true);
+      const newRepo = await GithubAPI.createRepository(githubToken, repoName);
+      await loadGitHubRepositories();
+      onProjectSelect(newRepo);
+    } catch (err) {
+      setError('Erreur lors de la création du dépôt');
+      console.error('Failed to create repository:', err);
     } finally {
       setLoading(false);
     }
@@ -46,7 +65,6 @@ const ProjectSelect: React.FC<ProjectSelectProps> = ({
 
   return (
     <Box className="project-select-container gradient-background">
-      {/* Contrôles fenêtre */}
       <Box className="window-controls">
         <IconButton onClick={() => window.electron?.minimize()}>
           <Remove />
@@ -56,7 +74,6 @@ const ProjectSelect: React.FC<ProjectSelectProps> = ({
         </IconButton>
       </Box>
 
-      {/* En-tête */}
       <Box className="header">
         <Typography variant="h4" component="h1">
           {mode === 'github' ? 'Sélectionner un dépôt' : 'Sélectionner un projet'}
@@ -68,16 +85,24 @@ const ProjectSelect: React.FC<ProjectSelectProps> = ({
         </Typography>
       </Box>
 
-      {/* Actions principales */}
       <Box className="main-actions">
         {mode === 'github' ? (
-          <Button
-            variant="contained"
-            startIcon={<GitHub />}
-            onClick={() => {}}
-          >
-            Nouveau dépôt
-          </Button>
+          <>
+            <Button
+              variant="contained"
+              startIcon={<GitHub />}
+              onClick={handleCreateRepo}
+              disabled={loading}
+            >
+              Nouveau dépôt
+            </Button>
+            <IconButton
+              onClick={loadGitHubRepositories}
+              disabled={loading}
+            >
+              <Refresh />
+            </IconButton>
+          </>
         ) : (
           <Button
             variant="contained"
@@ -89,15 +114,28 @@ const ProjectSelect: React.FC<ProjectSelectProps> = ({
         )}
       </Box>
 
-      {/* Liste des projets */}
       <Box className="projects-list">
         {loading ? (
           <Box className="loading-container">
             <CircularProgress />
             <Typography>Chargement des projets...</Typography>
           </Box>
+        ) : error ? (
+          <Box className="error-container">
+            <Typography color="error">{error}</Typography>
+            <Button
+              variant="outlined"
+              onClick={loadGitHubRepositories}
+              startIcon={<Refresh />}
+            >
+              Réessayer
+            </Button>
+          </Box>
         ) : repositories.length > 0 ? (
-          <Box>Liste des repos à implémenter</Box>
+          <RepoList 
+            repositories={repositories}
+            onSelect={onProjectSelect}
+          />
         ) : (
           <Box className="empty-state">
             <Typography variant="h6">
