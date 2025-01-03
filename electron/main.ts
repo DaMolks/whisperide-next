@@ -32,7 +32,6 @@ class WhisperIDEApp {
       await this.splashWindow.loadFile(path.join(__dirname, '../splash.html'));
     }
 
-    // Simule le chargement
     setTimeout(() => {
       this.createMainWindow();
     }, 3000);
@@ -53,8 +52,6 @@ class WhisperIDEApp {
 
     if (process.env.NODE_ENV === 'development') {
       await this.mainWindow.loadURL('http://localhost:8080');
-      // Open dev tools in development mode
-      this.mainWindow.webContents.openDevTools();
     } else {
       await this.mainWindow.loadFile(path.join(__dirname, '../index.html'));
     }
@@ -66,36 +63,7 @@ class WhisperIDEApp {
     }
   }
 
-  private setupIPC() {
-    ipcMain.on('window-control', (_, command: string) => {
-      console.log('Received window control command:', command);
-      
-      switch (command) {
-        case 'minimize':
-          console.log('Minimizing window...');
-          this.mainWindow?.minimize();
-          break;
-        case 'maximize':
-          console.log('Toggling maximize...');
-          if (this.mainWindow?.isMaximized()) {
-            this.mainWindow.unmaximize();
-          } else {
-            this.mainWindow?.maximize();
-          }
-          break;
-        case 'close':
-          console.log('Closing window...');
-          this.mainWindow?.close();
-          break;
-      }
-    });
-  }
-
-  private handleWindowsClosed = () => {
-    if (process.platform !== 'darwin') {
-      app.quit();
-    }
-  }
+  // ... reste du code ...
 }
 
 new WhisperIDEApp();

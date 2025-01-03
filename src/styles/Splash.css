@@ -1,75 +1,9 @@
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
+@keyframes shine {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
 }
 
-@keyframes pulse {
-  0% { transform: scale(1); opacity: 0.8; }
-  50% { transform: scale(1.05); opacity: 1; }
-  100% { transform: scale(1); opacity: 0.8; }
-}
-
-@keyframes gradientBG {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-}
-
-.splash-container {
-  width: 100vw;
-  height: 100vh;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: linear-gradient(-45deg, #1a1a1a, #2c3e50, #2c3e50, #1a1a1a);
-  background-size: 400% 400%;
-  animation: gradientBG 15s ease infinite;
-  overflow: hidden;
-}
-
-.splash-content {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 2rem;
-  padding: 2rem;
-  width: 100%;
-  max-width: 500px;
-  animation: fadeIn 0.8s ease-out;
-}
-
-.splash-logo {
-  animation: pulse 2s infinite ease-in-out;
-  color: white;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.splash-logo svg {
-  width: 100px;
-  height: 100px;
-}
-
-.splash-title {
-  color: white !important;
-  font-weight: 300 !important;
-  letter-spacing: 0.1em;
-  text-align: center;
-  font-size: 2rem !important;
-  margin: 0 !important;
-}
-
-.splash-progress {
-  width: 100% !important;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 1rem;
-}
+/* ... autres animations existantes ... */
 
 .splash-progress .MuiLinearProgress-root {
   width: 80%;
@@ -77,17 +11,26 @@
   height: 4px !important;
   border-radius: 2px;
   background-color: rgba(255, 255, 255, 0.1) !important;
+  position: relative;
+  overflow: hidden;
 }
 
 .splash-progress .MuiLinearProgress-bar {
   background-color: #3498db !important;
 }
 
-.splash-step {
-  color: rgba(255, 255, 255, 0.7) !important;
-  text-align: center;
-  min-height: 24px;
-  font-size: 0.9rem !important;
-  margin-top: 0.5rem !important;
-  animation: fadeIn 0.3s ease-out;
+.splash-progress .MuiLinearProgress-root::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.3),
+    transparent
+  );
+  animation: shine 2s infinite;
 }
