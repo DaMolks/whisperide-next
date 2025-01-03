@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Box, LinearProgress, Typography } from '@mui/material';
 import '../styles/Splash.css';
+import '../styles/shared.css';
 
 const steps = [
   'Initialisation...',
@@ -40,7 +41,7 @@ const Splash: React.FC = () => {
   }, []);
 
   return (
-    <Box className={`splash-container ${isComplete ? 'complete' : ''}`}>
+    <Box className={`splash-container gradient-background ${isComplete ? 'complete' : ''}`}>
       <Box className="splash-content">
         <Typography variant="h2" className="splash-title">
           WhisperIDE Next

@@ -2,6 +2,7 @@ import React from 'react';
 import { Box, Typography, Button, IconButton } from '@mui/material';
 import { GitHub, Close, Remove } from '@mui/icons-material';
 import './Welcome.css';
+import '../../styles/shared.css';
 
 interface WelcomeProps {
   onGitHubLogin: () => void;
@@ -22,7 +23,7 @@ const Welcome: React.FC<WelcomeProps> = ({ onGitHubLogin, onLocalMode }) => {
   };
 
   return (
-    <Box className="welcome-container">
+    <Box className="welcome-container gradient-background">
       <Box className="welcome-controls">
         <IconButton 
           onClick={handleMinimize}
@@ -57,7 +58,7 @@ const Welcome: React.FC<WelcomeProps> = ({ onGitHubLogin, onLocalMode }) => {
           </Button>
           
           <Button
-            variant="outlined"
+            variant="text"
             size="large"
             onClick={onLocalMode}
             className="local-button"
