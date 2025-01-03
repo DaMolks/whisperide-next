@@ -11,9 +11,12 @@ class WhisperIDEApp {
   }
 
   private createMainWindow = async () => {
+    // Créer une fenêtre de la taille de l'écran
+    const { width, height } = require('electron').screen.getPrimaryDisplay().workAreaSize;
+    
     this.mainWindow = new BrowserWindow({
-      width: 1200,
-      height: 800,
+      width: width,
+      height: height,
       frame: false,
       webPreferences: {
         nodeIntegration: true,
@@ -21,6 +24,9 @@ class WhisperIDEApp {
         preload: path.join(__dirname, 'preload.js')
       }
     });
+
+    // Centrer la fenêtre
+    this.mainWindow.center();
 
     if (process.env.NODE_ENV === 'development') {
       await this.mainWindow.loadURL('http://localhost:8080');
@@ -31,8 +37,6 @@ class WhisperIDEApp {
 
   private setupIPC() {
     ipcMain.on('window-control', (_, command: string) => {
-      console.log('Received command:', command);
-      
       switch (command) {
         case 'minimize':
           this.mainWindow?.minimize();
