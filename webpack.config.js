@@ -1,5 +1,6 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin');
 
 module.exports = {
   mode: 'development',
@@ -14,28 +15,32 @@ module.exports = {
   module: {
     rules: [
       {
-        test: /\.(ts|tsx)$/,
-        exclude: /node_modules/,
+        test: /\.tsx?$/,
         use: [
           {
-            loader: 'babel-loader',
+            loader: 'ts-loader',
             options: {
-              presets: [
-                '@babel/preset-react',
-                '@babel/preset-typescript'
-              ]
+              transpileOnly: true
             }
           }
-        ]
+        ],
+        exclude: /node_modules/
       },
       {
         test: /\.css$/,
         use: ['style-loader', 'css-loader']
+      },
+      {
+        test: /\.ttf$/,
+        type: 'asset/resource'
       }
     ]
   },
   resolve: {
-    extensions: ['.tsx', '.ts', '.js']
+    extensions: ['.tsx', '.ts', '.js'],
+    alias: {
+      '@': path.resolve(__dirname, 'src')
+    }
   },
   plugins: [
     new HtmlWebpackPlugin({
@@ -47,6 +52,9 @@ module.exports = {
       template: 'src/splash/splash.html',
       filename: 'splash.html',
       chunks: ['splash']
+    }),
+    new MonacoWebpackPlugin({
+      languages: ['javascript', 'typescript', 'python', 'java', 'cpp', 'csharp', 'html', 'css', 'json']
     })
   ],
   devServer: {
