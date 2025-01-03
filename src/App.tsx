@@ -3,11 +3,14 @@ import { ThemeProvider, CssBaseline } from '@mui/material';
 import { darkTheme } from './theme';
 import Splash from './splash/Splash';
 import Welcome from './screens/Welcome/Welcome';
+import ProjectSelect from './screens/ProjectSelect/ProjectSelect';
 import MainLayout from './layouts/MainLayout';
 
 type AppState = 'splash' | 'welcome' | 'select-project' | 'main';
+type ProjectMode = 'github' | 'local';
 
 interface AppData {
+  mode?: ProjectMode;
   githubToken?: string;
 }
 
@@ -15,7 +18,6 @@ const App: React.FC = () => {
   const [appState, setAppState] = useState<AppState>('splash');
   const [appData, setAppData] = useState<AppData>({});
 
-  // Timer pour simuler le chargement
   React.useEffect(() => {
     if (appState === 'splash') {
       const timer = setTimeout(() => {
@@ -26,28 +28,41 @@ const App: React.FC = () => {
   }, [appState]);
 
   const handleGitHubLogin = (token: string) => {
-    setAppData({ ...appData, githubToken: token });
+    setAppData({ mode: 'github', githubToken: token });
     setAppState('select-project');
   };
 
   const handleLocalMode = () => {
+    setAppData({ mode: 'local' });
     setAppState('select-project');
+  };
+
+  const handleProjectSelect = (projectInfo: any) => {
+    // TODO: Stocker les infos du projet
+    setAppState('main');
   };
 
   return (
     <ThemeProvider theme={darkTheme}>
       <CssBaseline />
+      
       {appState === 'splash' && <Splash />}
+      
       {appState === 'welcome' && (
         <Welcome
           onGitHubLogin={handleGitHubLogin}
           onLocalMode={handleLocalMode}
         />
       )}
-      {/* TODO: Ajouter SelectProject screen */}
-      {appState === 'select-project' && (
-        <div>Project Selection (à implémenter)</div>
+      
+      {appState === 'select-project' && appData.mode && (
+        <ProjectSelect
+          mode={appData.mode}
+          githubToken={appData.githubToken}
+          onProjectSelect={handleProjectSelect}
+        />
       )}
+      
       {appState === 'main' && <MainLayout />}
     </ThemeProvider>
   );
