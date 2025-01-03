@@ -20,7 +20,12 @@ const MainLayout: React.FC = () => {
     >
       <TitleBar />
       
-      <Box sx={{ flex: 1, overflow: 'hidden', pl: 1 }}> {/* Ajout de padding left */}
+      <Box sx={{ 
+        flex: 1, 
+        overflow: 'hidden', 
+        pl: 1,
+        bgcolor: 'background.paper' // Même couleur que FileExplorer
+      }}>
         <SplitPane
           defaultSplit={0.2}
           left={<FileExplorer />}
