@@ -1,42 +1,33 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Box, IconButton } from '@mui/material';
 import { Close, Remove, CropSquare } from '@mui/icons-material';
 import './TitleBar.css';
 
-const TitleBar = () => {
-  useEffect(() => {
-    console.log('Window object:', window);
-    console.log('Window.electron:', (window as any).electron);
-    console.log('Window.electron type:', typeof (window as any).electron);
-  }, []);
-
+const TitleBar: React.FC = () => {
   const handleClose = () => {
-    console.log('Close button clicked');
+    console.log('Close clicked');
     if ((window as any).electron) {
-      console.log('Sending close command');
-      (window as any).electron.send('window-control', 'close');
+      (window as any).electron.close();
     } else {
-      console.error('window.electron is not defined');
+      console.log('Electron not found in window');
     }
   };
 
   const handleMinimize = () => {
-    console.log('Minimize button clicked');
+    console.log('Minimize clicked');
     if ((window as any).electron) {
-      console.log('Sending minimize command');
-      (window as any).electron.send('window-control', 'minimize');
+      (window as any).electron.minimize();
     } else {
-      console.error('window.electron is not defined');
+      console.log('Electron not found in window');
     }
   };
 
   const handleMaximize = () => {
-    console.log('Maximize button clicked');
+    console.log('Maximize clicked');
     if ((window as any).electron) {
-      console.log('Sending maximize command');
-      (window as any).electron.send('window-control', 'maximize');
+      (window as any).electron.maximize();
     } else {
-      console.error('window.electron is not defined');
+      console.log('Electron not found in window');
     }
   };
 
