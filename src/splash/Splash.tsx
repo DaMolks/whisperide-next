@@ -22,7 +22,6 @@ const Splash: React.FC = () => {
       const newProgress = Math.min((elapsed / duration) * 100, 100);
       setProgress(newProgress);
 
-      // Met à jour l'étape en fonction du progrès
       const stepIndex = Math.min(
         Math.floor((newProgress / 100) * steps.length),
         steps.length - 1
@@ -41,9 +40,9 @@ const Splash: React.FC = () => {
     <Box className="splash-container">
       <Box className="splash-content">
         <div className="splash-logo">
-          <svg width="80" height="80" viewBox="0 0 100 100">
+          <svg width="100" height="100" viewBox="0 0 100 100">
             <circle cx="50" cy="50" r="45" fill="none" stroke="currentColor" strokeWidth="2" />
-            <text x="50" y="55" textAnchor="middle" fill="currentColor" fontSize="24" fontFamily="Inter">
+            <text x="50" y="55" textAnchor="middle" fill="currentColor" fontSize="24">
               W
             </text>
           </svg>
@@ -57,21 +56,11 @@ const Splash: React.FC = () => {
           <LinearProgress
             variant="determinate"
             value={progress}
-            sx={{
-              width: '300px',
-              height: '4px',
-              borderRadius: '2px',
-              bgcolor: 'rgba(255, 255, 255, 0.1)',
-              '& .MuiLinearProgress-bar': {
-                bgcolor: '#3498db'
-              }
-            }}
           />
+          <Typography variant="body2" className="splash-step">
+            {steps[currentStep]}
+          </Typography>
         </Box>
-
-        <Typography variant="body2" className="splash-step">
-          {steps[currentStep]}
-        </Typography>
       </Box>
     </Box>
   );
