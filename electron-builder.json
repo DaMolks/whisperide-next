@@ -1,22 +1,21 @@
 {
-  "appId": "com.whisperide.app",
-  "productName": "WhisperIDE",
+  "appId": "com.whisperide.next",
+  "productName": "WhisperIDE Next",
   "directories": {
     "output": "dist",
-    "buildResources": "resources"
+    "buildResources": "build"
   },
   "files": [
-    "build/**/*",
+    "dist/**/*",
     "package.json"
   ],
   "win": {
-    "target": "nsis",
-    "icon": "resources/icon.ico"
+    "target": ["nsis"],
+    "icon": "build/icon.ico"
   },
   "nsis": {
     "oneClick": false,
     "allowToChangeInstallationDirectory": true,
-    "createDesktopShortcut": true,
-    "runAfterFinish": true
+    "createDesktopShortcut": true
   }
 }
