@@ -63,7 +63,36 @@ class WhisperIDEApp {
     }
   }
 
-  // ... reste du code ...
+  private setupIPC = () => {
+    ipcMain.on('window-control', (_, command: string) => {
+      console.log('Received window control command:', command);
+      
+      switch (command) {
+        case 'minimize':
+          console.log('Minimizing window...');
+          this.mainWindow?.minimize();
+          break;
+        case 'maximize':
+          console.log('Toggling maximize...');
+          if (this.mainWindow?.isMaximized()) {
+            this.mainWindow.unmaximize();
+          } else {
+            this.mainWindow?.maximize();
+          }
+          break;
+        case 'close':
+          console.log('Closing window...');
+          this.mainWindow?.close();
+          break;
+      }
+    });
+  }
+
+  private handleWindowsClosed = () => {
+    if (process.platform !== 'darwin') {
+      app.quit();
+    }
+  }
 }
 
 new WhisperIDEApp();
