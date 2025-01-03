@@ -11,13 +11,12 @@ class WhisperIDEApp {
   }
 
   private createMainWindow = async () => {
-    // Créer une fenêtre de la taille de l'écran
-    const { width, height } = require('electron').screen.getPrimaryDisplay().workAreaSize;
-    
     this.mainWindow = new BrowserWindow({
-      width: width,
-      height: height,
+      width: 1200,
+      height: 800,
       frame: false,
+      show: false,
+      backgroundColor: '#1a1a1a',
       webPreferences: {
         nodeIntegration: true,
         contextIsolation: false,
@@ -25,13 +24,14 @@ class WhisperIDEApp {
       }
     });
 
-    // Centrer la fenêtre
     this.mainWindow.center();
 
     if (process.env.NODE_ENV === 'development') {
       await this.mainWindow.loadURL('http://localhost:8080');
+      this.mainWindow.show();
     } else {
       await this.mainWindow.loadFile(path.join(__dirname, '../index.html'));
+      this.mainWindow.show();
     }
   }
 
