@@ -3,49 +3,21 @@ import * as path from 'path';
 
 class WhisperIDEApp {
   private mainWindow: BrowserWindow | null = null;
-  private splashWindow: BrowserWindow | null = null;
 
   constructor() {
-    app.on('ready', this.createSplash);
+    app.on('ready', this.createMainWindow);
     app.on('window-all-closed', this.handleWindowsClosed);
     this.setupIPC();
-  }
-
-  private createSplash = async () => {
-    this.splashWindow = new BrowserWindow({
-      width: 600,
-      height: 400,
-      frame: false,
-      transparent: true,
-      resizable: false,
-      center: true,
-      webPreferences: {
-        nodeIntegration: true,
-        contextIsolation: true,
-        preload: path.join(__dirname, 'preload.js')
-      }
-    });
-
-    if (process.env.NODE_ENV === 'development') {
-      await this.splashWindow.loadURL('http://localhost:8080/splash.html');
-    } else {
-      await this.splashWindow.loadFile(path.join(__dirname, '../splash.html'));
-    }
-
-    setTimeout(() => {
-      this.createMainWindow();
-    }, 3000);
   }
 
   private createMainWindow = async () => {
     this.mainWindow = new BrowserWindow({
       width: 1200,
       height: 800,
-      show: false,
       frame: false,
       webPreferences: {
         nodeIntegration: true,
-        contextIsolation: true,
+        contextIsolation: false,
         preload: path.join(__dirname, 'preload.js')
       }
     });
@@ -55,25 +27,17 @@ class WhisperIDEApp {
     } else {
       await this.mainWindow.loadFile(path.join(__dirname, '../index.html'));
     }
-
-    this.mainWindow.show();
-    if (this.splashWindow) {
-      this.splashWindow.close();
-      this.splashWindow = null;
-    }
   }
 
-  private setupIPC = () => {
+  private setupIPC() {
     ipcMain.on('window-control', (_, command: string) => {
-      console.log('Received window control command:', command);
+      console.log('Received command:', command);
       
       switch (command) {
         case 'minimize':
-          console.log('Minimizing window...');
           this.mainWindow?.minimize();
           break;
         case 'maximize':
-          console.log('Toggling maximize...');
           if (this.mainWindow?.isMaximized()) {
             this.mainWindow.unmaximize();
           } else {
@@ -81,7 +45,6 @@ class WhisperIDEApp {
           }
           break;
         case 'close':
-          console.log('Closing window...');
           this.mainWindow?.close();
           break;
       }
