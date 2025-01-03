@@ -3,24 +3,25 @@
   "version": "0.1.0",
   "main": "dist/electron/main.js",
   "scripts": {
-    "postinstall": "electron-builder install-app-deps",
+    "postinstall": "node scripts/install.js",
     "dev": "concurrently \"npm run dev:webpack\" \"npm run dev:electron\"",
     "dev:webpack": "webpack serve --mode development",
     "dev:electron": "tsc -p electron/tsconfig.json && wait-on tcp:8080 && cross-env NODE_ENV=development electron .",
     "start": "electron .",
     "build": "node scripts/build.js",
     "build:react": "webpack --mode production",
-    "build:electron": "tsc -p electron/tsconfig.json",
-    "pack": "electron-builder --dir",
-    "dist": "electron-builder"
+    "build:electron": "tsc -p electron/tsconfig.json"
   },
   "dependencies": {
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
     "@mui/icons-material": "^5.14.0",
     "@mui/material": "^5.14.0",
+    "monaco-editor": "^0.45.0",
+    "monaco-editor-webpack-plugin": "^7.1.0",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "react-monaco-editor": "^0.55.0"
   },
   "devDependencies": {
     "@babel/core": "^7.22.0",
