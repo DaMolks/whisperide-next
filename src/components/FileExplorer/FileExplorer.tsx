@@ -29,3 +29,5 @@ const FileExplorer: React.FC = () => {
     </Box>
   );
 };
+
+export default FileExplorer;
