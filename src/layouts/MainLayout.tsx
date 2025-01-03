@@ -20,13 +20,16 @@ const MainLayout: React.FC = () => {
     >
       <TitleBar />
       
+      {/* Container principal */}
       <Box sx={{ flex: 1, overflow: 'hidden', display: 'flex' }}>
+        {/* SplitPane principal : Explorer | Main */}
         <SplitPane
+          defaultSplit={0.2}
           left={<FileExplorer />}
           right={
             <SplitPane
               direction="vertical"
-              defaultSplit={0.75}
+              defaultSplit={0.8}
               left={
                 <SplitPane
                   defaultSplit={0.8}

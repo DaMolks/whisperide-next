@@ -5,42 +5,50 @@ import './SplitPane.css';
 interface SplitPaneProps {
   left: React.ReactNode;
   right: React.ReactNode;
+  direction?: 'horizontal' | 'vertical';
   defaultSplit?: number;
   minSize?: number;
-  direction?: 'horizontal' | 'vertical';
 }
 
 const SplitPane: React.FC<SplitPaneProps> = ({
   left,
   right,
+  direction = 'horizontal',
   defaultSplit = 0.25,
-  minSize = 200,
-  direction = 'horizontal'
+  minSize = 100,
 }) => {
-  const [isDragging, setIsDragging] = useState(false);
   const [split, setSplit] = useState(defaultSplit);
+  const [isDragging, setIsDragging] = useState(false);
 
   const handleMouseDown = useCallback((e: React.MouseEvent) => {
     setIsDragging(true);
     e.preventDefault();
   }, []);
 
-  const handleMouseMove = useCallback((e: MouseEvent) => {
-    if (!isDragging) return;
+  const handleMouseMove = useCallback(
+    (e: MouseEvent) => {
+      if (!isDragging) return;
 
-    const container = document.getElementById('split-container');
-    if (!container) return;
+      const container = document.getElementById('split-container');
+      if (!container) return;
 
-    const { left: containerLeft, width: containerWidth } = container.getBoundingClientRect();
-    let newSplit = (e.clientX - containerLeft) / containerWidth;
-    
-    // Limit split based on minSize
-    const minSplit = minSize / containerWidth;
-    const maxSplit = 1 - minSplit;
-    newSplit = Math.max(minSplit, Math.min(maxSplit, newSplit));
+      const { left: containerLeft, width: containerWidth, top: containerTop, height: containerHeight } = container.getBoundingClientRect();
 
-    setSplit(newSplit);
-  }, [isDragging, minSize]);
+      let newSplit;
+      if (direction === 'horizontal') {
+        newSplit = (e.clientX - containerLeft) / containerWidth;
+      } else {
+        newSplit = (e.clientY - containerTop) / containerHeight;
+      }
+
+      // Limite le split en fonction de minSize
+      const minSplit = minSize / (direction === 'horizontal' ? containerWidth : containerHeight);
+      newSplit = Math.max(minSplit, Math.min(1 - minSplit, newSplit));
+
+      setSplit(newSplit);
+    },
+    [isDragging, direction, minSize]
+  );
 
   const handleMouseUp = useCallback(() => {
     setIsDragging(false);
@@ -48,12 +56,12 @@ const SplitPane: React.FC<SplitPaneProps> = ({
 
   React.useEffect(() => {
     if (isDragging) {
-      document.addEventListener('mousemove', handleMouseMove);
-      document.addEventListener('mouseup', handleMouseUp);
+      window.addEventListener('mousemove', handleMouseMove);
+      window.addEventListener('mouseup', handleMouseUp);
     }
     return () => {
-      document.removeEventListener('mousemove', handleMouseMove);
-      document.removeEventListener('mouseup', handleMouseUp);
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseup', handleMouseUp);
     };
   }, [isDragging, handleMouseMove, handleMouseUp]);
 
@@ -64,41 +72,28 @@ const SplitPane: React.FC<SplitPaneProps> = ({
         display: 'flex',
         flexDirection: direction === 'horizontal' ? 'row' : 'column',
         height: '100%',
-        overflow: 'hidden',
-        position: 'relative',
-        bgcolor: 'background.default'
+        width: '100%',
+        overflow: 'hidden'
       }}
     >
       <Box
         sx={{
           width: direction === 'horizontal' ? `${split * 100}%` : '100%',
-          height: direction === 'horizontal' ? '100%' : `${split * 100}%`,
-          overflow: 'auto'
+          height: direction === 'vertical' ? `${split * 100}%` : '100%',
+          overflow: 'hidden',
+          flexShrink: 0
         }}
       >
         {left}
       </Box>
 
       <Box
-        className="split-handler"
         sx={{
-          position: 'relative',
+          width: direction === 'horizontal' ? '4px' : '100%',
+          height: direction === 'vertical' ? '4px' : '100%',
+          backgroundColor: isDragging ? 'primary.main' : 'divider',
           cursor: direction === 'horizontal' ? 'col-resize' : 'row-resize',
-          '&::after': {
-            content: '""',
-            position: 'absolute',
-            top: direction === 'horizontal' ? 0 : '50%',
-            left: direction === 'horizontal' ? '50%' : 0,
-            transform: direction === 'horizontal' ? 
-              'translateX(-50%)' : 'translateY(-50%)',
-            width: direction === 'horizontal' ? '1px' : '100%',
-            height: direction === 'horizontal' ? '100%' : '1px',
-            bgcolor: 'divider',
-            transition: 'background-color 0.2s'
-          },
-          '&:hover::after': {
-            bgcolor: 'primary.main'
-          }
+          flexShrink: 0
         }}
         onMouseDown={handleMouseDown}
       />
@@ -106,8 +101,9 @@ const SplitPane: React.FC<SplitPaneProps> = ({
       <Box
         sx={{
           width: direction === 'horizontal' ? `${(1 - split) * 100}%` : '100%',
-          height: direction === 'horizontal' ? '100%' : `${(1 - split) * 100}%`,
-          overflow: 'auto'
+          height: direction === 'vertical' ? `${(1 - split) * 100}%` : '100%',
+          overflow: 'hidden',
+          flexShrink: 0
         }}
       >
         {right}
