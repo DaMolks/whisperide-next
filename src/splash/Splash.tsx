@@ -3,10 +3,10 @@ import { Box, LinearProgress, Typography } from '@mui/material';
 import '../styles/Splash.css';
 
 const steps = [
-  'Initialisation de l\'environnement...',
-  'Vérification des dépendances...',
-  'Chargement des configurations...',
-  'Démarrage des services...'
+  'Initialisation...',
+  'Vérification...',
+  'Configuration...',
+  'Démarrage...'
 ];
 
 const Splash: React.FC = () => {
@@ -39,27 +39,20 @@ const Splash: React.FC = () => {
   return (
     <Box className="splash-container">
       <Box className="splash-content">
-        <div className="splash-logo">
-          <svg width="100" height="100" viewBox="0 0 100 100">
-            <circle cx="50" cy="50" r="45" fill="none" stroke="currentColor" strokeWidth="2" />
-            <text x="50" y="55" textAnchor="middle" fill="currentColor" fontSize="24">
-              W
-            </text>
-          </svg>
-        </div>
-
-        <Typography variant="h4" className="splash-title">
-          WhisperIDE
+        <Typography variant="h3" className="splash-title">
+          WhisperIDE Next
         </Typography>
 
         <Box className="splash-progress">
-          <LinearProgress
-            variant="determinate"
-            value={progress}
-          />
-          <Typography variant="body2" className="splash-step">
-            {steps[currentStep]}
-          </Typography>
+          <Box className="progress-bar-container">
+            <LinearProgress
+              variant="determinate"
+              value={progress}
+            />
+            <Typography variant="body2" className="splash-step">
+              {steps[currentStep]}
+            </Typography>
+          </Box>
         </Box>
       </Box>
     </Box>

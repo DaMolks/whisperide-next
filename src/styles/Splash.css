@@ -1,13 +1,70 @@
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes gradientBG {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
 @keyframes shine {
   0% { transform: translateX(-100%); }
   100% { transform: translateX(100%); }
 }
 
-/* ... autres animations existantes ... */
+.splash-container {
+  width: 100vw;
+  height: 100vh;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(-45deg, #1a1a1a, #2c3e50, #2c3e50, #1a1a1a);
+  background-size: 400% 400%;
+  animation: gradientBG 15s ease infinite;
+  overflow: hidden;
+}
 
-.splash-progress .MuiLinearProgress-root {
+.splash-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 500px;
+  padding: 2rem;
+  animation: fadeIn 0.8s ease-out;
+}
+
+.splash-title {
+  color: white !important;
+  font-weight: 300 !important;
+  letter-spacing: 0.15em !important;
+  text-align: center;
+  font-size: 2.5rem !important;
+  margin-bottom: 3rem !important;
+  font-family: 'Inter', sans-serif !important;
+}
+
+.splash-progress {
+  width: 100% !important;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  min-height: 60px; /* Hauteur fixe pour le conteneur */
+}
+
+.progress-bar-container {
   width: 80%;
   max-width: 400px;
+  position: relative;
+}
+
+.splash-progress .MuiLinearProgress-root {
   height: 4px !important;
   border-radius: 2px;
   background-color: rgba(255, 255, 255, 0.1) !important;
@@ -33,4 +90,19 @@
     transparent
   );
   animation: shine 2s infinite;
+}
+
+.splash-step {
+  color: rgba(255, 255, 255, 0.7) !important;
+  text-align: center;
+  height: 24px; /* Hauteur fixe pour le texte */
+  line-height: 24px;
+  font-size: 0.9rem !important;
+  font-weight: 400 !important;
+  opacity: 0;
+  animation: fadeIn 0.3s ease-out forwards;
+  position: absolute;
+  width: 100%;
+  left: 0;
+  bottom: -32px; /* Position fixe sous la barre de progression */
 }

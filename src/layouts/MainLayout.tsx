@@ -20,9 +20,7 @@ const MainLayout: React.FC = () => {
     >
       <TitleBar />
       
-      {/* Container principal */}
-      <Box sx={{ flex: 1, overflow: 'hidden', display: 'flex' }}>
-        {/* SplitPane principal : Explorer | Main */}
+      <Box sx={{ flex: 1, overflow: 'hidden', pl: 1 }}> {/* Ajout de padding left */}
         <SplitPane
           defaultSplit={0.2}
           left={<FileExplorer />}
