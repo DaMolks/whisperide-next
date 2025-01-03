@@ -19,20 +19,19 @@ class WhisperIDEApp {
       backgroundColor: '#1a1a1a',
       webPreferences: {
         nodeIntegration: true,
-        contextIsolation: false,
+        contextIsolation: true,
         preload: path.join(__dirname, 'preload.js')
       }
     });
 
-    this.mainWindow.center();
-
     if (process.env.NODE_ENV === 'development') {
       await this.mainWindow.loadURL('http://localhost:8080');
-      this.mainWindow.show();
     } else {
       await this.mainWindow.loadFile(path.join(__dirname, '../index.html'));
-      this.mainWindow.show();
     }
+    
+    this.setupIPC();
+    this.mainWindow.show();
   }
 
   private setupIPC() {
