@@ -1,6 +1,6 @@
 import { app, BrowserWindow, ipcMain, protocol } from 'electron';
 import * as path from 'path';
-import { GitHubAuthService } from '../src/services/github/auth';
+import { GitHubAuthService } from './services/github-auth';
 
 class WhisperIDEApp {
   private mainWindow: BrowserWindow | null = null;
