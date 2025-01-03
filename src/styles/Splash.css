@@ -16,6 +16,10 @@
 }
 
 .splash-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
   height: 100vh;
   display: flex;
   align-items: center;
@@ -23,35 +27,43 @@
   background: linear-gradient(-45deg, #1a1a1a, #2c3e50, #2c3e50, #1a1a1a);
   background-size: 400% 400%;
   animation: gradientBG 15s ease infinite;
+  margin: 0;
+  padding: 0;
 }
 
 .splash-content {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 2rem;
+  justify-content: center;
+  width: 100%;
+  padding: 2rem;
   animation: fadeIn 0.8s ease-out forwards;
 }
 
 .splash-logo {
   animation: pulse 2s infinite ease-in-out;
   color: white;
+  margin-bottom: 2rem;
 }
 
 .splash-title {
   color: white !important;
   font-weight: 300 !important;
   letter-spacing: 0.1em;
+  margin-bottom: 2rem !important;
 }
 
 .splash-progress {
-  position: relative;
-  width: 300px;
+  width: 80% !important;
+  max-width: 400px !important;
+  margin: 0 auto;
 }
 
 .splash-step {
   color: rgba(255, 255, 255, 0.7) !important;
   text-align: center;
   min-height: 24px;
+  margin-top: 1rem !important;
   animation: fadeIn 0.3s ease-out forwards;
 }

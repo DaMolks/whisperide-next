@@ -1,4 +1,4 @@
-import { app, BrowserWindow } from 'electron';
+import { app, BrowserWindow, ipcMain } from 'electron';
 import * as path from 'path';
 
 class WhisperIDEApp {
@@ -8,15 +8,17 @@ class WhisperIDEApp {
   constructor() {
     app.on('ready', this.createSplash);
     app.on('window-all-closed', this.handleWindowsClosed);
+    this.setupIPC();
   }
 
   private createSplash = async () => {
     this.splashWindow = new BrowserWindow({
-      width: 400,
-      height: 300,
+      width: 600,
+      height: 400,
       frame: false,
       transparent: true,
       resizable: false,
+      center: true,
       webPreferences: {
         nodeIntegration: true,
         contextIsolation: false
@@ -58,6 +60,28 @@ class WhisperIDEApp {
       this.splashWindow.close();
       this.splashWindow = null;
     }
+  }
+
+  private setupIPC() {
+    ipcMain.on('window-control', (_, command: string) => {
+      console.log('Received command:', command);
+      
+      switch (command) {
+        case 'minimize':
+          this.mainWindow?.minimize();
+          break;
+        case 'maximize':
+          if (this.mainWindow?.isMaximized()) {
+            this.mainWindow.unmaximize();
+          } else {
+            this.mainWindow?.maximize();
+          }
+          break;
+        case 'close':
+          this.mainWindow?.close();
+          break;
+      }
+    });
   }
 
   private handleWindowsClosed = () => {
