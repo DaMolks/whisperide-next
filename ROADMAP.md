@@ -1,56 +1,70 @@
 # 🚀 Feuille de Route WhisperIDE
 
-## ✅ Phase 0: Configuration (Terminé)
-- [x] Structure du projet
-- [x] Configuration Electron/React
-- [x] Système de build
+## 🎯 Statut Global
+Modern IDE avec intégration IA optimisée pour le développement naturel.
 
-## 🎯 Phase 1: Base UI (En cours)
+## ✅ Phase 0 : Configuration (Terminé)
+- [x] Structure du projet Electron/React
+- [x] Configuration build
 - [x] Fenêtre sans bordure personnalisée
-- [x] Écran de chargement élégant
-- [ ] Layout principal
-  - [ ] SplitPane réactif
-  - [ ] Zones redimensionnables
-  - [ ] Animations fluides
-- [ ] Système de thème
-  - [ ] Thème sombre moderne
-  - [ ] Changement de thème dynamique
-  - [ ] Animations de transition
+- [x] Thème sombre élégant
+- [x] Contrôles de fenêtre fonctionnels
 
-## 💻 Phase 2: Core IDE (À venir)
-- [ ] Explorateur de fichiers
-  - [ ] Navigation intuitive
-  - [ ] Recherche instantanée
-  - [ ] Vue arborescente animée
+## 🔨 Phase 1 : Interface de Base (En cours)
+### Complété :
+- [x] Écran de démarrage moderne
+  - [x] Animations fluides
+  - [x] Effets de chargement
+  - [x] Design épuré
+- [x] Layout principal
+  - [x] Split panes redimensionnables
+  - [x] Intégration gestionnaire de fichiers
+  - [x] Zones dédiées (Editeur, Terminal, Chat)
+
+### En cours :
 - [ ] Éditeur de code
   - [ ] Coloration syntaxique
   - [ ] Auto-complétion
-  - [ ] Terminal intégré
-- [ ] Chat IA
-  - [ ] Interface conversationnelle
-  - [ ] Intégration contextuelle
-  - [ ] Suggestions en temps réel
+  - [ ] Line numbers
+- [ ] Terminal intégré
+  - [ ] Exécution de commandes
+  - [ ] Historique
+  - [ ] Intégration shell système
 
-## 🤖 Phase 3: Intégration IA (À venir)
-- [ ] Support multi-moteurs
-  - [ ] Ollama
-  - [ ] ChatGPT
-  - [ ] Claude
-- [ ] Contexte projet
-  - [ ] Analyse de code
-  - [ ] Suggestions intelligentes
+## 🤖 Phase 2 : Intégration IA (À venir)
+- [ ] Support multi-LLM
+  - [ ] Intégration Ollama
+  - [ ] Support ChatGPT (optionnel)
+  - [ ] Support Claude (optionnel)
+- [ ] Interface IA
+  - [ ] Chat contextuel
+  - [ ] Suggestions de code
+  - [ ] Commands naturelles
+- [ ] Gestion de contexte
+  - [ ] Analyse du projet
   - [ ] Historique des interactions
+  - [ ] Base de connaissances
 
-## 🚀 Phase 4: Features Avancées (À venir)
-- [ ] Git avancé
-  - [ ] Visualisation de branches
-  - [ ] Résolution de conflits
-  - [ ] Timeline interactive
-- [ ] Plugins
-  - [ ] Marketplace
-  - [ ] Installation à chaud
-  - [ ] Configuration visuelle
-- [ ] Collaboration
-  - [ ] Partage de sessions
-  - [ ] Code review
-  - [ ] Chat temps réel
+## 💻 Phase 3 : Git et Plugins (À venir)
+- [ ] Intégration Git
+  - [ ] Synchronisation en temps réel
+  - [ ] Gestion des branches
+  - [ ] Interface visuelle
+- [ ] Système de plugins
+  - [ ] API de plugin
+  - [ ] Store de plugins
+  - [ ] Auto-update
+
+## 🔍 Phase 4 : Fonctionnalités Avancées (À venir)
+- [ ] Débogueur intégré
+- [ ] Tests automatisés
+- [ ] Profiler de performance
+- [ ] Support multi-projet
+- [ ] Collaboration temps réel
+
+## 📈 Améliorations Futures
+- Support de langages additionnel
+- Thèmes personnalisables
+- Mode collaboratif
+- Intégration CI/CD
+- Mode offline pour l'IA
