@@ -1,11 +1,11 @@
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
-@keyframes slideIn {
-  from { transform: translateX(-100%); }
-  to { transform: translateX(0); }
+@keyframes slideDown {
+  from { transform: translateY(-50px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
 }
 
 .welcome-container {
@@ -19,48 +19,13 @@
   justify-content: center;
 }
 
-.welcome-content {
-  animation: fadeIn 0.8s ease-out;
-  text-align: center;
-}
-
 .welcome-title {
-  color: white !important;
-  font-weight: 300 !important;
-  letter-spacing: 0.2em !important;
-  margin-bottom: 3rem !important;
-  font-family: 'Inter', sans-serif !important;
+  animation: slideDown 0.5s ease-out forwards;
 }
 
 .welcome-buttons {
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  margin-top: 2rem;
-  animation: fadeIn 0.8s ease-out 0.3s both;
-}
-
-.github-button {
-  background: linear-gradient(45deg, #2196f3, #3f51b5) !important;
-  transition: all 0.3s ease !important;
-  width: 300px;
-  padding: 1rem !important;
-}
-
-.github-button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(0,0,0,0.3) !important;
-}
-
-.local-button {
-  border-color: rgba(255,255,255,0.5) !important;
-  color: white !important;
-  width: 300px;
-  padding: 1rem !important;
-  transition: all 0.3s ease !important;
-}
-
-.local-button:hover {
-  border-color: white !important;
-  background: rgba(255,255,255,0.1) !important;
+  animation: fadeIn 0.5s ease-out 0.3s both;
 }

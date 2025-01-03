@@ -12,10 +12,11 @@ const steps = [
 const Splash: React.FC = () => {
   const [currentStep, setCurrentStep] = useState(0);
   const [progress, setProgress] = useState(0);
+  const [isComplete, setIsComplete] = useState(false);
 
   useEffect(() => {
     let startTime = Date.now();
-    const duration = 3000; // 3 secondes au total
+    const duration = 3000;
 
     const updateProgress = () => {
       const elapsed = Date.now() - startTime;
@@ -28,7 +29,9 @@ const Splash: React.FC = () => {
       );
       setCurrentStep(stepIndex);
 
-      if (newProgress < 100) {
+      if (newProgress === 100) {
+        setIsComplete(true);
+      } else {
         requestAnimationFrame(updateProgress);
       }
     };
@@ -37,23 +40,18 @@ const Splash: React.FC = () => {
   }, []);
 
   return (
-    <Box className="splash-container">
+    <Box className={`splash-container ${isComplete ? 'complete' : ''}`}>
       <Box className="splash-content">
-        <Typography variant="h3" className="splash-title">
+        <Typography variant="h2" className="splash-title">
           WhisperIDE Next
         </Typography>
-
-        <Box className="splash-progress">
-          <Box className="progress-bar-container">
-            <LinearProgress
-              variant="determinate"
-              value={progress}
-            />
-            <Typography variant="body2" className="splash-step">
-              {steps[currentStep]}
-            </Typography>
-          </Box>
-        </Box>
+      </Box>
+      
+      <Box className="splash-progress">
+        <LinearProgress
+          variant="determinate"
+          value={progress}
+        />
       </Box>
     </Box>
   );
