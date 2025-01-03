@@ -1,5 +1,6 @@
 import { app, BrowserWindow, ipcMain, protocol } from 'electron';
 import * as path from 'path';
+import { GitHubAuthService } from '../src/services/github/auth';
 
 class WhisperIDEApp {
   private mainWindow: BrowserWindow | null = null;
@@ -58,7 +59,11 @@ class WhisperIDEApp {
         const token = await GitHubAuthService.authorize();
         event.reply('github-auth-complete', { token });
       } catch (error) {
-        event.reply('github-auth-error', { error: error.message });
+        if (error instanceof Error) {
+          event.reply('github-auth-error', { error: error.message });
+        } else {
+          event.reply('github-auth-error', { error: 'Unknown error occurred' });
+        }
       }
     });
 
