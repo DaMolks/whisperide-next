@@ -10,57 +10,42 @@ Modern IDE avec intégration IA optimisée pour le développement naturel.
 - [x] Thème sombre élégant
 - [x] Contrôles de fenêtre fonctionnels
 
-## 🔨 Phase 1 : Interface de Base (En cours)
+## 🔨 Phase 1 : Système de Base (En cours)
 ### Complété :
 - [x] Écran de démarrage moderne
-  - [x] Animations fluides
-  - [x] Effets de chargement
-  - [x] Design épuré
 - [x] Layout principal
-  - [x] Split panes redimensionnables
-  - [x] Intégration gestionnaire de fichiers
-  - [x] Zones dédiées (Editeur, Terminal, Chat)
+- [x] Intégration éditeur Monaco
 
 ### En cours :
+- [ ] Écran d'accueil et authentification
+  - [ ] Mode local/GitHub
+  - [ ] Connexion GitHub OAuth
+  - [ ] Stockage sécurisé des tokens
+- [ ] Gestion des projets
+  - [ ] Sélection projet local/GitHub
+  - [ ] Liste des projets récents
+  - [ ] Création nouveau projet
+  - [ ] Importation depuis GitHub
+
+### À venir :
 - [ ] Éditeur de code
-  - [ ] Coloration syntaxique
-  - [ ] Auto-complétion
-  - [ ] Line numbers
-- [ ] Terminal intégré
-  - [ ] Exécution de commandes
-  - [ ] Historique
-  - [ ] Intégration shell système
+  - [ ] Gestion des onglets
+  - [ ] Sauvegarde automatique
+  - [ ] Intégration avec l'explorateur
 
 ## 🤖 Phase 2 : Intégration IA (À venir)
 - [ ] Support multi-LLM
-  - [ ] Intégration Ollama
-  - [ ] Support ChatGPT (optionnel)
-  - [ ] Support Claude (optionnel)
 - [ ] Interface IA
-  - [ ] Chat contextuel
-  - [ ] Suggestions de code
-  - [ ] Commands naturelles
 - [ ] Gestion de contexte
-  - [ ] Analyse du projet
-  - [ ] Historique des interactions
-  - [ ] Base de connaissances
 
 ## 💻 Phase 3 : Git et Plugins (À venir)
-- [ ] Intégration Git
-  - [ ] Synchronisation en temps réel
-  - [ ] Gestion des branches
-  - [ ] Interface visuelle
+- [ ] Intégration Git avancée
 - [ ] Système de plugins
-  - [ ] API de plugin
-  - [ ] Store de plugins
-  - [ ] Auto-update
 
 ## 🔍 Phase 4 : Fonctionnalités Avancées (À venir)
 - [ ] Débogueur intégré
 - [ ] Tests automatisés
 - [ ] Profiler de performance
-- [ ] Support multi-projet
-- [ ] Collaboration temps réel
 
 ## 📈 Améliorations Futures
 - Support de langages additionnel
