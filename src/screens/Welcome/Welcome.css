@@ -1,4 +1,56 @@
-/* ... autres styles ... */
+@keyframes slideToTop {
+  0% { transform: translate(-50%, -50%); opacity: 1; }
+  100% { transform: translate(-50%, -75%); opacity: 1; }
+}
+
+@keyframes fadeUpIn {
+  0% { transform: translateY(20px); opacity: 0; }
+  100% { transform: translateY(0); opacity: 1; }
+}
+
+.welcome-container {
+  width: 100vw;
+  height: 100vh;
+  background: linear-gradient(-45deg, #1a1a1a, #2c3e50, #2c3e50, #1a1a1a);
+  background-size: 400% 400%;
+  animation: gradientBG 15s ease infinite;
+  position: relative;
+}
+
+.welcome-controls {
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: 0.5rem;
+  display: flex;
+  gap: 0.5rem;
+  -webkit-app-region: no-drag;
+  z-index: 10;
+}
+
+.welcome-content {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.welcome-title {
+  animation: slideToTop 0.8s ease-out forwards;
+  color: white !important;
+  font-weight: 300 !important;
+  letter-spacing: 0.2em !important;
+  position: absolute;
+  white-space: nowrap;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
 
 .welcome-buttons {
   animation: fadeUpIn 0.8s ease-out 0.4s forwards;
@@ -10,4 +62,26 @@
   margin-top: 12rem;
 }
 
-/* ... reste du fichier ... */
+.github-button {
+  background: linear-gradient(45deg, #2196f3, #3f51b5) !important;
+  width: 300px;
+  padding: 1rem !important;
+  transition: transform 0.2s ease !important;
+}
+
+.github-button:hover {
+  transform: translateY(-2px);
+}
+
+.local-button {
+  background: none !important;
+  border: none !important;
+  color: rgba(255,255,255,0.7) !important;
+  font-size: 0.9rem !important;
+  text-transform: none !important;
+  transition: color 0.2s ease !important;
+}
+
+.local-button:hover {
+  color: white !important;
+}
