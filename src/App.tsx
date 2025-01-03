@@ -1,16 +1,22 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { ThemeProvider, CssBaseline } from '@mui/material';
 import { darkTheme } from './theme';
 import Splash from './splash/Splash';
 import Welcome from './screens/Welcome/Welcome';
 import MainLayout from './layouts/MainLayout';
 
-type AppState = 'splash' | 'welcome' | 'main';
+type AppState = 'splash' | 'welcome' | 'select-project' | 'main';
+
+interface AppData {
+  githubToken?: string;
+}
 
 const App: React.FC = () => {
   const [appState, setAppState] = useState<AppState>('splash');
+  const [appData, setAppData] = useState<AppData>({});
 
-  useEffect(() => {
+  // Timer pour simuler le chargement
+  React.useEffect(() => {
     if (appState === 'splash') {
       const timer = setTimeout(() => {
         setAppState('welcome');
@@ -19,12 +25,13 @@ const App: React.FC = () => {
     }
   }, [appState]);
 
-  const handleGitHubLogin = () => {
-    setAppState('main');
+  const handleGitHubLogin = (token: string) => {
+    setAppData({ ...appData, githubToken: token });
+    setAppState('select-project');
   };
 
   const handleLocalMode = () => {
-    setAppState('main');
+    setAppState('select-project');
   };
 
   return (
@@ -36,6 +43,10 @@ const App: React.FC = () => {
           onGitHubLogin={handleGitHubLogin}
           onLocalMode={handleLocalMode}
         />
+      )}
+      {/* TODO: Ajouter SelectProject screen */}
+      {appState === 'select-project' && (
+        <div>Project Selection (à implémenter)</div>
       )}
       {appState === 'main' && <MainLayout />}
     </ThemeProvider>

@@ -1,24 +1,39 @@
-import React from 'react';
-import { Box, Typography, Button, IconButton } from '@mui/material';
+import React, { useState } from 'react';
+import { Box, Typography, Button, IconButton, CircularProgress } from '@mui/material';
 import { GitHub, Close, Remove } from '@mui/icons-material';
 import './Welcome.css';
 import '../../styles/shared.css';
 
 interface WelcomeProps {
-  onGitHubLogin: () => void;
+  onGitHubLogin: (token: string) => void;
   onLocalMode: () => void;
 }
 
 const Welcome: React.FC<WelcomeProps> = ({ onGitHubLogin, onLocalMode }) => {
+  const [isLoading, setIsLoading] = useState(false);
+
   const handleClose = () => {
-    if ((window as any).electron) {
-      (window as any).electron.close();
+    if (window.electron) {
+      window.electron.close();
     }
   };
 
   const handleMinimize = () => {
-    if ((window as any).electron) {
-      (window as any).electron.minimize();
+    if (window.electron) {
+      window.electron.minimize();
+    }
+  };
+
+  const handleGitHubClick = async () => {
+    try {
+      setIsLoading(true);
+      const token = await window.electron.githubAuth.login();
+      onGitHubLogin(token);
+    } catch (error) {
+      console.error('GitHub auth error:', error);
+      // TODO: Ajouter une notification d'erreur
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -50,11 +65,16 @@ const Welcome: React.FC<WelcomeProps> = ({ onGitHubLogin, onLocalMode }) => {
           <Button
             variant="contained"
             size="large"
-            startIcon={<GitHub />}
-            onClick={onGitHubLogin}
+            startIcon={!isLoading && <GitHub />}
+            onClick={handleGitHubClick}
             className="github-button"
+            disabled={isLoading}
           >
-            Connexion avec GitHub
+            {isLoading ? (
+              <CircularProgress size={24} color="inherit" />
+            ) : (
+              'Connexion avec GitHub'
+            )}
           </Button>
           
           <Button
@@ -62,6 +82,7 @@ const Welcome: React.FC<WelcomeProps> = ({ onGitHubLogin, onLocalMode }) => {
             size="large"
             onClick={onLocalMode}
             className="local-button"
+            disabled={isLoading}
           >
             Mode Local
           </Button>
