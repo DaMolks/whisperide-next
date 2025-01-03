@@ -1,131 +1,68 @@
-import { app, BrowserWindow, ipcMain, screen } from 'electron';
+import { app, BrowserWindow } from 'electron';
 import * as path from 'path';
-import * as fs from 'fs';
 
 class WhisperIDEApp {
   private mainWindow: BrowserWindow | null = null;
   private splashWindow: BrowserWindow | null = null;
 
   constructor() {
-    app.on('ready', this.init);
+    app.on('ready', this.createSplash);
     app.on('window-all-closed', this.handleWindowsClosed);
-    app.on('activate', this.onActivate);
-    this.setupIPC();
   }
 
-  private init = () => {
-    this.createSplashWindow();
-    this.createMainWindow();
-  }
-
-  private createSplashWindow = () => {
-    const primaryDisplay = screen.getPrimaryDisplay();
-    const { width, height } = primaryDisplay.workAreaSize;
-
+  private createSplash = async () => {
     this.splashWindow = new BrowserWindow({
       width: 400,
       height: 300,
-      x: Math.round((width - 400) / 2),
-      y: Math.round((height - 300) / 2),
       frame: false,
       transparent: true,
-      alwaysOnTop: true,
-      show: true,
+      resizable: false,
       webPreferences: {
         nodeIntegration: true,
         contextIsolation: false
       }
     });
 
-    const possiblePaths = [
-      path.join(__dirname, '../../src/splash/splash.html'),
-      path.join(__dirname, '../dist/splash.html'),
-      path.join(__dirname, '../dist/dist/splash.html')
-    ];
-
-    const splashPath = possiblePaths.find(p => fs.existsSync(p));
-
-    if (splashPath) {
-      console.log('Loading splash screen from:', splashPath);
-      this.splashWindow.loadFile(splashPath);
+    if (process.env.NODE_ENV === 'development') {
+      await this.splashWindow.loadURL('http://localhost:8080/splash.html');
     } else {
-      console.error('Splash screen HTML not found in any of these locations:', possiblePaths);
+      await this.splashWindow.loadFile(path.join(__dirname, '../splash.html'));
     }
+
+    // Simule le chargement
+    setTimeout(() => {
+      this.createMainWindow();
+    }, 3000);
   }
 
-  private createMainWindow = () => {
+  private createMainWindow = async () => {
     this.mainWindow = new BrowserWindow({
       width: 1200,
       height: 800,
-      frame: false,
       show: false,
-      backgroundColor: '#1a1a1a',
+      frame: false,
       webPreferences: {
-        nodeIntegration: false,
-        contextIsolation: true,
-        preload: path.join(__dirname, 'preload.js')
+        nodeIntegration: true,
+        contextIsolation: false
       }
     });
 
-    const possiblePaths = [
-      path.join(__dirname, '../../src/index.html'),
-      path.join(__dirname, '../dist/index.html'),
-      path.join(__dirname, '../dist/dist/index.html')
-    ];
-
-    const indexPath = possiblePaths.find(p => fs.existsSync(p));
-
-    if (indexPath) {
-      console.log('Loading main window from:', indexPath);
-      if (process.env.NODE_ENV === 'development') {
-        this.mainWindow.loadURL('http://localhost:8080');
-      } else {
-        this.mainWindow.loadFile(indexPath);
-      }
+    if (process.env.NODE_ENV === 'development') {
+      await this.mainWindow.loadURL('http://localhost:8080');
     } else {
-      console.error('Index HTML not found in any of these locations:', possiblePaths);
+      await this.mainWindow.loadFile(path.join(__dirname, '../index.html'));
     }
 
-    this.mainWindow.once('ready-to-show', () => {
-      this.splashWindow?.close();
-      this.mainWindow?.show();
-    });
-
-    // Debugging
-    this.mainWindow.webContents.on('did-fail-load', (event, errorCode, errorDescription) => {
-      console.error('Failed to load page', errorCode, errorDescription);
-    });
-  }
-
-  private setupIPC() {
-    ipcMain.on('window-control', (event, command: string) => {
-      switch (command) {
-        case 'minimize':
-          this.mainWindow?.minimize();
-          break;
-        case 'maximize':
-          if (this.mainWindow?.isMaximized()) {
-            this.mainWindow.unmaximize();
-          } else {
-            this.mainWindow?.maximize();
-          }
-          break;
-        case 'close':
-          this.mainWindow?.close();
-          break;
-      }
-    });
+    this.mainWindow.show();
+    if (this.splashWindow) {
+      this.splashWindow.close();
+      this.splashWindow = null;
+    }
   }
 
   private handleWindowsClosed = () => {
     if (process.platform !== 'darwin') {
       app.quit();
-    }
-  }
-
-  private onActivate = () => {
-    if (BrowserWindow.getAllWindows().length === 0) {
-      this.createMainWindow();
     }
   }
 }
