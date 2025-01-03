@@ -20,24 +20,22 @@ const MainLayout: React.FC = () => {
     >
       <TitleBar />
       
-      <Box sx={{ flex: 1, overflow: 'hidden' }}>
+      <Box sx={{ flex: 1, overflow: 'hidden', display: 'flex' }}>
         <SplitPane
           left={<FileExplorer />}
           right={
-            <Box sx={{ display: 'flex', height: '100%' }}>
-              <SplitPane
-                direction="vertical"
-                defaultSplit={0.7}
-                left={
-                  <SplitPane
-                    defaultSplit={0.7}
-                    left={<Editor />}
-                    right={<AIChat />}
-                  />
-                }
-                right={<Terminal />}
-              />
-            </Box>
+            <SplitPane
+              direction="vertical"
+              defaultSplit={0.75}
+              left={
+                <SplitPane
+                  defaultSplit={0.8}
+                  left={<Editor />}
+                  right={<AIChat />}
+                />
+              }
+              right={<Terminal />}
+            />
           }
         />
       </Box>

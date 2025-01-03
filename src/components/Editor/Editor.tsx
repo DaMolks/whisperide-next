@@ -1,18 +1,18 @@
 import React from 'react';
-import { Box, Typography } from '@mui/material';
+import { Box } from '@mui/material';
 
 const Editor: React.FC = () => {
   return (
     <Box
       sx={{
+        width: '100%',
         height: '100%',
-        bgcolor: 'background.default',
-        p: 2
+        bgcolor: '#1e1e1e',
+        color: 'text.primary',
+        overflow: 'hidden'
       }}
     >
-      <Typography variant="subtitle2">
-        Éditeur
-      </Typography>
+      Éditeur
     </Box>
   );
 };
