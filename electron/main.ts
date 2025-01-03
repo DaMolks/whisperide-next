@@ -21,7 +21,8 @@ class WhisperIDEApp {
       center: true,
       webPreferences: {
         nodeIntegration: true,
-        contextIsolation: false
+        contextIsolation: true,
+        preload: path.join(__dirname, 'preload.js')
       }
     });
 
@@ -45,12 +46,15 @@ class WhisperIDEApp {
       frame: false,
       webPreferences: {
         nodeIntegration: true,
-        contextIsolation: false
+        contextIsolation: true,
+        preload: path.join(__dirname, 'preload.js')
       }
     });
 
     if (process.env.NODE_ENV === 'development') {
       await this.mainWindow.loadURL('http://localhost:8080');
+      // Open dev tools in development mode
+      this.mainWindow.webContents.openDevTools();
     } else {
       await this.mainWindow.loadFile(path.join(__dirname, '../index.html'));
     }
@@ -64,13 +68,15 @@ class WhisperIDEApp {
 
   private setupIPC() {
     ipcMain.on('window-control', (_, command: string) => {
-      console.log('Received command:', command);
+      console.log('Received window control command:', command);
       
       switch (command) {
         case 'minimize':
+          console.log('Minimizing window...');
           this.mainWindow?.minimize();
           break;
         case 'maximize':
+          console.log('Toggling maximize...');
           if (this.mainWindow?.isMaximized()) {
             this.mainWindow.unmaximize();
           } else {
@@ -78,6 +84,7 @@ class WhisperIDEApp {
           }
           break;
         case 'close':
+          console.log('Closing window...');
           this.mainWindow?.close();
           break;
       }

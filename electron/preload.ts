@@ -1,34 +1,20 @@
 import { contextBridge, ipcRenderer } from 'electron';
 
-console.log('Preload script is running');
+console.log('Preload script starting...');
 
 contextBridge.exposeInMainWorld('electron', {
-  send: (channel: string, data?: any) => {
-    console.log(`Sending on channel ${channel}:`, data);
-    let validChannels = ['window-control'];
-    if (validChannels.includes(channel)) {
-      ipcRenderer.send(channel, data);
-    } else {
-      console.error(`Invalid channel: ${channel}`);
-    }
-  },
   minimize: () => {
-    console.log('Minimize method called');
+    console.log('Sending minimize command...');
     ipcRenderer.send('window-control', 'minimize');
   },
   maximize: () => {
-    console.log('Maximize method called');
+    console.log('Sending maximize command...');
     ipcRenderer.send('window-control', 'maximize');
   },
   close: () => {
-    console.log('Close method called');
+    console.log('Sending close command...');
     ipcRenderer.send('window-control', 'close');
-  },
-  receive: (channel: string, func: Function) => {
-    console.log(`Setting up receive for channel ${channel}`);
-    let validChannels = ['window-control-response'];
-    if (validChannels.includes(channel)) {
-      ipcRenderer.on(channel, (event, ...args) => func(...args));
-    }
   }
 });
+
+console.log('Preload script finished...');
