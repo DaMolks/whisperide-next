@@ -1,13 +1,32 @@
-import { app, BrowserWindow, ipcMain } from 'electron';
+import { app, BrowserWindow, ipcMain, protocol } from 'electron';
 import * as path from 'path';
 
 class WhisperIDEApp {
   private mainWindow: BrowserWindow | null = null;
 
   constructor() {
-    app.on('ready', this.createMainWindow);
+    app.on('ready', this.init);
     app.on('window-all-closed', this.handleWindowsClosed);
     this.setupIPC();
+  }
+
+  private init = () => {
+    this.registerProtocol();
+    this.createMainWindow();
+  }
+
+  private registerProtocol() {
+    if (!app.isDefaultProtocolClient('whisperide')) {
+      app.setAsDefaultProtocolClient('whisperide');
+    }
+
+    protocol.registerHttpProtocol('whisperide', (request, callback) => {
+      const url = request.url;
+      // Handle OAuth callback
+      if (url.includes('/oauth/callback')) {
+        this.mainWindow?.webContents.send('oauth-callback', url);
+      }
+    });
   }
 
   private createMainWindow = async () => {
@@ -30,11 +49,19 @@ class WhisperIDEApp {
       await this.mainWindow.loadFile(path.join(__dirname, '../index.html'));
     }
     
-    this.setupIPC();
     this.mainWindow.show();
   }
 
   private setupIPC() {
+    ipcMain.on('github-auth', async (event) => {
+      try {
+        const token = await GitHubAuthService.authorize();
+        event.reply('github-auth-complete', { token });
+      } catch (error) {
+        event.reply('github-auth-error', { error: error.message });
+      }
+    });
+
     ipcMain.on('window-control', (_, command: string) => {
       switch (command) {
         case 'minimize':
