@@ -2,19 +2,13 @@ import React from 'react';
 import { 
   List, 
   ListItem, 
-  ListItemIcon, 
-  ListItemText,
-  ListItemSecondaryAction,
-  IconButton,
+  ListItemButton, 
+  ListItemText, 
+  ListItemIcon,
   Typography,
-  Tooltip 
+  Chip
 } from '@mui/material';
-import { 
-  Code as CodeIcon,
-  Lock as LockIcon,
-  Public as PublicIcon,
-  Star as StarIcon
-} from '@mui/icons-material';
+import { Code, Public, Lock } from '@mui/icons-material';
 import { GithubRepository } from '../../services/github/api';
 import './RepoList.css';
 
@@ -24,10 +18,10 @@ interface RepoListProps {
 }
 
 const RepoList: React.FC<RepoListProps> = ({ repositories, onSelect }) => {
-  const formatDate = (dateStr: string) => {
-    const date = new Date(dateStr);
-    return date.toLocaleDateString('fr-FR', { 
-      day: 'numeric',
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('fr-FR', {
+      day: '2-digit',
       month: 'short',
       year: 'numeric'
     });
@@ -35,39 +29,37 @@ const RepoList: React.FC<RepoListProps> = ({ repositories, onSelect }) => {
 
   return (
     <List className="repo-list">
-      {repositories.map(repo => (
-        <ListItem 
-          key={repo.id} 
-          button 
-          onClick={() => onSelect(repo)}
-          className="repo-item"
-        >
-          <ListItemIcon>
-            {repo.private ? <LockIcon /> : <PublicIcon />}
-          </ListItemIcon>
-          
-          <ListItemText
-            primary={
-              <Typography variant="subtitle1">
-                {repo.name}
-                {repo.language && (
-                  <Tooltip title={`Langage principal: ${repo.language}`}>
-                    <span className="language-indicator">
-                      <CodeIcon fontSize="small" />
-                      {repo.language}
-                    </span>
-                  </Tooltip>
-                )}
-              </Typography>
-            }
-            secondary={`Mis à jour le ${formatDate(repo.updated_at)}`}
-          />
-
-          <ListItemSecondaryAction>
-            <IconButton edge="end" onClick={() => window.open(repo.html_url, '_blank')}>
-              <StarIcon />
-            </IconButton>
-          </ListItemSecondaryAction>
+      {repositories.map((repo) => (
+        <ListItem key={repo.id} disablePadding className="repo-item">
+          <ListItemButton onClick={() => onSelect(repo)}>
+            <ListItemIcon>
+              {repo.private ? <Lock /> : <Public />}
+            </ListItemIcon>
+            <ListItemText
+              primary={
+                <Typography variant="subtitle1">
+                  {repo.name}
+                  {repo.language && (
+                    <Chip
+                      icon={<Code />}
+                      label={repo.language}
+                      size="small"
+                      className="language-chip"
+                    />
+                  )}
+                </Typography>
+              }
+              secondary={
+                <Typography variant="body2" className="repo-description">
+                  {repo.description || 'Aucune description'}
+                  <br />
+                  <span className="update-date">
+                    Mis à jour le {formatDate(repo.updated_at)}
+                  </span>
+                </Typography>
+              }
+            />
+          </ListItemButton>
         </ListItem>
       ))}
     </List>

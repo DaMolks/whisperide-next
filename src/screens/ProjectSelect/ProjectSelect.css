@@ -1,63 +1,70 @@
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
 .project-select-container {
-  width: 100vw;
-  height: 100vh;
   display: flex;
   flex-direction: column;
-  padding: 2rem;
-  animation: fadeIn 0.3s ease-out;
+  height: 100vh;
+  overflow: hidden;
+  padding: 16px;
+  gap: 24px;
 }
 
 .window-controls {
-  position: absolute;
-  top: 0;
-  right: 0;
-  padding: 0.5rem;
   display: flex;
-  gap: 0.5rem;
+  gap: 8px;
+  justify-content: flex-end;
   -webkit-app-region: no-drag;
-  z-index: 10;
 }
 
 .header {
-  text-align: center;
-  color: white;
-  margin-bottom: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
 .main-actions {
   display: flex;
-  justify-content: center;
-  gap: 1rem;
-  margin-bottom: 2rem;
+  gap: 16px;
+  align-items: center;
 }
 
 .projects-list {
   flex: 1;
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 8px;
-  padding: 1rem;
   overflow-y: auto;
+  border-radius: 8px;
+  background-color: rgba(0, 0, 0, 0.2);
+  padding: 16px;
 }
 
-.loading-container {
-  height: 100%;
+.loading-container,
+.error-container,
+.empty-state {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 1rem;
-  color: rgba(255, 255, 255, 0.7);
+  gap: 16px;
+  height: 200px;
 }
 
-.empty-state {
-  height: 100%;
+.recent-projects {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  color: rgba(255, 255, 255, 0.5);
+  flex-direction: column;
+  gap: 16px;
+}
+
+.projects-list::-webkit-scrollbar {
+  width: 8px;
+}
+
+.projects-list::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
+}
+
+.projects-list::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+}
+
+.projects-list::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.2);
 }
