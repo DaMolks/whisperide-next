@@ -1,13 +1,24 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Box } from '@mui/material';
-import TitleBar from '../components/TitleBar/TitleBar';
 import SplitPane from '../components/layout/SplitPane';
 import FileExplorer from '../components/FileExplorer/FileExplorer';
 import Editor from '../components/Editor/Editor';
-import Terminal from '../components/Terminal/Terminal';
-import AIChat from '../components/AIChat/AIChat';
+import GitPanel from '../components/GitPanel/GitPanel';
 
-const MainLayout: React.FC = () => {
+interface MainLayoutProps {
+  project: {
+    path: string;
+    name: string;
+  };
+}
+
+const MainLayout: React.FC<MainLayoutProps> = ({ project }) => {
+  const [selectedFile, setSelectedFile] = useState<string | null>(null);
+
+  const handleFileSelect = (filePath: string) => {
+    setSelectedFile(filePath);
+  };
+
   return (
     <Box
       sx={{
@@ -18,32 +29,53 @@ const MainLayout: React.FC = () => {
         bgcolor: 'background.default'
       }}
     >
-      <TitleBar />
-      
-      <Box sx={{ 
-        flex: 1, 
-        overflow: 'hidden', 
-        pl: 1,
-        bgcolor: 'background.paper' // Même couleur que FileExplorer
-      }}>
+      <Box
+        sx={{
+          flex: 1,
+          display: 'flex',
+          overflow: 'hidden'
+        }}
+      >
         <SplitPane
-          defaultSplit={0.2}
-          left={<FileExplorer />}
-          right={
-            <SplitPane
-              direction="vertical"
-              defaultSplit={0.8}
-              left={
-                <SplitPane
-                  defaultSplit={0.8}
-                  left={<Editor />}
-                  right={<AIChat />}
-                />
-              }
-              right={<Terminal />}
+          defaultSize={240}
+          min={200}
+          max={400}
+          split="vertical"
+        >
+          <Box
+            sx={{
+              height: '100%',
+              display: 'flex',
+              flexDirection: 'column'
+            }}
+          >
+            <FileExplorer
+              projectPath={project.path}
+              onFileSelect={handleFileSelect}
             />
-          }
-        />
+          </Box>
+          <Box
+            sx={{
+              height: '100%',
+              display: 'flex',
+              flexDirection: 'column'
+            }}
+          >
+            <SplitPane
+              defaultSize={240}
+              min={200}
+              max={400}
+              split="vertical"
+              primary="second"
+            >
+              <Editor
+                filePath={selectedFile}
+                key={selectedFile || 'no-file'}
+              />
+              <GitPanel projectPath={project.path} />
+            </SplitPane>
+          </Box>
+        </SplitPane>
       </Box>
     </Box>
   );
