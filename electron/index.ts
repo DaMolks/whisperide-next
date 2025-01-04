@@ -7,10 +7,14 @@ import { setupGithubAuth } from './github-auth';
 // Charger les variables d'environnement
 config();
 
-// Vérifier les variables d'environnement requises
+// En mode développement, on continue même sans credentials GitHub
 if (!process.env.GITHUB_CLIENT_ID || !process.env.GITHUB_CLIENT_SECRET) {
-  console.error('Missing GitHub OAuth credentials in .env file');
-  process.exit(1);
+  if (process.env.NODE_ENV === 'development') {
+    console.warn('Warning: Missing GitHub OAuth credentials in .env file');
+  } else {
+    console.error('Error: Missing GitHub OAuth credentials in .env file');
+    process.exit(1);
+  }
 }
 
 let mainWindow: BrowserWindow | null = null;
