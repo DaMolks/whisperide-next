@@ -1,7 +1,7 @@
 {
   "name": "whisperide-next",
   "version": "0.1.0",
-  "main": "./dist/electron/main/index.js",
+  "main": "./dist/electron/index.js",
   "scripts": {
     "postinstall": "node scripts/install.js",
     "clean": "rimraf dist node_modules",

@@ -3,20 +3,15 @@
     "target": "ES2020",
     "module": "CommonJS",
     "outDir": "../dist/electron",
-    "rootDir": "../",
+    "rootDir": ".",
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "moduleResolution": "node",
-    "resolveJsonModule": true,
-    "baseUrl": "../",
-    "paths": {
-      "@shared/*": ["shared/*"]
-    }
+    "resolveJsonModule": true
   },
   "include": [
-    ".",
-    "../shared/**/*"
+    "**/*"
   ]
 }
