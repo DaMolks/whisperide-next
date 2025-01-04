@@ -1,37 +1,16 @@
-const { execSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
 
-function checkDependency(cmd) {
-  try {
-    execSync(cmd + ' --version');
-    return true;
-  } catch {
-    return false;
-  }
+// Créer le dossier dist si nécessaire
+const distPath = path.join(__dirname, '../dist');
+if (!fs.existsSync(distPath)) {
+  fs.mkdirSync(distPath);
 }
 
-function installDependencies() {
-  console.log('💾 Installation des dépendances...');
-
-  // Node modules
-  if (!fs.existsSync('node_modules')) {
-    console.log('\n📦 Installation des packages npm...');
-    execSync('npm install', { stdio: 'inherit' });
-  }
-
-  // Global dependencies
-  if (!checkDependency('webpack')) {
-    console.log('\n🔧 Installation de webpack-cli globalement...');
-    execSync('npm install -g webpack-cli', { stdio: 'inherit' });
-  }
-
-  console.log('\n✅ Installation terminée!');
+// Créer le dossier dist/electron si nécessaire
+const electronDistPath = path.join(distPath, 'electron');
+if (!fs.existsSync(electronDistPath)) {
+  fs.mkdirSync(electronDistPath);
 }
 
-try {
-  installDependencies();
-} catch (error) {
-  console.error('\n❌ Erreur:', error);
-  process.exit(1);
-}
+console.log('Installation setup completed successfully!');
