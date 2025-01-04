@@ -9,14 +9,21 @@ export interface ProjectInfo {
   defaultBranch?: string;
 }
 
-export interface ProjectSettings {
+export interface ProjectConfig {
   name: string;
   description?: string;
   version?: string;
 }
 
-export interface CloneOptions {
-  url: string;
-  token: string;
+export interface ProjectMode {
+  mode: 'github' | 'local';
+  githubToken?: string;
+}
+
+export interface FileEntry {
+  name: string;
   path: string;
+  type: 'file' | 'directory';
+  children?: FileEntry[];
+  gitStatus?: 'modified' | 'untracked' | 'staged' | null;
 }
