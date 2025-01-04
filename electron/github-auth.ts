@@ -7,13 +7,14 @@ const GITHUB_CLIENT_ID = process.env.GITHUB_CLIENT_ID;
 const GITHUB_CLIENT_SECRET = process.env.GITHUB_CLIENT_SECRET;
 
 export function setupGithubAuth() {
-  console.log('Setting up GitHub auth with:', {
-    clientId: GITHUB_CLIENT_ID ? 'Set' : 'Not set',
-    clientSecret: GITHUB_CLIENT_SECRET ? 'Set' : 'Not set'
-  });
+  console.log('Setting up GitHub auth with client ID:', GITHUB_CLIENT_ID);
 
   ipcMain.handle('github-auth-login', async () => {
     if (!GITHUB_CLIENT_ID || !GITHUB_CLIENT_SECRET) {
+      console.error('GitHub OAuth credentials missing:', {
+        clientId: GITHUB_CLIENT_ID,
+        hasSecret: !!GITHUB_CLIENT_SECRET
+      });
       throw new Error('GitHub OAuth credentials are not configured');
     }
 
@@ -53,38 +54,56 @@ export function setupGithubAuth() {
             if (code) {
               try {
                 console.log('Exchanging code for token...');
-                const response = await fetch('https://github.com/login/oauth/access_token', {
+                const tokenUrl = 'https://github.com/login/oauth/access_token';
+                console.log('Token URL:', tokenUrl);
+                
+                const requestBody = {
+                  client_id: GITHUB_CLIENT_ID,
+                  client_secret: GITHUB_CLIENT_SECRET,
+                  code,
+                  redirect_uri: `http://localhost:${port}/oauth/callback`
+                };
+                console.log('Request body:', { ...requestBody, client_secret: '[REDACTED]' });
+
+                const response = await fetch(tokenUrl, {
                   method: 'POST',
                   headers: {
                     'Accept': 'application/json',
                     'Content-Type': 'application/json'
                   },
-                  body: JSON.stringify({
-                    client_id: GITHUB_CLIENT_ID,
-                    client_secret: GITHUB_CLIENT_SECRET,
-                    code,
-                    redirect_uri: `http://localhost:${port}/oauth/callback`
-                  })
+                  body: JSON.stringify(requestBody)
                 });
 
                 console.log('Token exchange response status:', response.status);
-                const data = await response.json();
-                console.log('Token exchange response:', data);
+                const responseText = await response.text();
+                console.log('Raw response:', responseText);
+                
+                try {
+                  const data = JSON.parse(responseText);
+                  console.log('Token exchange response:', {
+                    ...data,
+                    access_token: data.access_token ? '[REDACTED]' : undefined
+                  });
 
-                // Fermer le serveur express
-                listener.close();
+                  // Fermer le serveur express
+                  listener.close();
 
-                if (data.error) {
-                  console.error('OAuth error:', data.error);
-                  reject(new Error(data.error_description || data.error));
-                  res.send('<script>window.close()</script>');
-                } else if (data.access_token) {
-                  console.log('Successfully obtained token');
-                  resolve(data.access_token);
-                  res.send('<script>window.close()</script>');
-                } else {
-                  console.error('No token in response');
-                  reject(new Error('No access token received'));
+                  if (data.error) {
+                    console.error('OAuth error:', data.error);
+                    reject(new Error(data.error_description || data.error));
+                    res.send('<script>window.close()</script>');
+                  } else if (data.access_token) {
+                    console.log('Successfully obtained token');
+                    resolve(data.access_token);
+                    res.send('<script>window.close()</script>');
+                  } else {
+                    console.error('No token in response');
+                    reject(new Error('No access token received'));
+                    res.send('<script>window.close()</script>');
+                  }
+                } catch (parseError) {
+                  console.error('Failed to parse response:', parseError);
+                  reject(new Error('Invalid response format'));
                   res.send('<script>window.close()</script>');
                 }
               } catch (error) {
