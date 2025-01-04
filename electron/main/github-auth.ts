@@ -1,57 +1,27 @@
 import { BrowserWindow, ipcMain } from 'electron';
+import express from 'express';
+import { AddressInfo } from 'net';
 
 const GITHUB_CLIENT_ID = process.env.GITHUB_CLIENT_ID || 'your_client_id';
 const GITHUB_CLIENT_SECRET = process.env.GITHUB_CLIENT_SECRET || 'your_client_secret';
 
 export function setupGithubAuth() {
+  // Créer un serveur express temporaire pour gérer la redirection OAuth
+  let server: ReturnType<typeof express> | null = null;
+
   ipcMain.handle('github-auth-login', async () => {
     return new Promise((resolve, reject) => {
-      console.log('Starting GitHub auth process...');
-      console.log('Using client ID:', GITHUB_CLIENT_ID);
-      
-      const win = new BrowserWindow({
-        width: 800,
-        height: 600,
-        webPreferences: {
-          nodeIntegration: false,
-          contextIsolation: true,
-          devTools: true // Activer les DevTools
-        }
-      });
+      // Créer un serveur express temporaire
+      server = express();
+      const listener = server.listen(8080);
+      const port = (listener.address() as AddressInfo).port;
 
-      // Ouvrir les DevTools automatiquement
-      win.webContents.openDevTools({ mode: 'detach' });
-
-      // URL de base simple pour l'authentification GitHub
-      const authUrl = `https://github.com/login/oauth/authorize?client_id=${GITHUB_CLIENT_ID}&scope=repo`;
-      console.log('Auth URL:', authUrl);
-
-      // Capturer toutes les navigations possibles
-      win.webContents.on('will-navigate', (event, url) => {
-        console.log('will-navigate:', url);
-      });
-
-      win.webContents.on('did-navigate', (event, url) => {
-        console.log('did-navigate:', url);
-      });
-
-      win.webContents.on('will-redirect', (event, url) => {
-        console.log('will-redirect:', url);
-      });
-
-      win.webContents.on('did-redirect-navigation', (event, url) => {
-        console.log('did-redirect-navigation:', url);
-      });
-
-      // Capturer le code lorsqu'il apparaît dans l'URL
-      const handleCode = async (url: string) => {
-        const urlObj = new URL(url);
-        const code = urlObj.searchParams.get('code');
+      // Route pour gérer le callback OAuth
+      server.get('/oauth/callback', async (req, res) => {
+        const { code } = req.query;
 
         if (code) {
-          console.log('Got code from GitHub!');
           try {
-            console.log('Exchanging code for token...');
             const response = await fetch('https://github.com/login/oauth/access_token', {
               method: 'POST',
               headers: {
@@ -66,40 +36,53 @@ export function setupGithubAuth() {
             });
 
             const data = await response.json();
-            console.log('Token response:', data);
-            
+
+            // Fermer le serveur express
+            listener.close();
+            server = null;
+
             if (data.error) {
-              console.error('GitHub auth error:', data);
               reject(new Error(data.error_description || data.error));
+              res.send('<script>window.close()</script>');
             } else if (data.access_token) {
               resolve(data.access_token);
+              res.send('<script>window.close()</script>');
             } else {
               reject(new Error('No access token received'));
+              res.send('<script>window.close()</script>');
             }
-            win.close();
           } catch (error) {
-            console.error('Error in token exchange:', error);
+            // Fermer le serveur express en cas d'erreur
+            listener.close();
+            server = null;
             reject(error);
-            win.close();
+            res.send('<script>window.close()</script>');
           }
+        } else {
+          res.status(400).send('No code provided');
         }
-      };
+      });
 
-      // Écouter toutes les navigations pour le code
-      win.webContents.on('will-navigate', (_, url) => handleCode(url));
-      win.webContents.on('will-redirect', (_, url) => handleCode(url));
-      win.webContents.on('did-redirect-navigation', (_, url) => handleCode(url));
+      const win = new BrowserWindow({
+        width: 800,
+        height: 600,
+        webPreferences: {
+          nodeIntegration: false,
+          contextIsolation: true
+        }
+      });
+
+      const authUrl = `https://github.com/login/oauth/authorize?client_id=${GITHUB_CLIENT_ID}&scope=repo`;
 
       win.on('closed', () => {
+        // Nettoyage du serveur si la fenêtre est fermée
+        if (server) {
+          listener.close();
+          server = null;
+        }
         reject(new Error('Window was closed'));
       });
 
-      // Activer le menu contextuel pour accéder aux DevTools
-      win.webContents.on('context-menu', (e, params) => {
-        win.webContents.openDevTools({ mode: 'detach' });
-      });
-
-      console.log('Loading GitHub auth page...');
       win.loadURL(authUrl);
     });
   });
