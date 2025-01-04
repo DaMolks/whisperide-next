@@ -1,11 +1,5 @@
 import { contextBridge, ipcRenderer } from 'electron';
-import { ProjectInfo, ProjectSettings } from '../src/services/projects/types';
-
-interface CloneOptions {
-  url: string;
-  token: string;
-  path: string;
-}
+import type { ProjectInfo, ProjectSettings, CloneOptions } from '../shared/types';
 
 contextBridge.exposeInMainWorld('electron', {
   close: () => ipcRenderer.send('window-close'),
