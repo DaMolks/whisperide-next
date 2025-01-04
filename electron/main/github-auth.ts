@@ -14,9 +14,13 @@ export function setupGithubAuth() {
         height: 600,
         webPreferences: {
           nodeIntegration: false,
-          contextIsolation: true
+          contextIsolation: true,
+          devTools: true // Activer les DevTools
         }
       });
+
+      // Ouvrir les DevTools automatiquement
+      win.webContents.openDevTools({ mode: 'detach' });
 
       // URL de base simple pour l'authentification GitHub
       const authUrl = `https://github.com/login/oauth/authorize?client_id=${GITHUB_CLIENT_ID}&scope=repo`;
@@ -88,6 +92,11 @@ export function setupGithubAuth() {
 
       win.on('closed', () => {
         reject(new Error('Window was closed'));
+      });
+
+      // Activer le menu contextuel pour accéder aux DevTools
+      win.webContents.on('context-menu', (e, params) => {
+        win.webContents.openDevTools({ mode: 'detach' });
       });
 
       console.log('Loading GitHub auth page...');
