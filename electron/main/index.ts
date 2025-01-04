@@ -1,7 +1,17 @@
 import { app, BrowserWindow, ipcMain } from 'electron';
 import * as path from 'path';
+import { config } from 'dotenv';
 import { setupProjectHandlers } from './project';
 import { setupGithubAuth } from './github-auth';
+
+// Charger les variables d'environnement
+config();
+
+// Vérifier les variables d'environnement requises
+if (!process.env.GITHUB_CLIENT_ID || !process.env.GITHUB_CLIENT_SECRET) {
+  console.error('Missing GitHub OAuth credentials in .env file');
+  process.exit(1);
+}
 
 let mainWindow: BrowserWindow | null = null;
 
