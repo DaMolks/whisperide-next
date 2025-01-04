@@ -4,13 +4,23 @@ import { config } from 'dotenv';
 import { setupProjectHandlers } from './project';
 import { setupGithubAuth } from './github-auth';
 
-// Charger les variables d'environnement
-config();
+// Charger les variables d'environnement avec le chemin absolu
+const envPath = path.join(process.cwd(), '.env');
+console.log('Loading .env from:', envPath);
+const result = config({ path: envPath });
+
+if (result.error) {
+  console.error('Error loading .env file:', result.error);
+} else {
+  console.log('.env file loaded successfully');
+  console.log('GitHub Client ID:', process.env.GITHUB_CLIENT_ID ? 'Set' : 'Not set');
+}
 
 // En mode développement, on continue même sans credentials GitHub
 if (!process.env.GITHUB_CLIENT_ID || !process.env.GITHUB_CLIENT_SECRET) {
   if (process.env.NODE_ENV === 'development') {
     console.warn('Warning: Missing GitHub OAuth credentials in .env file');
+    console.warn('Expected .env file at:', envPath);
   } else {
     console.error('Error: Missing GitHub OAuth credentials in .env file');
     process.exit(1);
