@@ -1,17 +1,52 @@
-body {
+html,
+body,
+#root {
+  height: 100vh;
   margin: 0;
   padding: 0;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  background-color: #1a1a1a;
-  color: #ffffff;
+  background-color: #1e1e1e;
+  color: white;
+  overflow: hidden;
 }
 
 * {
   box-sizing: border-box;
 }
 
-#root {
-  height: 100vh;
+.gradient-background {
+  background: linear-gradient(135deg, #1e1e1e 0%, #2d2d2d 100%);
+}
+
+/* Styles de base pour les boutons */
+button {
+  outline: none !important;
+}
+
+/* Styles pour les scrollbars */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* Zone non sélectionnable pour la fenêtre titlebar */
+.window-controls {
+  -webkit-app-region: no-drag;
+}
+
+/* Zone draggable pour la fenêtre */
+.titlebar {
+  -webkit-app-region: drag;
 }
