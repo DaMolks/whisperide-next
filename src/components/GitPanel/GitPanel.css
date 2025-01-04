@@ -1,0 +1,99 @@
+.git-panel {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background-color: rgba(0, 0, 0, 0.2);
+  color: white;
+}
+
+.git-panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.git-tabs {
+  min-height: 48px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.git-tabs .MuiTab-root {
+  min-height: 48px;
+  font-size: 0.8125rem;
+}
+
+.git-content {
+  padding: 16px;
+  flex: 1;
+  overflow-y: auto;
+}
+
+.git-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.git-content::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.git-content::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+}
+
+.git-content::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.section-title {
+  padding: 8px 0;
+  margin-top: 16px;
+  opacity: 0.7;
+}
+
+.commit-section {
+  margin-top: 24px;
+  padding: 16px;
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 4px;
+}
+
+.commit-section .MuiTextField-root {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+}
+
+.commit-section .MuiTextField-root .MuiOutlinedInput-root {
+  color: white;
+}
+
+.commit-section .MuiTextField-root .MuiOutlinedInput-notchedOutline {
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.commit-section .MuiTextField-root:hover .MuiOutlinedInput-notchedOutline {
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.commit-section .MuiTextField-root.Mui-focused .MuiOutlinedInput-notchedOutline {
+  border-color: #1976d2;
+}
+
+.MuiList-root .MuiListItem-root {
+  border-radius: 4px;
+  margin: 2px 0;
+}
+
+.MuiList-root .MuiListItem-root:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.MuiList-root .MuiListItem-root.Mui-selected {
+  background-color: rgba(25, 118, 210, 0.2);
+}
+
+.MuiList-root .MuiListItem-root.Mui-selected:hover {
+  background-color: rgba(25, 118, 210, 0.3);
+}
