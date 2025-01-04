@@ -6,11 +6,11 @@
     "postinstall": "node scripts/install.js",
     "clean": "rimraf dist node_modules",
     "dev": "concurrently \"npm run dev:webpack\" \"npm run dev:electron\"",
-    "dev:webpack": "webpack serve --mode development",
+    "dev:webpack": "npx webpack serve --mode development",
     "dev:electron": "tsc -p electron/tsconfig.json && cross-env NODE_ENV=development electron .",
     "start": "electron .",
     "build": "npm run build:react && npm run build:electron",
-    "build:react": "webpack --mode production",
+    "build:react": "npx webpack --mode production",
     "build:electron": "tsc -p electron/tsconfig.json"
   },
   "dependencies": {
