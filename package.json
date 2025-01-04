@@ -4,11 +4,12 @@
   "main": "dist/electron/main.js",
   "scripts": {
     "postinstall": "node scripts/install.js",
+    "clean": "rimraf dist node_modules",
     "dev": "concurrently \"npm run dev:webpack\" \"npm run dev:electron\"",
     "dev:webpack": "webpack serve --mode development",
-    "dev:electron": "tsc -p electron/tsconfig.json && wait-on tcp:8080 && cross-env NODE_ENV=development electron .",
+    "dev:electron": "tsc -p electron/tsconfig.json && cross-env NODE_ENV=development electron .",
     "start": "electron .",
-    "build": "node scripts/build.js",
+    "build": "npm run build:react && npm run build:electron",
     "build:react": "webpack --mode production",
     "build:electron": "tsc -p electron/tsconfig.json"
   },
@@ -42,6 +43,7 @@
     "electron": "^25.0.0",
     "electron-builder": "^24.6.0",
     "html-webpack-plugin": "^5.5.0",
+    "rimraf": "^5.0.5",
     "style-loader": "^3.3.3",
     "ts-loader": "^9.4.0",
     "typescript": "^5.0.0",
