@@ -5,13 +5,14 @@ import Splash from './splash/Splash';
 import Welcome from './screens/Welcome/Welcome';
 import ProjectSelect from './screens/ProjectSelect/ProjectSelect';
 import MainLayout from './layouts/MainLayout';
+import { ProjectInfo, ProjectMode } from '@shared/types';
 
 type AppState = 'splash' | 'welcome' | 'select-project' | 'main';
-type ProjectMode = 'github' | 'local';
 
 interface AppData {
-  mode?: ProjectMode;
+  projectMode?: ProjectMode;
   githubToken?: string;
+  currentProject?: ProjectInfo;
 }
 
 const App: React.FC = () => {
@@ -28,17 +29,22 @@ const App: React.FC = () => {
   }, [appState]);
 
   const handleGitHubLogin = (token: string) => {
-    setAppData({ mode: 'github', githubToken: token });
+    setAppData({
+      projectMode: { mode: 'github', githubToken: token },
+      githubToken: token
+    });
     setAppState('select-project');
   };
 
   const handleLocalMode = () => {
-    setAppData({ mode: 'local' });
+    setAppData({
+      projectMode: { mode: 'local' }
+    });
     setAppState('select-project');
   };
 
-  const handleProjectSelect = (projectInfo: any) => {
-    // TODO: Stocker les infos du projet
+  const handleProjectSelect = (projectInfo: ProjectInfo) => {
+    setAppData(prev => ({ ...prev, currentProject: projectInfo }));
     setAppState('main');
   };
 
@@ -55,15 +61,19 @@ const App: React.FC = () => {
         />
       )}
       
-      {appState === 'select-project' && appData.mode && (
+      {appState === 'select-project' && appData.projectMode && (
         <ProjectSelect
-          mode={appData.mode}
-          githubToken={appData.githubToken}
+          mode={appData.projectMode.mode}
+          githubToken={appData.projectMode.githubToken}
           onProjectSelect={handleProjectSelect}
         />
       )}
       
-      {appState === 'main' && <MainLayout />}
+      {appState === 'main' && appData.currentProject && (
+        <MainLayout 
+          project={appData.currentProject}
+        />
+      )}
     </ThemeProvider>
   );
 };
