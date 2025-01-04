@@ -1,39 +1,48 @@
 import { contextBridge, ipcRenderer } from 'electron';
-import type { ProjectInfo, ProjectSettings, CloneOptions } from './types';
+import type { ProjectInfo, ProjectConfig } from './services/project-manager';
+import type { GitInfo } from './services/git';
 
 contextBridge.exposeInMainWorld('electron', {
+  // Contrôles de fenêtre
   close: () => ipcRenderer.send('window-close'),
   minimize: () => ipcRenderer.send('window-minimize'),
   maximize: () => ipcRenderer.send('window-maximize'),
   
-  // GitHub APIs
-  githubAuth: {
-    login: () => ipcRenderer.invoke('github-auth-login')
+  // Gestion de projet
+  projects: {
+    getRecent: () => ipcRenderer.invoke('get-recent-projects') as Promise<ProjectInfo[]>,
+    open: (path: string) => ipcRenderer.invoke('open-project', path) as Promise<ProjectInfo>,
+    create: (path: string, config?: ProjectConfig) => 
+      ipcRenderer.invoke('create-project', path, config) as Promise<ProjectInfo>,
+    selectDirectory: () => 
+      ipcRenderer.invoke('select-directory') as Promise<string | null>
   },
 
-  // Project management APIs
-  readProjectSettings: async (path: string): Promise<ProjectSettings> => 
-    ipcRenderer.invoke('read-project-settings', path),
-  
-  cloneRepository: async (options: CloneOptions): Promise<string> => 
-    ipcRenderer.invoke('clone-repository', options),
-  
-  getProjectsDirectory: async (): Promise<string> => 
-    ipcRenderer.invoke('get-projects-directory'),
-  
-  getRecentProjects: async (): Promise<ProjectInfo[]> => 
-    ipcRenderer.invoke('get-recent-projects'),
-  
-  addRecentProject: async (project: ProjectInfo): Promise<void> => 
-    ipcRenderer.invoke('add-recent-project', project),
-
-  selectDirectory: async (): Promise<string | null> => 
-    ipcRenderer.invoke('select-directory')
+  // Git
+  git: {
+    isInstalled: () => ipcRenderer.invoke('check-git') as Promise<boolean>,
+    getInfo: (path: string) => 
+      ipcRenderer.invoke('get-git-info', path) as Promise<GitInfo>
+  }
 });
 
+// Types pour TypeScript
 declare global {
   interface Window {
-    electron: typeof contextBridge.exposeInMainWorld extends 
-      { exposeInMainWorld: (key: string, api: infer T) => void } ? T : never;
+    electron: {
+      close: () => void;
+      minimize: () => void;
+      maximize: () => void;
+      projects: {
+        getRecent: () => Promise<ProjectInfo[]>;
+        open: (path: string) => Promise<ProjectInfo>;
+        create: (path: string, config?: ProjectConfig) => Promise<ProjectInfo>;
+        selectDirectory: () => Promise<string | null>;
+      };
+      git: {
+        isInstalled: () => Promise<boolean>;
+        getInfo: (path: string) => Promise<GitInfo>;
+      };
+    };
   }
 }
