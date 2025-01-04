@@ -9,9 +9,13 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "moduleResolution": "node",
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
+    "paths": {
+      "@types/*": ["./types/*"]
+    }
   },
   "include": [
-    "**/*"
+    "**/*",
+    "types/**/*"
   ]
 }
