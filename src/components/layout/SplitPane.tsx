@@ -1,114 +1,93 @@
-import React, { useState, useCallback } from 'react';
-import { Box } from '@mui/material';
+import React, { useEffect, useRef, useState, ReactNode } from 'react';
 import './SplitPane.css';
 
-interface SplitPaneProps {
-  left: React.ReactNode;
-  right: React.ReactNode;
-  direction?: 'horizontal' | 'vertical';
-  defaultSplit?: number;
-  minSize?: number;
+export interface SplitPaneProps {
+  defaultSize?: number;
+  min?: number;
+  max?: number;
+  split?: 'vertical' | 'horizontal';
+  primary?: 'first' | 'second';
+  children?: ReactNode;
 }
 
 const SplitPane: React.FC<SplitPaneProps> = ({
-  left,
-  right,
-  direction = 'horizontal',
-  defaultSplit = 0.25,
-  minSize = 100,
+  defaultSize = 200,
+  min = 50,
+  max = 500,
+  split = 'vertical',
+  primary = 'first',
+  children
 }) => {
-  const [split, setSplit] = useState(defaultSplit);
+  const [size, setSize] = useState(defaultSize);
   const [isDragging, setIsDragging] = useState(false);
+  const splitPaneRef = useRef<HTMLDivElement>(null);
+  const startPositionRef = useRef(0);
+  const startSizeRef = useRef(0);
 
-  const handleMouseDown = useCallback((e: React.MouseEvent) => {
+  const handleMouseDown = (e: React.MouseEvent) => {
     setIsDragging(true);
+    startPositionRef.current = split === 'vertical' ? e.clientX : e.clientY;
+    startSizeRef.current = size;
     e.preventDefault();
-  }, []);
+  };
 
-  const handleMouseMove = useCallback(
-    (e: MouseEvent) => {
-      if (!isDragging) return;
+  useEffect(() => {
+    if (!isDragging) return;
 
-      const container = document.getElementById('split-container');
-      if (!container) return;
+    const handleMouseMove = (e: MouseEvent) => {
+      if (!isDragging || !splitPaneRef.current) return;
 
-      const { left: containerLeft, width: containerWidth, top: containerTop, height: containerHeight } = container.getBoundingClientRect();
-
-      let newSplit;
-      if (direction === 'horizontal') {
-        newSplit = (e.clientX - containerLeft) / containerWidth;
-      } else {
-        newSplit = (e.clientY - containerTop) / containerHeight;
-      }
-
-      // Limite le split en fonction de minSize
-      const minSplit = minSize / (direction === 'horizontal' ? containerWidth : containerHeight);
-      newSplit = Math.max(minSplit, Math.min(1 - minSplit, newSplit));
-
-      setSplit(newSplit);
-    },
-    [isDragging, direction, minSize]
-  );
-
-  const handleMouseUp = useCallback(() => {
-    setIsDragging(false);
-  }, []);
-
-  React.useEffect(() => {
-    if (isDragging) {
-      window.addEventListener('mousemove', handleMouseMove);
-      window.addEventListener('mouseup', handleMouseUp);
-    }
-    return () => {
-      window.removeEventListener('mousemove', handleMouseMove);
-      window.removeEventListener('mouseup', handleMouseUp);
+      const currentPosition = split === 'vertical' ? e.clientX : e.clientY;
+      const delta = currentPosition - startPositionRef.current;
+      
+      let newSize = startSizeRef.current + (primary === 'first' ? delta : -delta);
+      newSize = Math.max(min, Math.min(max, newSize));
+      setSize(newSize);
     };
-  }, [isDragging, handleMouseMove, handleMouseUp]);
+
+    const handleMouseUp = () => {
+      setIsDragging(false);
+    };
+
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUp);
+
+    return () => {
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, [isDragging, min, max, primary, split]);
+
+  const [firstChild, secondChild] = React.Children.toArray(children);
+
+  const resizeStyle = {
+    [split === 'vertical' ? 'width' : 'height']: size,
+    [split === 'vertical' ? 'minWidth' : 'minHeight']: min,
+    [split === 'vertical' ? 'maxWidth' : 'maxHeight']: max
+  };
 
   return (
-    <Box
-      id="split-container"
-      sx={{
-        display: 'flex',
-        flexDirection: direction === 'horizontal' ? 'row' : 'column',
-        height: '100%',
-        width: '100%',
-        overflow: 'hidden'
-      }}
+    <div
+      ref={splitPaneRef}
+      className={`split-pane ${split} ${isDragging ? 'dragging' : ''}`}
     >
-      <Box
-        sx={{
-          width: direction === 'horizontal' ? `${split * 100}%` : '100%',
-          height: direction === 'vertical' ? `${split * 100}%` : '100%',
-          overflow: 'hidden',
-          flexShrink: 0
-        }}
+      <div
+        className="pane first"
+        style={primary === 'first' ? resizeStyle : undefined}
       >
-        {left}
-      </Box>
-
-      <Box
-        sx={{
-          width: direction === 'horizontal' ? '4px' : '100%',
-          height: direction === 'vertical' ? '4px' : '100%',
-          backgroundColor: isDragging ? 'primary.main' : 'divider',
-          cursor: direction === 'horizontal' ? 'col-resize' : 'row-resize',
-          flexShrink: 0
-        }}
+        {firstChild}
+      </div>
+      <div
+        className="resizer"
         onMouseDown={handleMouseDown}
       />
-
-      <Box
-        sx={{
-          width: direction === 'horizontal' ? `${(1 - split) * 100}%` : '100%',
-          height: direction === 'vertical' ? `${(1 - split) * 100}%` : '100%',
-          overflow: 'hidden',
-          flexShrink: 0
-        }}
+      <div
+        className="pane second"
+        style={primary === 'second' ? resizeStyle : undefined}
       >
-        {right}
-      </Box>
-    </Box>
+        {secondChild}
+      </div>
+    </div>
   );
 };
 
