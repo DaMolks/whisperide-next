@@ -3,28 +3,25 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin');
 
 module.exports = {
-  mode: 'development',
-  entry: {
-    app: './src/index.tsx',
-    splash: './src/splash/index.tsx'
-  },
+  entry: './src/index.tsx',
   output: {
-    filename: '[name].js',
-    path: path.resolve(__dirname, 'dist')
+    path: path.resolve(__dirname, 'dist'),
+    filename: 'bundle.js',
+    globalObject: 'self'
+  },
+  resolve: {
+    extensions: ['.ts', '.tsx', '.js', '.jsx'],
+    fallback: {
+      path: false,
+      fs: false
+    }
   },
   module: {
     rules: [
       {
-        test: /\.tsx?$/,
-        use: [
-          {
-            loader: 'ts-loader',
-            options: {
-              transpileOnly: true
-            }
-          }
-        ],
-        exclude: /node_modules/
+        test: /\.(ts|tsx)$/,
+        exclude: /node_modules/,
+        use: 'ts-loader'
       },
       {
         test: /\.css$/,
@@ -36,25 +33,32 @@ module.exports = {
       }
     ]
   },
-  resolve: {
-    extensions: ['.tsx', '.ts', '.js'],
-    alias: {
-      '@': path.resolve(__dirname, 'src')
-    }
-  },
   plugins: [
     new HtmlWebpackPlugin({
-      template: 'src/index.html',
-      filename: 'index.html',
-      chunks: ['app']
-    }),
-    new HtmlWebpackPlugin({
-      template: 'src/splash/splash.html',
-      filename: 'splash.html',
-      chunks: ['splash']
+      template: './public/index.html'
     }),
     new MonacoWebpackPlugin({
-      languages: ['javascript', 'typescript', 'python', 'java', 'cpp', 'csharp', 'html', 'css', 'json']
+      languages: [
+        'javascript',
+        'typescript',
+        'css',
+        'html',
+        'json',
+        'markdown',
+        'python',
+        'java',
+        'cpp',
+        'csharp',
+        'go',
+        'ruby',
+        'php',
+        'swift',
+        'kotlin',
+        'rust',
+        'sql',
+        'yaml',
+        'xml'
+      ]
     })
   ],
   devServer: {
