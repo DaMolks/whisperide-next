@@ -1,30 +1,28 @@
 import React, { useEffect, useState } from 'react';
 import {
   Box,
+  Typography,
   IconButton,
   Menu,
   MenuItem,
-  Typography,
-  TextField,
   Dialog,
   DialogTitle,
   DialogContent,
   DialogActions,
-  Button
+  Button,
+  TextField
 } from '@mui/material';
 import {
-  Folder,
-  InsertDriveFile,
-  Create,
-  Delete,
+  FolderOutlined,
+  InsertDriveFileOutlined,
   Add,
-  ExpandMore,
+  Delete,
+  Refresh,
   ChevronRight,
-  Refresh
+  ExpandMore
 } from '@mui/icons-material';
-import { FileEntry } from '../../../electron/services/file-system';
+import { FileEntry } from '@shared/types';
 import './FileExplorer.css';
-import * as path from 'path';
 
 interface FileExplorerProps {
   projectPath: string;
@@ -70,7 +68,7 @@ const FileTreeItem: React.FC<FileTreeItemProps> = ({
             {expanded ? <ExpandMore /> : <ChevronRight />}
           </IconButton>
         )}
-        {entry.type === 'directory' ? <Folder /> : <InsertDriveFile />}
+        {entry.type === 'directory' ? <FolderOutlined /> : <InsertDriveFileOutlined />}
         <Typography className="file-name" variant="body2">
           {entry.name}
         </Typography>
@@ -174,12 +172,12 @@ export const FileExplorer: React.FC<FileExplorerProps> = ({
       const basePath = contextMenu?.entry?.type === 'directory'
         ? contextMenu.entry.path
         : projectPath;
-      const newPath = path.join(basePath, newFileName);
+      const fullPath = path.join(basePath, newFileName);
 
       if (createType === 'file') {
-        await window.electron.files.createFile(newPath);
+        await window.electron.files.createFile(fullPath);
       } else {
-        await window.electron.files.createDirectory(newPath);
+        await window.electron.files.createDirectory(fullPath);
       }
 
       setNewFileDialog(false);
@@ -197,6 +195,9 @@ export const FileExplorer: React.FC<FileExplorerProps> = ({
       await window.electron.files.delete(contextMenu.entry.path);
       handleClose();
       loadFiles();
+      if (selectedPath === contextMenu.entry.path) {
+        setSelectedPath(null);
+      }
     } catch (err) {
       console.error('Failed to delete:', err);
       setError('Erreur lors de la suppression');
@@ -252,10 +253,10 @@ export const FileExplorer: React.FC<FileExplorerProps> = ({
         }
       >
         <MenuItem onClick={() => handleCreate('file')}>
-          <Create sx={{ mr: 1 }} /> Nouveau fichier
+          <InsertDriveFileOutlined sx={{ mr: 1 }} /> Nouveau fichier
         </MenuItem>
         <MenuItem onClick={() => handleCreate('directory')}>
-          <Folder sx={{ mr: 1 }} /> Nouveau dossier
+          <FolderOutlined sx={{ mr: 1 }} /> Nouveau dossier
         </MenuItem>
         {contextMenu?.entry && (
           <MenuItem onClick={handleDelete}>
@@ -264,8 +265,8 @@ export const FileExplorer: React.FC<FileExplorerProps> = ({
         )}
       </Menu>
 
-      <Dialog 
-        open={newFileDialog} 
+      <Dialog
+        open={newFileDialog}
         onClose={() => setNewFileDialog(false)}
         PaperProps={{
           sx: {
