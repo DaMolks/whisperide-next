@@ -2,36 +2,33 @@ import React, { useState } from 'react';
 import { Box, Typography, Button, IconButton, CircularProgress } from '@mui/material';
 import { GitHub, Close, Remove } from '@mui/icons-material';
 import './Welcome.css';
-import '../../styles/shared.css';
 
 interface WelcomeProps {
   onGitHubLogin: (token: string) => void;
   onLocalMode: () => void;
 }
 
-const Welcome: React.FC<WelcomeProps> = ({ onGitHubLogin, onLocalMode }) => {
+export const Welcome: React.FC<WelcomeProps> = ({ onGitHubLogin, onLocalMode }) => {
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleClose = () => {
-    if (window.electron) {
-      window.electron.close();
-    }
+    window.electron?.close();
   };
 
   const handleMinimize = () => {
-    if (window.electron) {
-      window.electron.minimize();
-    }
+    window.electron?.minimize();
   };
 
   const handleGitHubClick = async () => {
     try {
       setIsLoading(true);
+      setError(null);
       const token = await window.electron.githubAuth.login();
       onGitHubLogin(token);
-    } catch (error) {
-      console.error('GitHub auth error:', error);
-      // TODO: Ajouter une notification d'erreur
+    } catch (err) {
+      console.error('GitHub auth error:', err);
+      setError('Erreur lors de la connexion à GitHub');
     } finally {
       setIsLoading(false);
     }
@@ -40,14 +37,14 @@ const Welcome: React.FC<WelcomeProps> = ({ onGitHubLogin, onLocalMode }) => {
   return (
     <Box className="welcome-container gradient-background">
       <Box className="welcome-controls">
-        <IconButton 
+        <IconButton
           onClick={handleMinimize}
           size="small"
           sx={{ color: 'rgba(255,255,255,0.7)' }}
         >
           <Remove />
         </IconButton>
-        <IconButton 
+        <IconButton
           onClick={handleClose}
           size="small"
           sx={{ color: 'rgba(255,255,255,0.7)' }}
@@ -58,8 +55,14 @@ const Welcome: React.FC<WelcomeProps> = ({ onGitHubLogin, onLocalMode }) => {
 
       <Box className="welcome-content">
         <Typography variant="h2" className="welcome-title">
-          WhisperIDE Next
+          WhisperIDE
         </Typography>
+
+        {error && (
+          <Typography color="error" sx={{ mb: 2 }}>
+            {error}
+          </Typography>
+        )}
 
         <Box className="welcome-buttons">
           <Button
@@ -76,7 +79,7 @@ const Welcome: React.FC<WelcomeProps> = ({ onGitHubLogin, onLocalMode }) => {
               'Connexion avec GitHub'
             )}
           </Button>
-          
+
           <Button
             variant="text"
             size="large"
