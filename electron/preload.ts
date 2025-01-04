@@ -1,6 +1,6 @@
 import { contextBridge, ipcRenderer } from 'electron';
 import type { ProjectInfo, ProjectConfig } from './services/project-manager';
-import type { GitInfo } from './services/git';
+import type { GitInfo, GitStatus, GitBranch, GitCommitInfo } from './services/git';
 import type { FileEntry } from './services/file-system';
 
 contextBridge.exposeInMainWorld('electron', {
@@ -21,9 +21,25 @@ contextBridge.exposeInMainWorld('electron', {
 
   // Git
   git: {
-    isInstalled: () => ipcRenderer.invoke('check-git') as Promise<boolean>,
-    getInfo: (path: string) => 
-      ipcRenderer.invoke('get-git-info', path) as Promise<GitInfo>
+    isInstalled: () => ipcRenderer.invoke('git-is-installed') as Promise<boolean>,
+    getInfo: (path: string) => ipcRenderer.invoke('git-info', path) as Promise<GitInfo>,
+    getStatus: (path: string) => ipcRenderer.invoke('git-status', path) as Promise<GitStatus>,
+    stage: (path: string, files: string[]) => 
+      ipcRenderer.invoke('git-stage', path, files) as Promise<void>,
+    unstage: (path: string, files: string[]) => 
+      ipcRenderer.invoke('git-unstage', path, files) as Promise<void>,
+    commit: (path: string, message: string) => 
+      ipcRenderer.invoke('git-commit', path, message) as Promise<void>,
+    getBranches: (path: string) => 
+      ipcRenderer.invoke('git-branches', path) as Promise<GitBranch[]>,
+    createBranch: (path: string, name: string) => 
+      ipcRenderer.invoke('git-create-branch', path, name) as Promise<void>,
+    checkout: (path: string, branch: string) => 
+      ipcRenderer.invoke('git-checkout', path, branch) as Promise<void>,
+    getCommitHistory: (path: string, count?: number) => 
+      ipcRenderer.invoke('git-history', path, count) as Promise<GitCommitInfo[]>,
+    getDiff: (path: string, file: string) => 
+      ipcRenderer.invoke('git-diff', path, file) as Promise<string>
   },
 
   // Système de fichiers
@@ -61,6 +77,15 @@ declare global {
       git: {
         isInstalled: () => Promise<boolean>;
         getInfo: (path: string) => Promise<GitInfo>;
+        getStatus: (path: string) => Promise<GitStatus>;
+        stage: (path: string, files: string[]) => Promise<void>;
+        unstage: (path: string, files: string[]) => Promise<void>;
+        commit: (path: string, message: string) => Promise<void>;
+        getBranches: (path: string) => Promise<GitBranch[]>;
+        createBranch: (path: string, name: string) => Promise<void>;
+        checkout: (path: string, branch: string) => Promise<void>;
+        getCommitHistory: (path: string, count?: number) => Promise<GitCommitInfo[]>;
+        getDiff: (path: string, file: string) => Promise<string>;
       };
       files: {
         list: (path: string) => Promise<FileEntry[]>;
