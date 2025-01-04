@@ -1,55 +1,88 @@
-# 🚀 Feuille de Route WhisperIDE
+# 🚀 Feuille de Route WhisperIDE Next
 
 ## 🎯 Statut Global
-Modern IDE avec intégration IA optimisée pour le développement naturel.
+IDE moderne centré sur l'intégration IA avec des capacités de développement professionnelles.
 
-## ✅ Phase 0 : Configuration (Terminé)
+## ✅ Phase 0 : Fondations (Terminé)
 - [x] Structure du projet Electron/React
 - [x] Configuration build
 - [x] Fenêtre sans bordure personnalisée
 - [x] Thème sombre élégant
 - [x] Contrôles de fenêtre fonctionnels
+- [x] Écran de démarrage moderne avec animations
 
-## 🔨 Phase 1 : Système de Base (En cours)
+## 🔨 Phase 1 : GitHub et Gestion des Projets (En cours)
 ### Complété :
-- [x] Écran de démarrage moderne
-- [x] Layout principal
-- [x] Intégration éditeur Monaco
+- [x] Écran d'accueil avec mode GitHub/Local
+- [x] Authentification GitHub OAuth
+- [x] Structure de l'interface de sélection de projet
 
 ### En cours :
-- [ ] Écran d'accueil et authentification
-  - [ ] Mode local/GitHub
-  - [ ] Connexion GitHub OAuth
-  - [ ] Stockage sécurisé des tokens
+- [ ] Intégration GitHub complète
+  - [ ] Clone repository
+  - [ ] Pull/Push changes
+  - [ ] Gestion des branches
 - [ ] Gestion des projets
-  - [ ] Sélection projet local/GitHub
-  - [ ] Liste des projets récents
-  - [ ] Création nouveau projet
-  - [ ] Importation depuis GitHub
+  - [ ] Création nouveau projet local
+  - [ ] Import projet existant
+  - [ ] Initialisation git
+  - [ ] Configurations projet
 
 ### À venir :
-- [ ] Éditeur de code
-  - [ ] Gestion des onglets
+- [ ] Mise en cache local
+  - [ ] Stockage des tokens
+  - [ ] Historique des projets
+  - [ ] Préférences utilisateur
+
+## 💻 Phase 2 : Interface IDE (À venir)
+- [ ] Zone d'édition principale
+  - [ ] Monaco Editor intégration
+  - [ ] Multi-fichiers (onglets)
   - [ ] Sauvegarde automatique
-  - [ ] Intégration avec l'explorateur
+- [ ] Explorateur de fichiers
+  - [ ] Arborescence de projet
+  - [ ] Menus contextuels
+  - [ ] Drag and drop
+- [ ] Terminal intégré
+  - [ ] Multi-terminal support
+  - [ ] Command history
+- [ ] Zone de chat IA
+  - [ ] Interface conversationnelle
+  - [ ] Contexte de projet
 
-## 🤖 Phase 2 : Intégration IA (À venir)
+## 🤖 Phase 3 : Intégration IA (À venir)
 - [ ] Support multi-LLM
-- [ ] Interface IA
-- [ ] Gestion de contexte
+  - [ ] Ollama
+  - [ ] ChatGPT (optionnel)
+  - [ ] Claude (optionnel)
+- [ ] Fonctionnalités IA
+  - [ ] Complétion de code
+  - [ ] Explication de code
+  - [ ] Suggestions
+  - [ ] Détection bugs
+- [ ] Context Management
+  - [ ] Analyse de projet
+  - [ ] Historique des conversations
+  - [ ] Base de connaissances
 
-## 💻 Phase 3 : Git et Plugins (À venir)
-- [ ] Intégration Git avancée
-- [ ] Système de plugins
-
-## 🔍 Phase 4 : Fonctionnalités Avancées (À venir)
-- [ ] Débogueur intégré
-- [ ] Tests automatisés
-- [ ] Profiler de performance
+## 🔧 Phase 4 : Fonctionnalités Avancées (À venir)
+- [ ] Débogage intégré
+  - [ ] Breakpoints
+  - [ ] Variables watch
+  - [ ] Call stack
+- [ ] Tests et Qualité
+  - [ ] Test runner intégré
+  - [ ] Couverture de code
+  - [ ] Linting
+- [ ] Performance
+  - [ ] Profiling
+  - [ ] Optimisations
+  - [ ] Métriques
 
 ## 📈 Améliorations Futures
-- Support de langages additionnel
+- Support multi-langages
 - Thèmes personnalisables
+- Plugins système
 - Mode collaboratif
 - Intégration CI/CD
 - Mode offline pour l'IA
