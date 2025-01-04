@@ -1,169 +1,317 @@
-import React, { useState } from 'react';
-import { Box, Typography, IconButton, List, ListItem, ListItemIcon, ListItemText, Collapse } from '@mui/material';
-import { ExpandMore, ExpandLess, Folder, FolderOpen, InsertDriveFile, Refresh } from '@mui/icons-material';
+import React, { useEffect, useState } from 'react';
+import {
+  Box,
+  IconButton,
+  Menu,
+  MenuItem,
+  Typography,
+  TextField,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Button
+} from '@mui/material';
+import {
+  Folder,
+  InsertDriveFile,
+  Create,
+  Delete,
+  Add,
+  ExpandMore,
+  ChevronRight,
+  Refresh
+} from '@mui/icons-material';
+import { FileEntry } from '../../../electron/services/file-system';
+import './FileExplorer.css';
+import * as path from 'path';
 
-interface FileNode {
-  name: string;
-  type: 'file' | 'folder';
-  children?: FileNode[];
-  path: string;
-  expanded?: boolean;
+interface FileExplorerProps {
+  projectPath: string;
+  onFileSelect: (filePath: string) => void;
 }
 
-const mockData: FileNode = {
-  name: 'projet',
-  type: 'folder',
-  path: '/',
-  expanded: true,
-  children: [
-    {
-      name: 'src',
-      type: 'folder',
-      path: '/src',
-      children: [
-        { name: 'index.tsx', type: 'file', path: '/src/index.tsx' },
-        { name: 'App.tsx', type: 'file', path: '/src/App.tsx' },
-        {
-          name: 'components',
-          type: 'folder',
-          path: '/src/components',
-          children: [
-            { name: 'FileExplorer.tsx', type: 'file', path: '/src/components/FileExplorer.tsx' },
-            { name: 'Editor.tsx', type: 'file', path: '/src/components/Editor.tsx' }
-          ]
-        }
-      ]
-    },
-    { name: 'package.json', type: 'file', path: '/package.json' },
-    { name: 'README.md', type: 'file', path: '/README.md' }
-  ]
-};
+interface FileTreeItemProps {
+  entry: FileEntry;
+  level: number;
+  selected: string | null;
+  onSelect: (path: string) => void;
+  onContextMenu: (event: React.MouseEvent, entry: FileEntry) => void;
+}
 
-const FileTreeItem: React.FC<{ node: FileNode; level: number; onSelect: (path: string) => void }> = ({ 
-  node, 
+const FileTreeItem: React.FC<FileTreeItemProps> = ({
+  entry,
   level,
-  onSelect 
+  selected,
+  onSelect,
+  onContextMenu
 }) => {
-  const [expanded, setExpanded] = useState(node.expanded || false);
+  const [expanded, setExpanded] = useState(false);
 
-  const handleClick = () => {
-    if (node.type === 'folder') {
-      setExpanded(!expanded);
-    } else {
-      onSelect(node.path);
-    }
-  };
-
-  const getFileIcon = () => {
-    if (node.type === 'folder') {
-      return expanded ? <FolderOpen color="primary" /> : <Folder color="primary" />;
-    }
-    return <InsertDriveFile />;
+  const handleExpandClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setExpanded(!expanded);
   };
 
   return (
-    <>
-      <ListItem
-        button
-        onClick={handleClick}
-        sx={{
-          pl: level * 2,
-          py: 0.5,
-          minHeight: 32,
-          '&:hover': {
-            bgcolor: 'action.hover'
-          }
-        }}
+    <Box className="file-tree-item">
+      <Box
+        className={`file-item ${selected === entry.path ? 'selected' : ''}`}
+        onClick={() => onSelect(entry.path)}
+        onContextMenu={(e) => onContextMenu(e, entry)}
+        sx={{ pl: level * 2 }}
       >
-        <ListItemIcon sx={{ minWidth: 32 }}>
-          {getFileIcon()}
-        </ListItemIcon>
-        <ListItemText 
-          primary={node.name}
-          primaryTypographyProps={{
-            sx: {
-              fontSize: '0.9rem',
-              whiteSpace: 'nowrap',
-              overflow: 'hidden',
-              textOverflow: 'ellipsis'
-            }
-          }}
-        />
-        {node.type === 'folder' && node.children?.length > 0 && (
+        {entry.type === 'directory' && (
           <IconButton
             size="small"
-            onClick={(e) => {
-              e.stopPropagation();
-              setExpanded(!expanded);
-            }}
+            onClick={handleExpandClick}
+            sx={{ p: 0.5, mr: 0.5 }}
           >
-            {expanded ? <ExpandLess /> : <ExpandMore />}
+            {expanded ? <ExpandMore /> : <ChevronRight />}
           </IconButton>
         )}
-      </ListItem>
-
-      {node.type === 'folder' && (
-        <Collapse in={expanded} timeout="auto">
-          <List disablePadding>
-            {node.children?.map((child, index) => (
-              <FileTreeItem 
-                key={child.path} 
-                node={child} 
-                level={level + 1}
-                onSelect={onSelect}
-              />
-            ))}
-          </List>
-        </Collapse>
+        {entry.type === 'directory' ? <Folder /> : <InsertDriveFile />}
+        <Typography className="file-name" variant="body2">
+          {entry.name}
+        </Typography>
+        {entry.gitStatus && (
+          <Box
+            className={`git-status ${entry.gitStatus}`}
+            title={entry.gitStatus}
+          />
+        )}
+      </Box>
+      {entry.type === 'directory' && expanded && entry.children && (
+        <Box className="children">
+          {entry.children.map((child) => (
+            <FileTreeItem
+              key={child.path}
+              entry={child}
+              level={level + 1}
+              selected={selected}
+              onSelect={onSelect}
+              onContextMenu={onContextMenu}
+            />
+          )}
+        </Box>
       )}
-    </>
+    </Box>
   );
 };
 
-const FileExplorer: React.FC = () => {
+export const FileExplorer: React.FC<FileExplorerProps> = ({
+  projectPath,
+  onFileSelect
+}) => {
+  const [files, setFiles] = useState<FileEntry[]>([]);
+  const [selectedPath, setSelectedPath] = useState<string | null>(null);
+  const [contextMenu, setContextMenu] = useState<{
+    mouseX: number;
+    mouseY: number;
+    entry?: FileEntry;
+  } | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [newFileDialog, setNewFileDialog] = useState(false);
+  const [newFileName, setNewFileName] = useState('');
+  const [createType, setCreateType] = useState<'file' | 'directory'>('file');
+
+  useEffect(() => {
+    loadFiles();
+  }, [projectPath]);
+
+  const loadFiles = async () => {
+    try {
+      setLoading(true);
+      const fileList = await window.electron.files.list(projectPath);
+      setFiles(fileList);
+      setError(null);
+    } catch (err) {
+      console.error('Failed to load files:', err);
+      setError('Erreur lors du chargement des fichiers');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleContextMenu = (
+    event: React.MouseEvent,
+    entry: FileEntry
+  ) => {
+    event.preventDefault();
+    event.stopPropagation();
+    setContextMenu(
+      contextMenu === null
+        ? {
+            mouseX: event.clientX,
+            mouseY: event.clientY,
+            entry
+          }
+        : null
+    );
+  };
+
+  const handleClose = () => {
+    setContextMenu(null);
+  };
+
   const handleSelect = (path: string) => {
-    console.log('Selected:', path);
-    // TODO: Implémentation de l'ouverture de fichier
+    setSelectedPath(path);
+    onFileSelect(path);
+  };
+
+  const handleCreate = (type: 'file' | 'directory') => {
+    setCreateType(type);
+    setNewFileName('');
+    setNewFileDialog(true);
+    handleClose();
+  };
+
+  const handleCreateConfirm = async () => {
+    if (!newFileName) return;
+
+    try {
+      const basePath = contextMenu?.entry?.type === 'directory'
+        ? contextMenu.entry.path
+        : projectPath;
+      const newPath = path.join(basePath, newFileName);
+
+      if (createType === 'file') {
+        await window.electron.files.createFile(newPath);
+      } else {
+        await window.electron.files.createDirectory(newPath);
+      }
+
+      setNewFileDialog(false);
+      loadFiles();
+    } catch (err) {
+      console.error('Failed to create:', err);
+      setError(`Erreur lors de la création ${createType === 'file' ? 'du fichier' : 'du dossier'}`);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!contextMenu?.entry) return;
+
+    try {
+      await window.electron.files.delete(contextMenu.entry.path);
+      handleClose();
+      loadFiles();
+    } catch (err) {
+      console.error('Failed to delete:', err);
+      setError('Erreur lors de la suppression');
+    }
   };
 
   return (
-    <Box
-      sx={{
-        height: '100%',
-        bgcolor: 'background.paper',
-        display: 'flex',
-        flexDirection: 'column',
-        borderRight: 1,
-        borderColor: 'divider'
-      }}
-    >
-      <Box
-        sx={{
-          p: 1,
-          borderBottom: 1,
-          borderColor: 'divider',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between'
-        }}
-      >
-        <Typography variant="subtitle2">
+    <Box className="file-explorer">
+      <Box className="file-explorer-header">
+        <Typography variant="subtitle1" component="h2">
           Explorateur
         </Typography>
-        <IconButton size="small">
-          <Refresh fontSize="small" />
+        <IconButton onClick={loadFiles} size="small" title="Actualiser">
+          <Refresh />
         </IconButton>
       </Box>
 
-      <Box sx={{ overflow: 'auto', flex: 1 }}>
-        <List dense disablePadding>
-          <FileTreeItem 
-            node={mockData} 
-            level={0}
-            onSelect={handleSelect}
-          />
-        </List>
+      <Box className="file-explorer-content">
+        {loading ? (
+          <Typography variant="body2" className="message">
+            Chargement...
+          </Typography>
+        ) : error ? (
+          <Typography variant="body2" color="error" className="message">
+            {error}
+          </Typography>
+        ) : files.length === 0 ? (
+          <Typography variant="body2" className="message">
+            Aucun fichier
+          </Typography>
+        ) : (
+          files.map((entry) => (
+            <FileTreeItem
+              key={entry.path}
+              entry={entry}
+              level={0}
+              selected={selectedPath}
+              onSelect={handleSelect}
+              onContextMenu={handleContextMenu}
+            />
+          ))
+        )}
       </Box>
+
+      <Menu
+        open={contextMenu !== null}
+        onClose={handleClose}
+        anchorReference="anchorPosition"
+        anchorPosition={
+          contextMenu !== null
+            ? { top: contextMenu.mouseY, left: contextMenu.mouseX }
+            : undefined
+        }
+      >
+        <MenuItem onClick={() => handleCreate('file')}>
+          <Create sx={{ mr: 1 }} /> Nouveau fichier
+        </MenuItem>
+        <MenuItem onClick={() => handleCreate('directory')}>
+          <Folder sx={{ mr: 1 }} /> Nouveau dossier
+        </MenuItem>
+        {contextMenu?.entry && (
+          <MenuItem onClick={handleDelete}>
+            <Delete sx={{ mr: 1 }} /> Supprimer
+          </MenuItem>
+        )}
+      </Menu>
+
+      <Dialog 
+        open={newFileDialog} 
+        onClose={() => setNewFileDialog(false)}
+        PaperProps={{
+          sx: {
+            backgroundColor: 'rgba(30, 30, 30, 0.95)',
+            color: 'white',
+            p: 2
+          }
+        }}
+      >
+        <DialogTitle>
+          {createType === 'file' ? 'Nouveau fichier' : 'Nouveau dossier'}
+        </DialogTitle>
+        <DialogContent>
+          <TextField
+            autoFocus
+            margin="dense"
+            label="Nom"
+            fullWidth
+            value={newFileName}
+            onChange={(e) => setNewFileName(e.target.value)}
+            variant="outlined"
+            sx={{
+              '& .MuiOutlinedInput-root': {
+                color: 'white',
+                '& fieldset': {
+                  borderColor: 'rgba(255, 255, 255, 0.23)'
+                },
+                '&:hover fieldset': {
+                  borderColor: 'rgba(255, 255, 255, 0.5)'
+                }
+              },
+              '& .MuiInputLabel-root': {
+                color: 'rgba(255, 255, 255, 0.7)'
+              }
+            }}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setNewFileDialog(false)} sx={{ color: 'rgba(255, 255, 255, 0.7)' }}>
+            Annuler
+          </Button>
+          <Button onClick={handleCreateConfirm} variant="contained">
+            Créer
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 };
