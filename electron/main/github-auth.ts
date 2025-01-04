@@ -2,6 +2,7 @@ import { BrowserWindow, ipcMain } from 'electron';
 
 const GITHUB_CLIENT_ID = process.env.GITHUB_CLIENT_ID || 'your_client_id';
 const GITHUB_CLIENT_SECRET = process.env.GITHUB_CLIENT_SECRET || 'your_client_secret';
+const REDIRECT_URI = 'whisperide://oauth/callback';
 
 export function setupGithubAuth() {
   ipcMain.handle('github-auth-login', async () => {
@@ -15,12 +16,12 @@ export function setupGithubAuth() {
       }
     });
 
-    // URL de base pour l'authentification GitHub
-    const authUrl = `https://github.com/login/oauth/authorize?client_id=${GITHUB_CLIENT_ID}&scope=repo`;
+    // URL de base pour l'authentification GitHub avec redirect_uri
+    const authUrl = `https://github.com/login/oauth/authorize?client_id=${GITHUB_CLIENT_ID}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&scope=repo`;
 
     return new Promise((resolve, reject) => {
       // Gérer la redirection après l'authentification
-      const handleNavigation = async (url: string) => {
+      const handleCallback = async (url: string) => {
         const match = url.match(/[?&]code=([^&]*)/); // Extraire le code
         if (match) {
           const code = match[1];
@@ -35,7 +36,8 @@ export function setupGithubAuth() {
               body: JSON.stringify({
                 client_id: GITHUB_CLIENT_ID,
                 client_secret: GITHUB_CLIENT_SECRET,
-                code
+                code,
+                redirect_uri: REDIRECT_URI
               })
             });
 
@@ -54,13 +56,18 @@ export function setupGithubAuth() {
         }
       };
 
-      // Écouter les changements d'URL
-      win.webContents.on('did-navigate', (_, url) => {
-        handleNavigation(url);
+      // Intercepter le protocole personnalisé
+      app.on('open-url', (_, url) => {
+        if (url.startsWith('whisperide://')) {
+          handleCallback(url);
+        }
       });
 
-      win.webContents.on('did-redirect-navigation', (_, url) => {
-        handleNavigation(url);
+      // Écouter les changements d'URL
+      win.webContents.on('did-navigate', (_, url) => {
+        if (url.startsWith(REDIRECT_URI)) {
+          handleCallback(url);
+        }
       });
 
       // Gérer la fermeture de la fenêtre
