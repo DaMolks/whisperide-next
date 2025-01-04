@@ -1,119 +1,121 @@
-import React, { useRef, useEffect } from 'react';
-import { Box } from '@mui/material';
+import React, { useEffect, useRef, useState } from 'react';
 import * as monaco from 'monaco-editor';
+import { editor } from 'monaco-editor';
+import { Box, Typography } from '@mui/material';
+import { EditorService } from '../../services/editor/EditorService';
+import './Editor.css';
 
-interface IEditor {
-  path?: string;
-  content?: string;
-  language?: string;
+interface EditorProps {
+  filePath: string | null;
 }
 
-const Editor: React.FC<IEditor> = ({ 
-  path = '', 
-  content = '', 
-  language = 'typescript' 
-}) => {
-  const editorRef = useRef<HTMLDivElement>(null);
-  const editor = useRef<monaco.editor.IStandaloneCodeEditor | null>(null);
+const Editor: React.FC<EditorProps> = ({ filePath }) => {
+  const editorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
+  // Créer l'éditeur
   useEffect(() => {
-    if (editorRef.current) {
-      // Configuration de l'éditeur
-      editor.current = monaco.editor.create(editorRef.current, {
-        value: content,
-        language,
-        theme: 'vs-dark',
-        automaticLayout: true,
-        minimap: {
-          enabled: true,
-          scale: 0.75
-        },
-        fontSize: 14,
-        fontFamily: '"Fira Code", monospace',
-        lineNumbers: 'on',
-        roundedSelection: false,
-        scrollBeyondLastLine: false,
-        renderLineHighlight: 'all',
-        occurrencesHighlight: true,
-        cursorBlinking: 'smooth',
-        cursorSmoothCaretAnimation: true,
-        smoothScrolling: true,
-        mouseWheelZoom: true,
-        rulers: [],
-        wordWrap: 'off',
-        folding: true,
-        links: true,
-        padding: {
-          top: 10,
-          bottom: 10
-        }
-      });
+    if (!containerRef.current) return;
 
-      // Événements de l'éditeur
-      editor.current.onDidChangeModelContent(() => {
-        // TODO: Sauvegarder les modifications
-        console.log('Content changed');
-      });
+    editorRef.current = monaco.editor.create(
+      containerRef.current,
+      EditorService.getEditorOptions()
+    );
 
-      // Configuration des suggestions
-      monaco.languages.registerCompletionItemProvider(language, {
-        provideCompletionItems: (model, position) => {
-          const suggestions: monaco.languages.CompletionItem[] = [
-            // Exemples de suggestions (a améliorer avec l'IA)
-            {
-              label: 'console.log',
-              kind: monaco.languages.CompletionItemKind.Function,
-              insertText: 'console.log($1)',
-              insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
-              documentation: 'Log to console'
-            }
-          ];
+    // Enregistrer les raccourcis clavier et commandes
+    EditorService.registerCommandPallette(editorRef.current);
 
-          return { suggestions };
-        }
-      });
-    }
-
-    // Cleanup
     return () => {
-      if (editor.current) {
-        editor.current.dispose();
+      editorRef.current?.dispose();
+    };
+  }, []);
+
+  // Charger un fichier quand le chemin change
+  useEffect(() => {
+    const loadFile = async () => {
+      if (!filePath || !editorRef.current) {
+        editorRef.current?.setModel(null);
+        return;
+      }
+
+      try {
+        setIsLoading(true);
+        setError(null);
+
+        // Charger le contenu du fichier
+        const content = await EditorService.getFileContent(filePath);
+
+        // Créer un nouveau modèle avec le langage approprié
+        const language = EditorService.guessLanguage(filePath);
+        const model = monaco.editor.createModel(content, language);
+
+        // Définir le modèle dans l'éditeur
+        editorRef.current.setModel(model);
+
+        // Si c'est un projet Git, ajouter les décorations de diff
+        if (window.electron.git.isInstalled()) {
+          try {
+            const diff = await window.electron.git.getDiff(filePath, filePath);
+            EditorService.registerGitDecorations(editorRef.current, diff);
+          } catch (err) {
+            // Ignorer les erreurs de diff - ce n'est pas critique
+            console.warn('Failed to get git diff:', err);
+          }
+        }
+
+        // Configurer la sauvegarde automatique
+        model.onDidChangeContent(async () => {
+          try {
+            await EditorService.saveFileContent(filePath, model.getValue());
+          } catch (err) {
+            console.error('Failed to auto-save:', err);
+            // Optionnel : afficher une notification d'erreur
+          }
+        });
+      } catch (err) {
+        console.error('Failed to load file:', err);
+        setError(`Erreur lors du chargement du fichier : ${err.message}`);
+      } finally {
+        setIsLoading(false);
       }
     };
-  }, [content, language]);
 
-  // Changement de contenu
-  useEffect(() => {
-    if (editor.current) {
-      const currentValue = editor.current.getValue();
-      if (currentValue !== content) {
-        editor.current.setValue(content);
-      }
-    }
-  }, [content]);
+    loadFile();
+  }, [filePath]);
 
-  // Changement de langage
-  useEffect(() => {
-    if (editor.current) {
-      const model = editor.current.getModel();
-      if (model) {
-        monaco.editor.setModelLanguage(model, language);
-      }
-    }
-  }, [language]);
+  if (!filePath) {
+    return (
+      <Box className="editor-container empty-state">
+        <Typography variant="body1" sx={{ opacity: 0.7 }}>
+          Sélectionnez un fichier pour commencer à éditer
+        </Typography>
+      </Box>
+    );
+  }
+
+  if (error) {
+    return (
+      <Box className="editor-container error-state">
+        <Typography color="error">{error}</Typography>
+      </Box>
+    );
+  }
 
   return (
-    <Box
-      ref={editorRef}
-      sx={{
-        width: '100%',
-        height: '100%',
-        bgcolor: '#1e1e1e',
-        '& .monaco-editor': {
-          paddingTop: 1
-        }
-      }}
-    />
+    <Box className="editor-container">
+      {isLoading ? (
+        <Box className="loading-state">
+          <Typography>Chargement...</Typography>
+        </Box>
+      ) : (
+        <div
+          ref={containerRef}
+          className="monaco-container"
+        />
+      )}
+    </Box>
   );
 };
 
