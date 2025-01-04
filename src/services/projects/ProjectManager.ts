@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
-import { ProjectInfo, ProjectSettings } from './types';
+import { ProjectInfo, ProjectSettings } from '../../shared/types';
 
 export class ProjectManager {
   // Ouvre un projet local
