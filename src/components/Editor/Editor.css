@@ -1,0 +1,130 @@
+.editor-container {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background-color: #1e1e1e;
+}
+
+.monaco-container {
+  flex: 1;
+  overflow: hidden;
+}
+
+.empty-state,
+.error-state,
+.loading-state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: 24px;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+/* Décorations Git */
+.git-addition-gutter {
+  border-left: 3px solid #4caf50;
+}
+
+.git-addition-line {
+  background-color: rgba(76, 175, 80, 0.1);
+}
+
+.git-deletion-gutter {
+  border-left: 3px solid #f44336;
+}
+
+.git-deletion-line {
+  background-color: rgba(244, 67, 54, 0.1);
+}
+
+/* Personnalisation Monaco */
+.monaco-editor .cursor {
+  border-color: #fff !important;
+}
+
+.monaco-editor .line-numbers {
+  color: rgba(255, 255, 255, 0.4) !important;
+}
+
+.monaco-editor .current-line {
+  border: none !important;
+  background-color: rgba(255, 255, 255, 0.04) !important;
+}
+
+.monaco-editor .view-overlays .current-line {
+  border: none !important;
+  background-color: rgba(255, 255, 255, 0.04) !important;
+}
+
+.monaco-editor .margin {
+  background-color: #1e1e1e !important;
+}
+
+/* Survol des lignes */
+.monaco-editor .view-overlays .hover-line {
+  background-color: rgba(255, 255, 255, 0.02) !important;
+}
+
+/* Minimap */
+.monaco-editor .minimap-slider {
+  background: rgba(255, 255, 255, 0.1) !important;
+}
+
+.monaco-editor .minimap-slider:hover {
+  background: rgba(255, 255, 255, 0.2) !important;
+}
+
+/* Scrollbars */
+.monaco-editor .scrollbar {
+  background-color: transparent !important;
+}
+
+.monaco-editor .scrollbar .slider {
+  background-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+.monaco-editor .scrollbar .slider:hover {
+  background-color: rgba(255, 255, 255, 0.2) !important;
+}
+
+/* Sélection */
+.monaco-editor .selected-text {
+  background-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+.monaco-editor .view-overlays .selection {
+  background-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+/* Suggestions et autocompletion */
+.monaco-editor .suggest-widget {
+  background-color: #252525 !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+.monaco-editor .suggest-widget .monaco-list .monaco-list-row.focused {
+  background-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+/* Recherche */
+.monaco-editor .findMatch {
+  background-color: rgba(255, 198, 0, 0.3) !important;
+  border: none !important;
+}
+
+.monaco-editor .currentFindMatch {
+  background-color: rgba(255, 198, 0, 0.5) !important;
+  border: none !important;
+}
+
+/* Debugging */
+.monaco-editor .debug-breakpoint-column {
+  background-color: rgba(255, 0, 0, 0.2) !important;
+}
+
+.monaco-editor .debug-breakpoint-glyph-margin {
+  background-color: #ff0000 !important;
+  border-radius: 50%;
+}
