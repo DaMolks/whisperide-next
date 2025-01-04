@@ -9,12 +9,11 @@ import {
   ListItemText,
   ListItemIcon,
   ListItemSecondaryAction,
-  Divider,
-  TextField,
   Dialog,
   DialogTitle,
   DialogContent,
   DialogActions,
+  TextField,
   Tab,
   Tabs
 } from '@mui/material';
@@ -27,69 +26,197 @@ import {
   History,
   CompareArrows
 } from '@mui/icons-material';
-import {
-  GitStatus,
-  GitBranch,
-  GitCommitInfo
-} from '../../../electron/services/git';
+import { GitStatus, GitBranch, GitCommitInfo } from '@shared/types';
 import './GitPanel.css';
 
-// ... [Code précédent inchangé jusqu'aux JSX renderings]
+interface GitPanelProps {
+  projectPath: string;
+}
+
+interface TabPanelProps {
+  children?: React.ReactNode;
+  value: number;
+  index: number;
+}
+
+const TabPanel: React.FC<TabPanelProps> = ({ children, value, index }) => (
+  <Box
+    role="tabpanel"
+    hidden={value !== index}
+    sx={{ flex: 1, overflow: 'auto' }}
+  >
+    {value === index && children}
+  </Box>
+);
+
+export const GitPanel: React.FC<GitPanelProps> = ({ projectPath }) => {
+  const [status, setStatus] = useState<GitStatus | null>(null);
+  const [branches, setBranches] = useState<GitBranch[]>([]);
+  const [commits, setCommits] = useState<GitCommitInfo[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [commitMessage, setCommitMessage] = useState('');
+  const [newBranchDialog, setNewBranchDialog] = useState(false);
+  const [newBranchName, setNewBranchName] = useState('');
+  const [selectedTab, setSelectedTab] = useState(0);
+
+  const loadStatus = async () => {
+    try {
+      setLoading(true);
+      const gitStatus = await window.electron.git.getStatus(projectPath);
+      setStatus(gitStatus);
+      setError(null);
+    } catch (err) {
+      console.error('Failed to load git status:', err);
+      setError('Erreur lors du chargement du status Git');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const loadBranches = async () => {
+    try {
+      const gitBranches = await window.electron.git.getBranches(projectPath);
+      setBranches(gitBranches);
+    } catch (err) {
+      console.error('Failed to load branches:', err);
+    }
+  };
+
+  const loadCommits = async () => {
+    try {
+      const gitCommits = await window.electron.git.getCommitHistory(projectPath);
+      setCommits(gitCommits);
+    } catch (err) {
+      console.error('Failed to load commits:', err);
+    }
+  };
+
+  useEffect(() => {
+    loadStatus();
+    loadBranches();
+    loadCommits();
+  }, [projectPath]);
+
+  const handleStage = async (file: string) => {
+    try {
+      await window.electron.git.stage(projectPath, [file]);
+      loadStatus();
+    } catch (err) {
+      console.error('Failed to stage file:', err);
+      setError('Erreur lors du staging');
+    }
+  };
+
+  const handleUnstage = async (file: string) => {
+    try {
+      await window.electron.git.unstage(projectPath, [file]);
+      loadStatus();
+    } catch (err) {
+      console.error('Failed to unstage file:', err);
+      setError('Erreur lors du unstaging');
+    }
+  };
+
+  const handleCommit = async () => {
+    if (!commitMessage.trim()) return;
+
+    try {
+      await window.electron.git.commit(projectPath, commitMessage);
+      setCommitMessage('');
+      loadStatus();
+      loadCommits();
+    } catch (err) {
+      console.error('Failed to commit:', err);
+      setError('Erreur lors du commit');
+    }
+  };
+
+  const handleCreateBranch = async () => {
+    if (!newBranchName.trim()) return;
+
+    try {
+      await window.electron.git.createBranch(projectPath, newBranchName);
+      setNewBranchDialog(false);
+      setNewBranchName('');
+      loadBranches();
+      loadStatus();
+    } catch (err) {
+      console.error('Failed to create branch:', err);
+      setError('Erreur lors de la création de la branche');
+    }
+  };
+
+  const handleCheckout = async (branch: string) => {
+    try {
+      await window.electron.git.checkout(projectPath, branch);
+      loadBranches();
+      loadStatus();
+      loadCommits();
+    } catch (err) {
+      console.error('Failed to checkout branch:', err);
+      setError('Erreur lors du changement de branche');
+    }
+  };
+
+  // ... [previous render code] ...
 
   return (
     <Box className="git-panel">
-      <Box className="git-panel-header">
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-          <Typography variant="subtitle1" component="h2">
-            Git
-          </Typography>
-          {status && (
-            <Typography variant="body2" sx={{ opacity: 0.7 }}>
-              sur {status.branch}
-              {status.ahead > 0 && ` (${status.ahead} commits d'avance)`}
-              {status.behind > 0 && ` (${status.behind} commits de retard)`}
-            </Typography>
-          )}
-        </Box>
-        <IconButton onClick={loadGitInfo} size="small" title="Actualiser">
-          <Refresh />
-        </IconButton>
-      </Box>
-
-      <Tabs
-        value={selectedTab}
-        onChange={(_, value) => setSelectedTab(value)}
-        variant="fullWidth"
-        className="git-tabs"
+      {/* ... [previous JSX code] ... */}
+      <Dialog
+        open={newBranchDialog}
+        onClose={() => setNewBranchDialog(false)}
+        PaperProps={{
+          sx: {
+            backgroundColor: 'rgba(30, 30, 30, 0.95)',
+            color: 'white',
+            p: 2
+          }
+        }}
       >
-        <Tab icon={<CompareArrows />} label="Changements" />
-        <Tab icon={<AccountTreeOutlined />} label="Branches" />
-        <Tab icon={<History />} label="Historique" />
-      </Tabs>
-
-      {/* ... [Reste du code inchangé] */}
-
-      <List dense>
-        {branches.map((branch) => (
-          <ListItem
-            key={branch.name}
-            button
-            selected={branch.current}
-            onClick={() => !branch.current && handleCheckout(branch.name)}
+        <DialogTitle>Nouvelle branche</DialogTitle>
+        <DialogContent>
+          <TextField
+            autoFocus
+            margin="dense"
+            label="Nom de la branche"
+            fullWidth
+            value={newBranchName}
+            onChange={(e) => setNewBranchName(e.target.value)}
+            variant="outlined"
+            sx={{
+              '& .MuiOutlinedInput-root': {
+                color: 'white',
+                '& fieldset': {
+                  borderColor: 'rgba(255, 255, 255, 0.23)'
+                },
+                '&:hover fieldset': {
+                  borderColor: 'rgba(255, 255, 255, 0.5)'
+                }
+              },
+              '& .MuiInputLabel-root': {
+                color: 'rgba(255, 255, 255, 0.7)'
+              }
+            }}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button
+            onClick={() => setNewBranchDialog(false)}
+            sx={{ color: 'rgba(255, 255, 255, 0.7)' }}
           >
-            <ListItemIcon>
-              <AccountTreeOutlined />
-            </ListItemIcon>
-            <ListItemText
-              primary={branch.name}
-              secondary={branch.remoteTracking}
-            />
-          </ListItem>
-        ))}
-      </List>
-
-      {/* ... [Reste du code inchangé] */}
-
+            Annuler
+          </Button>
+          <Button
+            onClick={handleCreateBranch}
+            variant="contained"
+            disabled={!newBranchName.trim()}
+          >
+            Créer
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 };
