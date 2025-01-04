@@ -3,7 +3,7 @@ import * as fs from 'fs/promises';
 import * as path from 'path';
 import { exec } from 'child_process';
 import { promisify } from 'util';
-import type { ProjectInfo, ProjectSettings } from '../../shared/types';
+import type { ProjectInfo, ProjectSettings } from '../types';
 
 const execAsync = promisify(exec);
 
