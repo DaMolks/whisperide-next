@@ -1,7 +1,7 @@
 import { BrowserWindow, ipcMain } from 'electron';
 
-const GITHUB_CLIENT_ID = process.env.GITHUB_CLIENT_ID;
-const GITHUB_CLIENT_SECRET = process.env.GITHUB_CLIENT_SECRET;
+const GITHUB_CLIENT_ID = process.env.GITHUB_CLIENT_ID || 'your_client_id';
+const GITHUB_CLIENT_SECRET = process.env.GITHUB_CLIENT_SECRET || 'your_client_secret';
 
 export function setupGithubAuth() {
   ipcMain.handle('github-auth-login', async () => {
@@ -18,12 +18,9 @@ export function setupGithubAuth() {
     // URL de base pour l'authentification GitHub
     const authUrl = `https://github.com/login/oauth/authorize?client_id=${GITHUB_CLIENT_ID}&scope=repo`;
 
-    // Charger l'URL d'authentification GitHub
-    win.loadURL(authUrl);
-
     return new Promise((resolve, reject) => {
       // Gérer la redirection après l'authentification
-      win.webContents.on('will-redirect', async (event, url) => {
+      const handleNavigation = async (url: string) => {
         const match = url.match(/[?&]code=([^&]*)/); // Extraire le code
         if (match) {
           const code = match[1];
@@ -55,12 +52,24 @@ export function setupGithubAuth() {
             reject(error);
           }
         }
+      };
+
+      // Écouter les changements d'URL
+      win.webContents.on('did-navigate', (_, url) => {
+        handleNavigation(url);
+      });
+
+      win.webContents.on('did-redirect-navigation', (_, url) => {
+        handleNavigation(url);
       });
 
       // Gérer la fermeture de la fenêtre
       win.on('closed', () => {
         reject(new Error('Window was closed'));
       });
+
+      // Charger l'URL d'authentification GitHub
+      win.loadURL(authUrl);
     });
   });
 }
