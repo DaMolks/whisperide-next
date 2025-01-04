@@ -13,6 +13,13 @@ if (!process.env.GITHUB_CLIENT_ID || !process.env.GITHUB_CLIENT_SECRET) {
   process.exit(1);
 }
 
+// Enregistrer le protocole personnalisé
+if (process.defaultApp) {
+  app.setAsDefaultProtocolClient('whisperide', process.execPath, [path.resolve(process.argv[1])]);
+} else {
+  app.setAsDefaultProtocolClient('whisperide');
+}
+
 let mainWindow: BrowserWindow | null = null;
 
 function createWindow() {
@@ -54,6 +61,20 @@ app.on('window-all-closed', () => {
 app.on('activate', () => {
   if (mainWindow === null) {
     createWindow();
+  }
+});
+
+// Gestion des arguments en ligne de commande pour le protocole personnalisé
+app.on('second-instance', (event, commandLine) => {
+  if (mainWindow) {
+    if (mainWindow.isMinimized()) mainWindow.restore();
+    mainWindow.focus();
+
+    // Gérer l'URL de redirection
+    const url = commandLine.find(arg => arg.startsWith('whisperide://'));
+    if (url) {
+      app.emit('open-url', event, url);
+    }
   }
 });
 
