@@ -1,4 +1,5 @@
-import { app, BrowserWindow, ipcMain, protocol } from 'electron';
+const { app, BrowserWindow, ipcMain } = require('electron');
+import { protocol } from 'electron';
 import * as path from 'path';
 import { GitHubAuthService } from './services/github-auth';
 
@@ -21,7 +22,7 @@ class WhisperIDEApp {
       app.setAsDefaultProtocolClient('whisperide');
     }
 
-    protocol.registerHttpProtocol('whisperide', (request, callback) => {
+    protocol.registerHttpProtocol('whisperide', (request: Electron.ProtocolRequest, callback: (response: Electron.ProtocolResponse) => void) => {
       const url = request.url;
       // Handle OAuth callback
       if (url.includes('/oauth/callback')) {
@@ -54,7 +55,7 @@ class WhisperIDEApp {
   }
 
   private setupIPC() {
-    ipcMain.on('github-auth', async (event) => {
+    ipcMain.on('github-auth', async (event: Electron.IpcMainEvent) => {
       try {
         const token = await GitHubAuthService.authorize();
         event.reply('github-auth-complete', { token });
@@ -67,7 +68,7 @@ class WhisperIDEApp {
       }
     });
 
-    ipcMain.on('window-control', (_, command: string) => {
+    ipcMain.on('window-control', (_: Electron.IpcMainEvent, command: string) => {
       switch (command) {
         case 'minimize':
           this.mainWindow?.minimize();
