@@ -1,6 +1,6 @@
 import * as fs from 'fs/promises';
 import * as path from 'path';
-import type { ProjectConfig, ProjectInfo, FileEntry } from '@shared/types';
+import type { ProjectConfig, ProjectInfo, FileEntry, BaseProjectConfig } from '@shared/types';
 import { GitService } from './git';
 
 export interface ExtendedProjectInfo extends ProjectInfo {
@@ -27,7 +27,7 @@ export class ProjectService {
     } catch {
       const defaultConfig: ProjectConfig = {
         name: path.basename(projectPath),
-        type: 'local' as const,
+        type: 'local',
         description: '',
         version: '0.1.0'
       };
