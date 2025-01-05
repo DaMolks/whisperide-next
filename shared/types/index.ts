@@ -4,6 +4,7 @@ export interface BaseConfig {
   name: string;
   description?: string;
   version?: string;
+  type: ProjectType;
 }
 
 export interface GitRemoteConfig {
@@ -17,18 +18,17 @@ export interface GitConfig {
   gitRemote?: GitRemoteConfig;
 }
 
-import { GitInfo } from './git';
-export { GitInfo };
+export interface ProjectConfig extends BaseConfig, GitConfig {}
 
-export interface ProjectConfig extends BaseConfig, GitConfig {
-  type: ProjectType;
-}
-
+// On importe tout d'un coup pour éviter les conflits
+from './git';
 export interface ProjectInfo extends BaseConfig {
   path: string;
-  type: ProjectType;
   lastOpened?: string;
-  gitInfo?: Pick<GitInfo, 'branch' | 'remotes'>;
+  gitInfo?: {
+    branch: string;
+    remote?: string;
+  };
 }
 
 export interface FileEntry {
@@ -39,4 +39,5 @@ export interface FileEntry {
   gitStatus?: 'modified' | 'untracked' | 'staged' | null;
 }
 
+// Exportation unique des types git
 export * from './git';
