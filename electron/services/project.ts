@@ -5,7 +5,7 @@ import { GitService } from './git';
 
 export interface ExtendedProjectInfo extends ProjectInfo {
   id: string;
-  lastOpened: string; // Override optional to required
+  lastOpened: string;
 }
 
 export class ProjectService {
@@ -25,13 +25,12 @@ export class ProjectService {
       const content = await fs.readFile(configPath, 'utf-8');
       return JSON.parse(content);
     } catch {
-      const defaultConfig: ProjectConfig = {
+      return {
         name: path.basename(projectPath),
         type: 'local',
         description: '',
         version: '0.1.0'
       };
-      return defaultConfig;
     }
   }
 
