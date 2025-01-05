@@ -1,12 +1,11 @@
 import * as fs from 'fs/promises';
 import * as path from 'path';
-import type { ProjectConfig, ProjectInfo } from '@shared/types';
+import type { ProjectConfig, ProjectInfo, FileEntry } from '@shared/types';
 import { GitService } from './git';
 
-type ExtendedProjectConfig = ProjectConfig;
-
-interface ExtendedProjectInfo extends ProjectInfo {
+export interface ExtendedProjectInfo extends ProjectInfo {
   id: string;
+  lastOpened: string;
 }
 
 export class ProjectService {
@@ -20,7 +19,7 @@ export class ProjectService {
     }
   }
 
-  static async readProjectSettings(projectPath: string): Promise<ExtendedProjectConfig> {
+  static async readProjectSettings(projectPath: string): Promise<ProjectConfig> {
     try {
       const configPath = path.join(projectPath, '.whisperide', 'config.json');
       const content = await fs.readFile(configPath, 'utf-8');
@@ -33,10 +32,10 @@ export class ProjectService {
     }
   }
 
-  static async createProject(projectPath: string, config?: Partial<ExtendedProjectConfig>): Promise<ExtendedProjectInfo> {
+  static async createProject(projectPath: string, config?: Partial<ProjectConfig>): Promise<ExtendedProjectInfo> {
     await fs.mkdir(path.join(projectPath, '.whisperide'), { recursive: true });
 
-    const projectConfig: ExtendedProjectConfig = {
+    const projectConfig: ProjectConfig = {
       name: config?.name || path.basename(projectPath),
       type: config?.type || 'local',
       gitInit: config?.gitInit
