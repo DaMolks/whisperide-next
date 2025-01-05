@@ -1,4 +1,4 @@
-import { BrowserWindow } from 'electron';
+const { BrowserWindow } = require('@electron/remote');
 
 export interface GitHubAuthConfig {
   clientId: string;
@@ -28,26 +28,41 @@ export class GitHubAuthService {
         height: 600,
         show: false,
         webPreferences: {
-          nodeIntegration: false
+          nodeIntegration: false,
+          contextIsolation: true
         }
       });
 
       authWindow.loadURL(this.getAuthUrl());
       authWindow.show();
 
-      authWindow.webContents.on('will-redirect', (event, url) => {
-        const urlObj = new URL(url);
-        if (urlObj.protocol === 'whisperide:') {
-          const token = urlObj.searchParams.get('access_token');
-          if (token) {
-            resolve(token);
-            authWindow.close();
+      authWindow.webContents.on('will-redirect', (event: Electron.Event, url: string) => {
+        try {
+          const urlObj = new URL(url);
+          if (urlObj.protocol === 'whisperide:') {
+            const token = urlObj.searchParams.get('access_token');
+            if (token) {
+              resolve(token);
+              authWindow.close();
+            } else {
+              reject(new Error('No access token received'));
+              authWindow.close();
+            }
           }
+        } catch (error) {
+          reject(error instanceof Error ? error : new Error('Failed to process redirect URL'));
+          authWindow.close();
         }
       });
 
       authWindow.on('closed', () => {
         reject(new Error('Authentication window was closed'));
+      });
+
+      // Gérer les erreurs de l'auth
+      authWindow.webContents.on('did-fail-load', (event: Electron.Event, errorCode: number, errorDescription: string) => {
+        reject(new Error(`Authentication failed: ${errorDescription} (${errorCode})`));
+        authWindow.close();
       });
     });
   }
