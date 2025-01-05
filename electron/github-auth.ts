@@ -1,4 +1,4 @@
-import { BrowserWindow, ipcMain } from 'electron';
+const { BrowserWindow, ipcMain } = require('electron');
 import express from 'express';
 import { AddressInfo } from 'net';
 import * as portfinder from 'portfinder';
