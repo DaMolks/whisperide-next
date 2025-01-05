@@ -1,3 +1,10 @@
+export interface GitInfo {
+  isGitRepo: boolean;
+  branch?: string;
+  remotes?: string[];
+  hasChanges?: boolean;
+}
+
 export interface GitStatus {
   staged: string[];
   modified: string[];
