@@ -54,34 +54,35 @@ const Editor: React.FC<EditorProps> = ({ filePath }) => {
         // Définir le modèle dans l'éditeur
         editorRef.current.setModel(model);
 
-        // Si c'est un projet Git, ajouter les décorations de diff
-        const isGitInstalled = await window.electron.git.isInstalled();
-        if (isGitInstalled) {
-          try {
-            const diff = await window.electron.git.getDiff(filePath);
+        // Vérification Git et gestion des décorations
+        try {
+          const diff = await window.electron.git.getDiff(filePath);
+          if (diff) {
             EditorService.registerGitDecorations(editorRef.current, diff);
-          } catch (err) {
-            // Ignorer les erreurs de diff - ce n'est pas critique
-            console.warn('Failed to get git diff:', err);
           }
+        } catch (error) {
+          // Ne pas afficher d'erreur si Git n'est pas installé ou si le fichier n'est pas dans un repo
+          console.debug('Git diff not available:', 
+            error instanceof Error ? error.message : 'Unknown error');
         }
 
         // Configurer la sauvegarde automatique
         model.onDidChangeContent(async () => {
           try {
             await EditorService.saveFileContent(filePath, model.getValue());
-          } catch (err) {
-            if (err instanceof Error) {
-              console.error('Failed to auto-save:', err.message);
-            } else {
-              console.error('Failed to auto-save:', err);
-            }
-            // Optionnel : afficher une notification d'erreur
+          } catch (error) {
+            const errorMessage = error instanceof Error 
+              ? error.message 
+              : 'Failed to save file';
+            console.error('Auto-save failed:', errorMessage);
+            // TODO: Afficher une notification d'erreur à l'utilisateur
           }
         });
-      } catch (err) {
-        const errorMessage = err instanceof Error ? err.message : 'Unknown error';
-        console.error('Failed to load file:', err);
+      } catch (error) {
+        const errorMessage = error instanceof Error 
+          ? error.message 
+          : 'Unknown error';
+        console.error('Failed to load file:', error);
         setError(`Erreur lors du chargement du fichier : ${errorMessage}`);
       } finally {
         setIsLoading(false);
