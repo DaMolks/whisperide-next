@@ -4,6 +4,12 @@ import type { GitBranch, GitCommitInfo, GitInfo, GitStatus } from '@shared/types
 
 const execAsync = promisify(exec);
 
+type RawGitBranch = {
+  current: boolean;
+  name: string;
+  remoteTracking: string | null;
+};
+
 export class GitService {
   static async isGitInstalled(): Promise<boolean> {
     try {
@@ -99,20 +105,22 @@ export class GitService {
   static async getBranches(projectPath: string): Promise<GitBranch[]> {
     const { stdout } = await execAsync('git branch -vv', { cwd: projectPath });
     
-    return stdout.split('\n')
-      .filter(line => line.trim())
-      .map(line => {
-        const match = line.match(/^([*] |  )(\S+)\s+\S+(?:\s+\[(\S+)\])?/);
-        if (!match) return null;
+    const branches: GitBranch[] = [];
+    const lines = stdout.split('\n').filter(line => line.trim());
 
+    for (const line of lines) {
+      const match = line.match(/^([*] |  )(\S+)\s+\S+(?:\s+\[(\S+)\])?/);
+      if (match) {
         const [, isCurrent, name, remoteTracking] = match;
-        return {
+        branches.push({
           current: isCurrent === '* ',
           name,
-          remoteTracking
-        };
-      })
-      .filter((branch): branch is GitBranch => branch !== null);
+          remoteTracking: remoteTracking || undefined
+        });
+      }
+    }
+
+    return branches;
   }
 
   static async createBranch(projectPath: string, name: string): Promise<void> {
