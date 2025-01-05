@@ -1,32 +1,53 @@
-import { BrowserWindow, ipcMain } from 'electron';
+const { BrowserWindow, ipcMain } = require('electron');
+import type { IpcMainEvent } from 'electron';
+import * as path from 'path';
 
 export class WindowManager {
-  private mainWindow: BrowserWindow | null = null;
-  private splashWindow: BrowserWindow | null = null;
+  private static windows: Map<string, BrowserWindow> = new Map();
 
-  constructor() {
-    this.setupWindowControls();
+  static createWindow(name: string, options: Electron.BrowserWindowConstructorOptions): BrowserWindow {
+    const window = new BrowserWindow(options);
+    this.windows.set(name, window);
+    return window;
   }
 
-  private setupWindowControls() {
-    ipcMain.on('window-control', (_, command: string) => {
+  static setupWindowControls() {
+    ipcMain.on('window-control', (_: IpcMainEvent, command: 'minimize' | 'maximize' | 'close') => {
+      const focusedWindow = BrowserWindow.getFocusedWindow();
+      if (!focusedWindow) return;
+
       switch (command) {
         case 'minimize':
-          this.mainWindow?.minimize();
+          focusedWindow.minimize();
           break;
         case 'maximize':
-          if (this.mainWindow?.isMaximized()) {
-            this.mainWindow.unmaximize();
-          } else {
-            this.mainWindow?.maximize();
-          }
+          focusedWindow.isMaximized() 
+            ? focusedWindow.unmaximize() 
+            : focusedWindow.maximize();
           break;
         case 'close':
-          this.mainWindow?.close();
+          focusedWindow.close();
           break;
       }
     });
   }
 
-  // ... reste du code WindowManager
+  static getWindow(name: string): BrowserWindow | undefined {
+    return this.windows.get(name);
+  }
+
+  static closeWindow(name: string) {
+    const window = this.getWindow(name);
+    if (window) {
+      window.close();
+      this.windows.delete(name);
+    }
+  }
+
+  static closeAllWindows() {
+    for (const [name, window] of this.windows) {
+      window.close();
+      this.windows.delete(name);
+    }
+  }
 }
