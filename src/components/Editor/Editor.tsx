@@ -55,9 +55,10 @@ const Editor: React.FC<EditorProps> = ({ filePath }) => {
         editorRef.current.setModel(model);
 
         // Si c'est un projet Git, ajouter les décorations de diff
-        if (window.electron.git.isInstalled()) {
+        const isGitInstalled = await window.electron.git.isInstalled();
+        if (isGitInstalled) {
           try {
-            const diff = await window.electron.git.getDiff(filePath, filePath);
+            const diff = await window.electron.git.getDiff(filePath);
             EditorService.registerGitDecorations(editorRef.current, diff);
           } catch (err) {
             // Ignorer les erreurs de diff - ce n'est pas critique
@@ -70,13 +71,18 @@ const Editor: React.FC<EditorProps> = ({ filePath }) => {
           try {
             await EditorService.saveFileContent(filePath, model.getValue());
           } catch (err) {
-            console.error('Failed to auto-save:', err);
+            if (err instanceof Error) {
+              console.error('Failed to auto-save:', err.message);
+            } else {
+              console.error('Failed to auto-save:', err);
+            }
             // Optionnel : afficher une notification d'erreur
           }
         });
       } catch (err) {
+        const errorMessage = err instanceof Error ? err.message : 'Unknown error';
         console.error('Failed to load file:', err);
-        setError(`Erreur lors du chargement du fichier : ${err.message}`);
+        setError(`Erreur lors du chargement du fichier : ${errorMessage}`);
       } finally {
         setIsLoading(false);
       }
