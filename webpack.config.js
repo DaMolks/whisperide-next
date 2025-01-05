@@ -17,8 +17,7 @@ module.exports = {
     },
     alias: {
       '@': path.resolve(__dirname, 'src'),
-      '@shared': path.resolve(__dirname, 'shared'),
-      '@electron': path.resolve(__dirname, 'electron')
+      '@shared': path.resolve(__dirname, 'shared')
     }
   },
   module: {
@@ -33,7 +32,6 @@ module.exports = {
             compilerOptions: {
               module: 'esnext',
               moduleResolution: 'node',
-              noEmit: false,
               jsx: 'react-jsx'
             }
           }
