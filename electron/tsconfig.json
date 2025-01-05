@@ -1,21 +1,21 @@
 {
+  "extends": "../tsconfig.json",
   "compilerOptions": {
+    "module": "commonjs",
     "target": "ES2020",
-    "module": "CommonJS",
     "outDir": "../dist/electron",
     "rootDir": ".",
-    "strict": true,
+    "sourceMap": true,
     "esModuleInterop": true,
-    "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true,
-    "moduleResolution": "node",
-    "resolveJsonModule": true,
+    "allowJs": true,
+    "noEmit": false,
+    "baseUrl": ".",
     "paths": {
-      "@types/*": ["./types/*"]
+      "@shared/*": ["../shared/*"]
     }
   },
   "include": [
-    "**/*",
-    "types/**/*"
+    ".",
+    "../shared/types"
   ]
 }
