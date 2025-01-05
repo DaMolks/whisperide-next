@@ -1,11 +1,13 @@
 import * as fs from 'fs/promises';
 import * as path from 'path';
-import type { ProjectConfig, ProjectInfo, FileEntry, BaseProjectConfig } from '@shared/types';
+import type { ProjectConfig, ProjectInfo, FileEntry } from '@shared/types';
 import { GitService } from './git';
 
 export interface ExtendedProjectInfo extends ProjectInfo {
   id: string;
-  lastOpened: string; // Override optional
+  lastOpened: string;
+  description?: string;
+  version?: string;
 }
 
 export class ProjectService {
@@ -23,7 +25,7 @@ export class ProjectService {
     try {
       const configPath = path.join(projectPath, '.whisperide', 'config.json');
       const content = await fs.readFile(configPath, 'utf-8');
-      return JSON.parse(content) as ProjectConfig;
+      return JSON.parse(content);
     } catch {
       const defaultConfig: ProjectConfig = {
         name: path.basename(projectPath),
