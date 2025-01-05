@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain, protocol } from 'electron';
+import { app, BrowserWindow, ipcMain, protocol, dialog } from 'electron';
 import type { IpcMainEvent } from 'electron';
 import * as path from 'path';
 import { GitHubAuthService } from './services/github-auth';
@@ -71,6 +71,19 @@ class WhisperIDEApp {
   }
 
   private setupIPC() {
+    // Gestionnaire de sélection de dossier
+    ipcMain.handle('select-directory', async () => {
+      if (!this.mainWindow) return null;
+
+      const result = await dialog.showOpenDialog(this.mainWindow, {
+        properties: ['openDirectory', 'createDirectory'],
+        title: 'Sélectionner un dossier de projet',
+      });
+
+      if (result.canceled) return null;
+      return result.filePaths[0];
+    });
+
     // Gestionnaires GitHub
     ipcMain.on('github-auth', async (event: IpcMainEvent, ...args: any[]) => {
       try {
