@@ -25,12 +25,13 @@ declare namespace Electron {
       devTools?: boolean;
     };
   }
-}
 
-declare module 'electron' {
-  export class BrowserWindow {
-    constructor(options: BrowserWindowConstructorOptions);
-    static getFocusedWindow(): BrowserWindow | null;
+  interface WebContents {
+    send(channel: string, ...args: any[]): void;
+  }
+
+  interface BrowserWindow {
+    webContents: WebContents;
     loadURL(url: string): Promise<void>;
     loadFile(filepath: string): Promise<void>;
     on(event: string, callback: (...args: any[]) => void): void;
@@ -40,10 +41,15 @@ declare module 'electron' {
     unmaximize(): void;
     close(): void;
     isMaximized(): boolean;
-    webContents: {
-      send(channel: string, ...args: any[]): void;
-    };
   }
+}
+
+declare module 'electron' {
+  export interface BrowserWindow extends Electron.BrowserWindow {}
+  export const BrowserWindow: {
+    new(options: Electron.BrowserWindowConstructorOptions): BrowserWindow;
+    getFocusedWindow(): BrowserWindow | null;
+  };
 
   export type BrowserWindowConstructorOptions = Electron.BrowserWindowConstructorOptions;
   export type Event = Electron.Event;
@@ -53,6 +59,14 @@ declare module 'electron' {
   export const ipcMain: {
     on(channel: string, listener: (event: IpcMainEvent, ...args: any[]) => void): void;
     handle(channel: string, listener: (event: IpcMainInvokeEvent, ...args: any[]) => void): void;
+  };
+
+  export const protocol: {
+    registerHttpProtocol(
+      scheme: string,
+      handler: (request: { url: string; referrer: string; method: string; uploadData?: any[] }, 
+               callback: (response: any) => void) => void
+    ): void;
   };
 
   export const app: {
