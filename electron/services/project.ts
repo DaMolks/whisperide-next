@@ -3,24 +3,24 @@ import * as path from 'path';
 import type { ProjectConfig, ProjectInfo } from '@shared/types';
 import { GitService } from './git';
 
-interface ExtendedProjectConfig extends ProjectConfig {
-  gitInit?: boolean;
-  type: 'local' | 'github';
-}
+export interface ExtendedProjectConfig extends ProjectConfig {}
 
-interface ExtendedProjectInfo extends ProjectInfo {
+export interface ExtendedProjectInfo extends ProjectInfo {
   id: string;
-  path: string;
-  name: string;
-  type: 'local' | 'github';
   lastOpened: string;
-  gitInfo?: {
-    branch: string;
-    remote?: string;
-  };
 }
 
 export class ProjectService {
+  static async getRecentProjects(): Promise<ExtendedProjectInfo[]> {
+    const configPath = path.join(process.env.APPDATA || process.env.HOME || '', '.whisperide', 'recent.json');
+    try {
+      const content = await fs.readFile(configPath, 'utf-8');
+      return JSON.parse(content);
+    } catch {
+      return [];
+    }
+  }
+
   static async readProjectSettings(projectPath: string): Promise<ExtendedProjectConfig> {
     try {
       const configPath = path.join(projectPath, '.whisperide', 'config.json');
@@ -65,6 +65,15 @@ export class ProjectService {
         remote: gitInfo.remotes?.[0]
       } : undefined
     };
+  }
+
+  static async listFiles(dirPath: string): Promise<{ path: string; name: string; type: 'file' | 'directory' }[]> {
+    const entries = await fs.readdir(dirPath, { withFileTypes: true });
+    return entries.map(entry => ({
+      path: path.join(dirPath, entry.name),
+      name: entry.name,
+      type: entry.isDirectory() ? 'directory' : 'file'
+    }));
   }
 
   static async openProject(projectPath: string): Promise<ExtendedProjectInfo> {
