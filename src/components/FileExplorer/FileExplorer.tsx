@@ -90,7 +90,7 @@ const FileTreeItem: React.FC<FileTreeItemProps> = ({
               onSelect={onSelect}
               onContextMenu={onContextMenu}
             />
-          )}
+          ))
         </Box>
       )}
     </Box>
@@ -104,9 +104,9 @@ export const FileExplorer: React.FC<FileExplorerProps> = ({
   const [files, setFiles] = useState<FileEntry[]>([]);
   const [selectedPath, setSelectedPath] = useState<string | null>(null);
   const [contextMenu, setContextMenu] = useState<{
-    mouseX: number;
-    mouseY: number;
-    entry?: FileEntry;
+    mouseX: number,
+    mouseY: number,
+    entry?: FileEntry
   } | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
