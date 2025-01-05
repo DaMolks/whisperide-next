@@ -49,7 +49,7 @@ export class ProjectService {
       JSON.stringify(projectConfig, null, 2)
     );
 
-    if (config?.gitInit) {
+    if (projectConfig.gitInit) {
       await GitService.init(projectPath);
     }
 
@@ -60,9 +60,9 @@ export class ProjectService {
       path: projectPath,
       name: projectConfig.name,
       type: projectConfig.type,
+      description: projectConfig.description,
       version: projectConfig.version,
       lastOpened: new Date().toISOString(),
-      description: projectConfig.description,
       gitInfo: gitInfo.isGitRepo ? {
         branch: gitInfo.branch || 'main',
         remote: gitInfo.remotes?.[0]
@@ -88,8 +88,8 @@ export class ProjectService {
       path: projectPath,
       name: config.name,
       type: config.type,
-      version: config.version,
       description: config.description,
+      version: config.version,
       lastOpened: new Date().toISOString(),
       gitInfo: gitInfo.isGitRepo ? {
         branch: gitInfo.branch || 'main',
