@@ -1,60 +1,70 @@
 import { v4 as uuidv4 } from 'uuid';
-import { ProjectInfo, ProjectSettings } from '../../shared/types';
+import { ProjectInfo, ProjectConfig } from '@shared/types';
+
+interface GitHubRepo {
+  name: string;
+  html_url: string;
+  default_branch: string;
+}
 
 export class ProjectManager {
   // Ouvre un projet local
   static async openLocalProject(path: string): Promise<ProjectInfo> {
-    const settings = await window.electron.readProjectSettings(path);
-    const projectInfo: ProjectInfo = {
-      id: uuidv4(),
-      name: settings.name || path.split('/').pop() || 'Unnamed Project',
-      path,
-      type: 'local',
-      lastOpened: new Date().toISOString()
-    };
-    
-    await this.saveProjectToRecents(projectInfo);
-    return projectInfo;
+    const project = await window.electron.projects.open(path);
+    await this.saveProjectToRecents(project);
+    return project;
   }
 
   // Clone et ouvre un projet GitHub
-  static async cloneAndOpenGithubRepo(repo: any, token: string): Promise<ProjectInfo> {
-    const projectPath = await window.electron.cloneRepository({
-      url: repo.html_url,
-      token,
-      path: await window.electron.getProjectsDirectory()
-    });
+  static async cloneAndOpenGithubRepo(repo: GitHubRepo, token: string): Promise<ProjectInfo> {
+    // Récupère le chemin racine des projets
+    const projectsDir = await window.electron.projects.selectDirectory();
+    if (!projectsDir) {
+      throw new Error('No directory selected');
+    }
 
-    const projectInfo: ProjectInfo = {
-      id: uuidv4(),
+    // Crée le projet
+    const config: ProjectConfig = {
       name: repo.name,
-      path: projectPath,
       type: 'github',
-      githubUrl: repo.html_url,
-      defaultBranch: repo.default_branch,
-      lastOpened: new Date().toISOString()
+      gitInit: true,
+      gitRemote: {
+        url: repo.html_url,
+        token,
+        branch: repo.default_branch
+      }
     };
 
-    await this.saveProjectToRecents(projectInfo);
-    return projectInfo;
+    const project = await window.electron.projects.create(projectsDir, config);
+    await this.saveProjectToRecents(project);
+    return project;
   }
 
   // Récupère les projets récents
   static async getRecentProjects(): Promise<ProjectInfo[]> {
     try {
-      return await window.electron.getRecentProjects();
+      return await window.electron.projects.getRecent();
     } catch (error) {
       console.error('Error loading recent projects:', error);
       return [];
     }
   }
 
+  // Filtre les projets récents par type
+  static async getRecentProjectsByType(type: 'local' | 'github'): Promise<ProjectInfo[]> {
+    const projects = await this.getRecentProjects();
+    return projects.filter(project => project.type === type);
+  }
+
   // Sauvegarde un projet dans les récents
   private static async saveProjectToRecents(project: ProjectInfo): Promise<void> {
     try {
-      await window.electron.addRecentProject(project);
+      // La gestion des projets récents est maintenant gérée par le main process
+      // via le preload
+      await window.electron.projects.open(project.path);
     } catch (error) {
       console.error('Error saving recent project:', error);
+      throw error;
     }
   }
 }
