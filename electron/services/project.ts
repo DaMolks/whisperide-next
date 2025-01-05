@@ -5,11 +5,6 @@ import { GitService } from './git';
 
 export interface ExtendedProjectInfo extends ProjectInfo {
   id: string;
-  lastOpened: string;
-  gitInfo?: {
-    branch: string;
-    remote?: string;
-  };
 }
 
 export class ProjectService {
@@ -45,7 +40,8 @@ export class ProjectService {
       name: config?.name || path.basename(projectPath),
       type: config?.type || 'local',
       description: config?.description || '',
-      version: config?.version || '0.1.0'
+      version: config?.version || '0.1.0',
+      gitInit: config?.gitInit
     };
 
     await fs.writeFile(
@@ -64,9 +60,9 @@ export class ProjectService {
       path: projectPath,
       name: projectConfig.name,
       type: projectConfig.type,
-      description: projectConfig.description,
       version: projectConfig.version,
       lastOpened: new Date().toISOString(),
+      description: projectConfig.description,
       gitInfo: gitInfo.isGitRepo ? {
         branch: gitInfo.branch || 'main',
         remote: gitInfo.remotes?.[0]
@@ -92,8 +88,8 @@ export class ProjectService {
       path: projectPath,
       name: config.name,
       type: config.type,
-      description: config.description,
       version: config.version,
+      description: config.description,
       lastOpened: new Date().toISOString(),
       gitInfo: gitInfo.isGitRepo ? {
         branch: gitInfo.branch || 'main',
