@@ -1,5 +1,5 @@
 const { app, BrowserWindow } = require('electron');
-import { initialize, enable } = require('@electron/remote/main');
+const { initialize, enable } = require('@electron/remote/main');
 import type { Event } from 'electron';
 
 // Initialiser electron/remote
