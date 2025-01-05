@@ -1,43 +1,39 @@
-import { BrowserWindow } from 'electron';
+const { BrowserWindow } = require('electron');
+import type { Event } from 'electron';
 
 export class GitHubAuthService {
-  private static readonly CLIENT_ID = 'Ov23liVipHbxEjnSpNXe';
-  private static readonly SCOPES = ['repo', 'user'];
-  private static readonly REDIRECT_URI = 'whisperide://oauth/callback';
-
-  public static getAuthUrl(): string {
-    const params = new URLSearchParams({
-      client_id: this.CLIENT_ID,
-      redirect_uri: this.REDIRECT_URI,
-      scope: this.SCOPES.join(' '),
-      response_type: 'token'
-    });
-
-    return `https://github.com/login/oauth/authorize?${params.toString()}`;
-  }
-
-  public static async authorize(): Promise<string> {
+  static async authorize(): Promise<string> {
     return new Promise((resolve, reject) => {
       const authWindow = new BrowserWindow({
         width: 800,
         height: 600,
         show: false,
         webPreferences: {
-          nodeIntegration: false
+          nodeIntegration: false,
+          contextIsolation: true
         }
       });
 
-      authWindow.loadURL(this.getAuthUrl());
+      const authUrl = this.getAuthUrl();
+      authWindow.loadURL(authUrl);
       authWindow.show();
 
-      authWindow.webContents.on('will-redirect', (event, url) => {
-        const urlObj = new URL(url);
-        if (urlObj.protocol === 'whisperide:') {
-          const token = urlObj.searchParams.get('access_token');
-          if (token) {
-            resolve(token);
-            authWindow.close();
+      authWindow.webContents.on('will-redirect', (event: Event, redirectUrl: string) => {
+        try {
+          const urlObj = new URL(redirectUrl);
+          if (urlObj.protocol === 'whisperide:') {
+            const token = urlObj.searchParams.get('access_token');
+            if (token) {
+              resolve(token);
+              authWindow.close();
+            } else {
+              reject(new Error('No access token received'));
+              authWindow.close();
+            }
           }
+        } catch (error) {
+          reject(error instanceof Error ? error : new Error('Failed to process redirect URL'));
+          authWindow.close();
         }
       });
 
@@ -45,5 +41,20 @@ export class GitHubAuthService {
         reject(new Error('Authentication window was closed'));
       });
     });
+  }
+
+  private static getAuthUrl(): string {
+    const clientId = process.env.GITHUB_CLIENT_ID;
+    if (!clientId) {
+      throw new Error('GitHub client ID is not configured');
+    }
+
+    const params = new URLSearchParams({
+      client_id: clientId,
+      scope: 'repo user',
+      response_type: 'token'
+    });
+
+    return `https://github.com/login/oauth/authorize?${params.toString()}`;
   }
 }
