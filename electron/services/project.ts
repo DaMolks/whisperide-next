@@ -1,11 +1,11 @@
 import * as fs from 'fs/promises';
 import * as path from 'path';
-import type { ProjectConfig, ProjectInfo, FileEntry, ProjectType } from '@shared/types';
+import type { ProjectConfig, ProjectInfo, FileEntry } from '@shared/types';
 import { GitService } from './git';
 
-export interface ExtendedProjectInfo extends Omit<ProjectInfo, 'lastOpened'> {
+export interface ExtendedProjectInfo extends ProjectInfo {
   id: string;
-  lastOpened: string; // Override to make required
+  lastOpened: string; // Override optional to required
 }
 
 export class ProjectService {
@@ -27,7 +27,7 @@ export class ProjectService {
     } catch {
       const defaultConfig: ProjectConfig = {
         name: path.basename(projectPath),
-        type: 'local' as ProjectType,
+        type: 'local',
         description: '',
         version: '0.1.0'
       };
@@ -43,7 +43,8 @@ export class ProjectService {
       type: config?.type || 'local',
       description: config?.description || '',
       version: config?.version || '0.1.0',
-      gitInit: config?.gitInit
+      gitInit: config?.gitInit,
+      gitRemote: config?.gitRemote
     };
 
     await fs.writeFile(
@@ -57,7 +58,7 @@ export class ProjectService {
 
     const gitInfo = await GitService.getGitInfo(projectPath);
     
-    const info: ExtendedProjectInfo = {
+    return {
       id: Math.random().toString(36).substring(7),
       path: projectPath,
       name: projectConfig.name,
@@ -70,8 +71,6 @@ export class ProjectService {
         remote: gitInfo.remotes?.[0]
       } : undefined
     };
-
-    return info;
   }
 
   static async listFiles(dirPath: string): Promise<FileEntry[]> {
@@ -87,7 +86,7 @@ export class ProjectService {
     const config = await this.readProjectSettings(projectPath);
     const gitInfo = await GitService.getGitInfo(projectPath);
 
-    const info: ExtendedProjectInfo = {
+    return {
       id: Math.random().toString(36).substring(7),
       path: projectPath,
       name: config.name,
@@ -100,7 +99,5 @@ export class ProjectService {
         remote: gitInfo.remotes?.[0]
       } : undefined
     };
-
-    return info;
   }
 }
