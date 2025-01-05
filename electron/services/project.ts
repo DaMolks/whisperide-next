@@ -1,11 +1,17 @@
 import * as fs from 'fs/promises';
 import * as path from 'path';
-import type { ProjectConfig, ProjectInfo, FileEntry } from '../../shared/types';
+import type {
+  ProjectConfig,
+  ProjectInfo,
+  FileEntry,
+  ProjectType,
+  BaseConfig
+} from '@shared/types';
 import { GitService } from './git';
 
-export interface ExtendedProjectInfo extends ProjectInfo {
+export interface ExtendedProjectInfo extends Omit<ProjectInfo, 'lastOpened'> {
   id: string;
-  lastOpened: string;
+  lastOpened: string; // Make it required
 }
 
 export class ProjectService {
