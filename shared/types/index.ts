@@ -1,5 +1,7 @@
 export interface ProjectConfig {
   name: string;
+  description?: string;
+  version?: string;
   type: 'local' | 'github';
   gitInit?: boolean;
   gitRemote?: {
