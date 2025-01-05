@@ -3,11 +3,10 @@ import * as path from 'path';
 import type { ProjectConfig, ProjectInfo } from '@shared/types';
 import { GitService } from './git';
 
-export interface ExtendedProjectConfig extends ProjectConfig {}
+type ExtendedProjectConfig = ProjectConfig;
 
-export interface ExtendedProjectInfo extends ProjectInfo {
+interface ExtendedProjectInfo extends ProjectInfo {
   id: string;
-  lastOpened: string;
 }
 
 export class ProjectService {
@@ -34,7 +33,7 @@ export class ProjectService {
     }
   }
 
-  static async createProject(projectPath: string, config?: ExtendedProjectConfig): Promise<ExtendedProjectInfo> {
+  static async createProject(projectPath: string, config?: Partial<ExtendedProjectConfig>): Promise<ExtendedProjectInfo> {
     await fs.mkdir(path.join(projectPath, '.whisperide'), { recursive: true });
 
     const projectConfig: ExtendedProjectConfig = {
@@ -67,7 +66,7 @@ export class ProjectService {
     };
   }
 
-  static async listFiles(dirPath: string): Promise<{ path: string; name: string; type: 'file' | 'directory' }[]> {
+  static async listFiles(dirPath: string): Promise<FileEntry[]> {
     const entries = await fs.readdir(dirPath, { withFileTypes: true });
     return entries.map(entry => ({
       path: path.join(dirPath, entry.name),
