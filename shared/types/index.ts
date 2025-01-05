@@ -1,8 +1,11 @@
-export interface ProjectConfig {
+export interface BaseProjectConfig {
   name: string;
   type: 'local' | 'github';
   description?: string;
   version?: string;
+}
+
+export interface GitConfig {
   gitInit?: boolean;
   gitRemote?: {
     url: string;
@@ -11,13 +14,17 @@ export interface ProjectConfig {
   };
 }
 
-export interface ProjectInfo extends Pick<ProjectConfig, 'name' | 'type' | 'description' | 'version'> {
+export interface ProjectConfig extends BaseProjectConfig, GitConfig {}
+
+export interface GitInfo {
+  branch: string;
+  remote?: string;
+}
+
+export interface ProjectInfo extends BaseProjectConfig {
   path: string;
   lastOpened?: string;
-  gitInfo?: {
-    branch: string;
-    remote?: string;
-  };
+  gitInfo?: GitInfo;
 }
 
 export interface FileEntry {
