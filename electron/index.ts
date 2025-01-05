@@ -1,15 +1,14 @@
 const { app, BrowserWindow } = require('electron');
-const { initialize, enable } = require('@electron/remote/main');
+import { initialize, enable } = require('@electron/remote/main');
+import type { Event } from 'electron';
 
 // Initialiser electron/remote
 initialize();
 
 app.whenReady().then(() => {
-  // Configure les fenêtres pour utiliser remote
-  app.on('browser-window-created', (_, window) => {
+  app.on('browser-window-created', (_: Event, window: typeof BrowserWindow) => {
     enable(window);
   });
 });
 
-// Le reste de la configuration Electron reste inchangé
 require('./main');
