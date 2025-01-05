@@ -1,55 +1,30 @@
-import { app, BrowserWindow, ipcMain } from 'electron';
+const { app, BrowserWindow } = require('electron');
 import * as path from 'path';
-import { config } from 'dotenv';
-import { setupProjectHandlers } from './project';
-import { setupGithubAuth } from './github-auth';
 
-// Charger les variables d'environnement
-config();
+type Process = NodeJS.Process & {
+  defaultApp?: boolean;
+};
 
-// Vérifier les variables d'environnement requises
-if (!process.env.GITHUB_CLIENT_ID || !process.env.GITHUB_CLIENT_SECRET) {
-  console.error('Missing GitHub OAuth credentials in .env file');
-  process.exit(1);
-}
+declare const process: Process;
 
-// Enregistrer le protocole personnalisé
-if (process.defaultApp) {
-  app.setAsDefaultProtocolClient('whisperide', process.execPath, [path.resolve(process.argv[1])]);
-} else {
-  app.setAsDefaultProtocolClient('whisperide');
-}
+let mainWindow: typeof BrowserWindow | null = null;
 
-let mainWindow: BrowserWindow | null = null;
-
-function createWindow() {
-  mainWindow = new BrowserWindow({
-    width: 1200,
-    height: 800,
-    frame: false,
-    webPreferences: {
-      nodeIntegration: true,
-      contextIsolation: true,
-      preload: path.join(__dirname, '../preload.js')
-    }
-  });
-
-  if (process.env.NODE_ENV === 'development') {
-    mainWindow.loadURL('http://localhost:8080');
-    mainWindow.webContents.openDevTools();
-  } else {
-    mainWindow.loadFile('index.html');
+app.whenReady().then(async () => {
+  if (!app.requestSingleInstanceLock()) {
+    app.quit();
+    return;
   }
 
-  mainWindow.on('closed', () => {
-    mainWindow = null;
-  });
-}
+  // Différence entre développement et production
+  if (process.defaultApp) {
+    // Mode développement
+    app.setAsDefaultProtocolClient('whisperide');
+  } else {
+    // Mode production
+    app.setAsDefaultProtocolClient('whisperide', process.execPath);
+  }
 
-app.whenReady().then(() => {
   createWindow();
-  setupProjectHandlers();
-  setupGithubAuth();
 });
 
 app.on('window-all-closed', () => {
@@ -64,27 +39,35 @@ app.on('activate', () => {
   }
 });
 
-// Gestion des arguments en ligne de commande pour le protocole personnalisé
-app.on('second-instance', (event, commandLine) => {
+app.on('second-instance', (_: Electron.Event, commandLine: string[]) => {
   if (mainWindow) {
     if (mainWindow.isMinimized()) mainWindow.restore();
     mainWindow.focus();
 
-    // Gérer l'URL de redirection
-    const url = commandLine.find(arg => arg.startsWith('whisperide://'));
+    const url = commandLine.find((arg: string) => arg.startsWith('whisperide://'));
     if (url) {
-      app.emit('open-url', event, url);
+      mainWindow.webContents.send('url-open', url);
     }
   }
 });
 
-// Contrôles de fenêtre
-ipcMain.on('window-minimize', () => mainWindow?.minimize());
-ipcMain.on('window-maximize', () => {
-  if (mainWindow?.isMaximized()) {
-    mainWindow.unmaximize();
+function createWindow() {
+  mainWindow = new BrowserWindow({
+    width: 1200,
+    height: 800,
+    minWidth: 1000,
+    minHeight: 600,
+    webPreferences: {
+      nodeIntegration: false,
+      contextIsolation: true,
+      preload: path.join(__dirname, '../preload/index.js')
+    }
+  });
+
+  if (process.env.NODE_ENV === 'development') {
+    mainWindow.loadURL('http://localhost:3000');
+    mainWindow.webContents.openDevTools();
   } else {
-    mainWindow?.maximize();
+    mainWindow.loadFile(path.join(__dirname, '../renderer/index.html'));
   }
-});
-ipcMain.on('window-close', () => mainWindow?.close());
+}
