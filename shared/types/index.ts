@@ -1,28 +1,36 @@
-export interface BaseProjectConfig {
+export type ProjectType = 'local' | 'github';
+
+export interface BaseConfig {
   name: string;
-  type: 'local' | 'github';
   description?: string;
   version?: string;
 }
 
-export interface GitConfig {
-  gitInit?: boolean;
-  gitRemote?: {
-    url: string;
-    token: string;
-    branch: string;
-  };
+export interface GitRemoteConfig {
+  url: string;
+  token: string;
+  branch: string;
 }
 
-export interface ProjectConfig extends BaseProjectConfig, GitConfig {}
+export interface GitConfig {
+  gitInit?: boolean;
+  gitRemote?: GitRemoteConfig;
+}
 
 export interface GitInfo {
   branch: string;
   remote?: string;
 }
 
-export interface ProjectInfo extends BaseProjectConfig {
+export interface ProjectConfig extends BaseConfig {
+  type: ProjectType;
+  gitInit?: boolean;
+  gitRemote?: GitRemoteConfig;
+}
+
+export interface ProjectInfo extends BaseConfig {
   path: string;
+  type: ProjectType;
   lastOpened?: string;
   gitInfo?: GitInfo;
 }
