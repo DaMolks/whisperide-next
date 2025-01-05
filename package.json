@@ -14,6 +14,7 @@
     "build:electron": "tsc -p electron/tsconfig.json"
   },
   "dependencies": {
+    "@electron/remote": "^2.1.2",
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
     "@mui/icons-material": "^5.14.0",
