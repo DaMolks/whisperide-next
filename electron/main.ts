@@ -2,6 +2,7 @@ import { app, BrowserWindow, ipcMain, protocol } from 'electron';
 import type { IpcMainEvent } from 'electron';
 import * as path from 'path';
 import { GitHubAuthService } from './services/github-auth';
+import { ProjectService } from './services/project';
 
 interface ProtocolRequest {
   url: string;
@@ -70,6 +71,7 @@ class WhisperIDEApp {
   }
 
   private setupIPC() {
+    // Gestionnaires GitHub
     ipcMain.on('github-auth', async (event: IpcMainEvent, ...args: any[]) => {
       try {
         const token = await GitHubAuthService.authorize();
@@ -83,6 +85,7 @@ class WhisperIDEApp {
       }
     });
 
+    // Gestionnaires de fenêtre
     ipcMain.on('window-control', (event: IpcMainEvent, command: string) => {
       switch (command) {
         case 'minimize':
@@ -98,6 +101,34 @@ class WhisperIDEApp {
         case 'close':
           this.mainWindow?.close();
           break;
+      }
+    });
+
+    // Gestionnaires de projets
+    ipcMain.handle('get-recent-projects', async () => {
+      try {
+        return await ProjectService.getRecentProjects();
+      } catch (error) {
+        console.error('Error getting recent projects:', error);
+        throw error;
+      }
+    });
+
+    ipcMain.handle('create-project', async (event, { path, config }: { path: string; config: any }) => {
+      try {
+        return await ProjectService.createProject(path, config);
+      } catch (error) {
+        console.error('Error creating project:', error);
+        throw error;
+      }
+    });
+
+    ipcMain.handle('open-project', async (event, path: string) => {
+      try {
+        return await ProjectService.openProject(path);
+      } catch (error) {
+        console.error('Error opening project:', error);
+        throw error;
       }
     });
   }
