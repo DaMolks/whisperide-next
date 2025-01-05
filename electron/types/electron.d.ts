@@ -74,8 +74,6 @@ declare module 'electron' {
   };
 
   export namespace Electron {
-    export type Event = Event;
-    export type IpcMainEvent = IpcMainEvent;
-    export type IpcMainInvokeEvent = IpcMainInvokeEvent;
+    export { Event, IpcMainEvent, IpcMainInvokeEvent, BrowserWindow, BrowserWindowConstructorOptions };
   }
 }
