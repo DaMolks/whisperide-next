@@ -31,6 +31,7 @@ declare module 'electron' {
 
   export interface WebContents {
     send(channel: string, ...args: any[]): void;
+    openDevTools(): void;
   }
 
   export interface BrowserWindow {
@@ -61,6 +62,7 @@ declare module 'electron' {
     isDefaultProtocolClient(protocol: string): boolean;
     setAsDefaultProtocolClient(protocol: string, execPath?: string, args?: string[]): boolean;
     whenReady(): Promise<void>;
+    requestSingleInstanceLock(): boolean;
   };
 
   export const ipcMain: {
