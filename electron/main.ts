@@ -1,4 +1,5 @@
 import { app, BrowserWindow, ipcMain, protocol } from 'electron';
+import type { IpcMainEvent } from 'electron';
 import * as path from 'path';
 import { GitHubAuthService } from './services/github-auth';
 
@@ -69,7 +70,7 @@ class WhisperIDEApp {
   }
 
   private setupIPC() {
-    ipcMain.on('github-auth', async (event: Electron.IpcMainEvent) => {
+    ipcMain.on('github-auth', async (event: IpcMainEvent, ...args: any[]) => {
       try {
         const token = await GitHubAuthService.authorize();
         event.reply('github-auth-complete', { token });
@@ -82,7 +83,7 @@ class WhisperIDEApp {
       }
     });
 
-    ipcMain.on('window-control', (_: Electron.IpcMainEvent, command: string) => {
+    ipcMain.on('window-control', (event: IpcMainEvent, command: string) => {
       switch (command) {
         case 'minimize':
           this.mainWindow?.minimize();
