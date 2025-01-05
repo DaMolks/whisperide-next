@@ -36,7 +36,8 @@ export class GitHubAuthService {
       authWindow.loadURL(this.getAuthUrl());
       authWindow.show();
 
-      authWindow.webContents.on('will-redirect', (event: Electron.Event, url: string) => {
+      // Gérer la redirection OAuth
+      authWindow.webContents.on('will-redirect', (event: Event, url: string) => {
         try {
           const urlObj = new URL(url);
           if (urlObj.protocol === 'whisperide:') {
@@ -57,12 +58,6 @@ export class GitHubAuthService {
 
       authWindow.on('closed', () => {
         reject(new Error('Authentication window was closed'));
-      });
-
-      // Gérer les erreurs de l'auth
-      authWindow.webContents.on('did-fail-load', (event: Electron.Event, errorCode: number, errorDescription: string) => {
-        reject(new Error(`Authentication failed: ${errorDescription} (${errorCode})`));
-        authWindow.close();
       });
     });
   }
