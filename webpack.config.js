@@ -14,6 +14,11 @@ module.exports = {
     fallback: {
       path: false,
       fs: false
+    },
+    alias: {
+      '@': path.resolve(__dirname, 'src'),
+      '@shared': path.resolve(__dirname, 'shared'),
+      '@electron': path.resolve(__dirname, 'electron')
     }
   },
   module: {
@@ -21,7 +26,18 @@ module.exports = {
       {
         test: /\.(ts|tsx)$/,
         exclude: /node_modules/,
-        use: 'ts-loader'
+        use: {
+          loader: 'ts-loader',
+          options: {
+            transpileOnly: true,
+            compilerOptions: {
+              module: 'esnext',
+              moduleResolution: 'node',
+              noEmit: false,
+              jsx: 'react-jsx'
+            }
+          }
+        }
       },
       {
         test: /\.css$/,
