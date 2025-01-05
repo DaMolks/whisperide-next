@@ -13,6 +13,7 @@ export interface ProjectInfo {
   path: string;
   name: string;
   type: 'local' | 'github';
+  lastOpened?: string;
   gitInfo?: {
     branch: string;
     remote?: string;
@@ -27,5 +28,4 @@ export interface FileEntry {
   gitStatus?: 'modified' | 'untracked' | 'staged' | null;
 }
 
-// Re-exporting from other files
 export * from './git';
