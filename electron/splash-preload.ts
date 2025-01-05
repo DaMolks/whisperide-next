@@ -1,4 +1,18 @@
-import { contextBridge } from 'electron';
+const { contextBridge } = require('electron');
 
-// Placeholder for future splash screen specific preload logic
-contextBridge.exposeInMainWorld('splashScreen', {});
+declare global {
+  interface Window {
+    splash: {
+      updateStatus: (message: string) => void;
+    };
+  }
+}
+
+contextBridge.exposeInMainWorld('splash', {
+  updateStatus: (message: string) => {
+    const statusElement = document.getElementById('status');
+    if (statusElement) {
+      statusElement.textContent = message;
+    }
+  }
+});
