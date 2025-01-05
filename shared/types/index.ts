@@ -1,5 +1,13 @@
-export * from './git';
-export * from './file-system';
+export interface ProjectConfig {
+  name: string;
+  type: 'local' | 'github';
+  gitInit?: boolean;
+  gitRemote?: {
+    url: string;
+    token: string;
+    branch: string;
+  };
+}
 
 export interface ProjectInfo {
   path: string;
@@ -11,8 +19,13 @@ export interface ProjectInfo {
   };
 }
 
-export interface ProjectConfig {
+export interface FileEntry {
   name: string;
-  type: 'local' | 'github';
-  gitInit?: boolean;
+  path: string;
+  type: 'file' | 'directory';
+  children?: FileEntry[];
+  gitStatus?: 'modified' | 'untracked' | 'staged' | null;
 }
+
+// Re-exporting from other files
+export * from './git';
