@@ -2,10 +2,13 @@ declare module 'electron' {
   export interface Event {
     preventDefault(): void;
     sender: any;
+    frameId: number;
+    processId: number;
+    returnValue: any;
   }
 
   export interface IpcMainEvent extends Event {
-    reply: (channel: string, ...args: any[]) => void;
+    reply(channel: string, ...args: any[]): void;
   }
 
   export interface IpcMainInvokeEvent extends IpcMainEvent {}
@@ -69,4 +72,10 @@ declare module 'electron' {
                callback: (response: any) => void) => void
     ): void;
   };
+
+  export namespace Electron {
+    export type Event = Event;
+    export type IpcMainEvent = IpcMainEvent;
+    export type IpcMainInvokeEvent = IpcMainInvokeEvent;
+  }
 }
