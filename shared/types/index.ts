@@ -17,22 +17,18 @@ export interface GitConfig {
   gitRemote?: GitRemoteConfig;
 }
 
-export interface GitInfo {
-  branch: string;
-  remote?: string;
-}
+import { GitInfo } from './git';
+export { GitInfo };
 
-export interface ProjectConfig extends BaseConfig {
+export interface ProjectConfig extends BaseConfig, GitConfig {
   type: ProjectType;
-  gitInit?: boolean;
-  gitRemote?: GitRemoteConfig;
 }
 
 export interface ProjectInfo extends BaseConfig {
   path: string;
   type: ProjectType;
   lastOpened?: string;
-  gitInfo?: GitInfo;
+  gitInfo?: Pick<GitInfo, 'branch' | 'remotes'>;
 }
 
 export interface FileEntry {
