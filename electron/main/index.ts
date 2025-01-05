@@ -1,4 +1,5 @@
-const { app, BrowserWindow } = require('electron');
+import { app, BrowserWindow } from 'electron';
+import type { Event } from 'electron';
 import * as path from 'path';
 
 type Process = NodeJS.Process & {
@@ -7,7 +8,7 @@ type Process = NodeJS.Process & {
 
 declare const process: Process;
 
-let mainWindow: typeof BrowserWindow | null = null;
+let mainWindow: BrowserWindow | null = null;
 
 app.whenReady().then(async () => {
   if (!app.requestSingleInstanceLock()) {
@@ -39,9 +40,11 @@ app.on('activate', () => {
   }
 });
 
-app.on('second-instance', (_: Electron.Event, commandLine: string[]) => {
+app.on('second-instance', (_: Event, commandLine: string[]) => {
   if (mainWindow) {
-    if (mainWindow.isMinimized()) mainWindow.restore();
+    if (mainWindow.isMinimized()) {
+      mainWindow.restore();
+    }
     mainWindow.focus();
 
     const url = commandLine.find((arg: string) => arg.startsWith('whisperide://'));
