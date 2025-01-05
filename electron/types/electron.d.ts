@@ -8,9 +8,16 @@ declare namespace Electron {
     sender: any;
   }
 
+  interface Event {
+    preventDefault(): void;
+    sender: any;
+  }
+
   interface BrowserWindowConstructorOptions {
     width?: number;
     height?: number;
+    minWidth?: number;
+    minHeight?: number;
     frame?: boolean;
     show?: boolean;
     backgroundColor?: string;
@@ -21,33 +28,25 @@ declare namespace Electron {
       devTools?: boolean;
     };
   }
-
-  interface Process extends NodeJS.Process {
-    defaultApp?: boolean;
-  }
 }
 
 declare module 'electron' {
-  const app: {
+  export type IpcMainEvent = Electron.IpcMainEvent;
+  export type IpcMainInvokeEvent = Electron.IpcMainInvokeEvent;
+  export type Event = Electron.Event;
+  export type BrowserWindowConstructorOptions = Electron.BrowserWindowConstructorOptions;
+
+  export const app: {
     on(event: string, listener: (...args: any[]) => void): void;
     quit(): void;
+    getPath(name: string): string;
     isDefaultProtocolClient(protocol: string): boolean;
-    setAsDefaultProtocolClient(protocol: string): void;
+    setAsDefaultProtocolClient(protocol: string, execPath?: string, args?: string[]): boolean;
+    whenReady(): Promise<void>;
   };
 
-  const BrowserWindow: {
-    new(options: Electron.BrowserWindowConstructorOptions): BrowserWindow;
-    getFocusedWindow(): BrowserWindow | null;
+  export const BrowserWindow: {
+    new(options: Electron.BrowserWindowConstructorOptions): typeof BrowserWindow;
+    getFocusedWindow(): typeof BrowserWindow | null;
   };
-
-  const ipcMain: {
-    on(channel: string, listener: (event: Electron.IpcMainEvent, ...args: any[]) => void): void;
-    handle(channel: string, listener: (event: Electron.IpcMainInvokeEvent, ...args: any[]) => Promise<any>): void;
-  };
-
-  const dialog: {
-    showOpenDialog(options: any): Promise<{ canceled: boolean; filePaths: string[] }>;
-  };
-
-  export { app, BrowserWindow, ipcMain, dialog };
 }
