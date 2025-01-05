@@ -1,7 +1,7 @@
-import { contextBridge, ipcRenderer } from 'electron';
-import type { ProjectInfo, ProjectConfig } from './services/project-manager';
-import type { GitInfo, GitStatus, GitBranch, GitCommitInfo } from './services/git';
-import type { FileEntry } from './services/file-system';
+const { contextBridge, ipcRenderer } = require('electron');
+import type { ProjectInfo, ProjectConfig } from '../shared/types';
+import type { GitInfo, GitStatus, GitBranch, GitCommitInfo } from '../shared/types';
+import type { FileEntry } from '../shared/types';
 
 contextBridge.exposeInMainWorld('electron', {
   // Contrôles de fenêtre
@@ -9,6 +9,10 @@ contextBridge.exposeInMainWorld('electron', {
   minimize: () => ipcRenderer.send('window-minimize'),
   maximize: () => ipcRenderer.send('window-maximize'),
   
+  githubAuth: {
+    login: () => ipcRenderer.invoke('github-auth-login') as Promise<string>
+  },
+
   // Gestion de projet
   projects: {
     getRecent: () => ipcRenderer.invoke('get-recent-projects') as Promise<ProjectInfo[]>,
@@ -50,24 +54,27 @@ contextBridge.exposeInMainWorld('electron', {
       ipcRenderer.invoke('read-file', path) as Promise<string>,
     write: (path: string, content: string) => 
       ipcRenderer.invoke('write-file', path, content) as Promise<void>,
-    createFile: (path: string) => 
+    createFile: (path: string) =>
       ipcRenderer.invoke('create-file', path) as Promise<void>,
-    createDirectory: (path: string) => 
+    createDirectory: (path: string) =>
       ipcRenderer.invoke('create-directory', path) as Promise<void>,
-    rename: (oldPath: string, newPath: string) => 
+    rename: (oldPath: string, newPath: string) =>
       ipcRenderer.invoke('rename-file', oldPath, newPath) as Promise<void>,
-    delete: (path: string) => 
+    delete: (path: string) =>
       ipcRenderer.invoke('delete-file', path) as Promise<void>
   }
 });
 
-// Types pour TypeScript
+// Types pour le window global
 declare global {
   interface Window {
     electron: {
       close: () => void;
       minimize: () => void;
       maximize: () => void;
+      githubAuth: {
+        login: () => Promise<string>;
+      };
       projects: {
         getRecent: () => Promise<ProjectInfo[]>;
         open: (path: string) => Promise<ProjectInfo>;
