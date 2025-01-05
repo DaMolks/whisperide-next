@@ -20,8 +20,6 @@ export interface GitConfig {
 
 export interface ProjectConfig extends BaseConfig, GitConfig {}
 
-// On importe tout d'un coup pour éviter les conflits
-from './git';
 export interface ProjectInfo extends BaseConfig {
   path: string;
   lastOpened?: string;
@@ -39,5 +37,4 @@ export interface FileEntry {
   gitStatus?: 'modified' | 'untracked' | 'staged' | null;
 }
 
-// Exportation unique des types git
 export * from './git';
