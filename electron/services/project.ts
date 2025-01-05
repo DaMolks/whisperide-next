@@ -3,16 +3,13 @@ import * as path from 'path';
 import type { ProjectConfig, ProjectInfo, FileEntry } from '@shared/types';
 import { GitService } from './git';
 
-interface GitProjectInfo extends ProjectInfo {
+export interface ExtendedProjectInfo extends ProjectInfo {
+  id: string;
+  lastOpened: string;
   gitInfo?: {
     branch: string;
     remote?: string;
   };
-}
-
-export interface ExtendedProjectInfo extends GitProjectInfo {
-  id: string;
-  lastOpened: string;
 }
 
 export class ProjectService {
@@ -32,13 +29,12 @@ export class ProjectService {
       const content = await fs.readFile(configPath, 'utf-8');
       return JSON.parse(content);
     } catch {
-      const defaultConfig: ProjectConfig = {
+      return {
         name: path.basename(projectPath),
         type: 'local',
         description: '',
         version: '0.1.0'
       };
-      return defaultConfig;
     }
   }
 
@@ -57,17 +53,19 @@ export class ProjectService {
       JSON.stringify(projectConfig, null, 2)
     );
 
-    if (projectConfig.gitInit) {
+    if (config?.gitInit) {
       await GitService.init(projectPath);
     }
 
     const gitInfo = await GitService.getGitInfo(projectPath);
-
+    
     return {
       id: Math.random().toString(36).substring(7),
       path: projectPath,
       name: projectConfig.name,
       type: projectConfig.type,
+      description: projectConfig.description,
+      version: projectConfig.version,
       lastOpened: new Date().toISOString(),
       gitInfo: gitInfo.isGitRepo ? {
         branch: gitInfo.branch || 'main',
@@ -94,6 +92,8 @@ export class ProjectService {
       path: projectPath,
       name: config.name,
       type: config.type,
+      description: config.description,
+      version: config.version,
       lastOpened: new Date().toISOString(),
       gitInfo: gitInfo.isGitRepo ? {
         branch: gitInfo.branch || 'main',
