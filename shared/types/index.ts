@@ -1,8 +1,8 @@
 export interface ProjectConfig {
   name: string;
+  type: 'local' | 'github';
   description?: string;
   version?: string;
-  type: 'local' | 'github';
   gitInit?: boolean;
   gitRemote?: {
     url: string;
@@ -12,9 +12,11 @@ export interface ProjectConfig {
 }
 
 export interface ProjectInfo {
-  path: string;
   name: string;
+  path: string;
   type: 'local' | 'github';
+  description?: string;
+  version?: string;
   lastOpened?: string;
   gitInfo?: {
     branch: string;
