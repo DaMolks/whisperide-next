@@ -3,7 +3,14 @@ import * as path from 'path';
 import type { ProjectConfig, ProjectInfo, FileEntry } from '@shared/types';
 import { GitService } from './git';
 
-export interface ExtendedProjectInfo extends ProjectInfo {
+interface GitProjectInfo extends ProjectInfo {
+  gitInfo?: {
+    branch: string;
+    remote?: string;
+  };
+}
+
+export interface ExtendedProjectInfo extends GitProjectInfo {
   id: string;
   lastOpened: string;
 }
@@ -25,10 +32,13 @@ export class ProjectService {
       const content = await fs.readFile(configPath, 'utf-8');
       return JSON.parse(content);
     } catch {
-      return {
+      const defaultConfig: ProjectConfig = {
         name: path.basename(projectPath),
-        type: 'local'
+        type: 'local',
+        description: '',
+        version: '0.1.0'
       };
+      return defaultConfig;
     }
   }
 
@@ -38,7 +48,8 @@ export class ProjectService {
     const projectConfig: ProjectConfig = {
       name: config?.name || path.basename(projectPath),
       type: config?.type || 'local',
-      gitInit: config?.gitInit
+      description: config?.description || '',
+      version: config?.version || '0.1.0'
     };
 
     await fs.writeFile(
@@ -51,7 +62,7 @@ export class ProjectService {
     }
 
     const gitInfo = await GitService.getGitInfo(projectPath);
-    
+
     return {
       id: Math.random().toString(36).substring(7),
       path: projectPath,
