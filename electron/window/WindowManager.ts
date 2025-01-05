@@ -1,17 +1,29 @@
 const { BrowserWindow, ipcMain } = require('electron');
-import type { IpcMainEvent } from 'electron';
-import * as path from 'path';
+import type { IpcMainEvent } from '../types/electron';
+
+type WindowOptions = {
+  width: number;
+  height: number;
+  frame?: boolean;
+  show?: boolean;
+  backgroundColor?: string;
+  webPreferences?: {
+    nodeIntegration?: boolean;
+    contextIsolation?: boolean;
+    preload?: string;
+  };
+};
 
 export class WindowManager {
-  private static windows: Map<string, BrowserWindow> = new Map();
+  private static windows = new Map<string, typeof BrowserWindow>();
 
-  static createWindow(name: string, options: Electron.BrowserWindowConstructorOptions): BrowserWindow {
+  static createWindow(name: string, options: WindowOptions): typeof BrowserWindow {
     const window = new BrowserWindow(options);
     this.windows.set(name, window);
     return window;
   }
 
-  static setupWindowControls() {
+  static setupWindowControls(): void {
     ipcMain.on('window-control', (_: IpcMainEvent, command: 'minimize' | 'maximize' | 'close') => {
       const focusedWindow = BrowserWindow.getFocusedWindow();
       if (!focusedWindow) return;
@@ -21,8 +33,8 @@ export class WindowManager {
           focusedWindow.minimize();
           break;
         case 'maximize':
-          focusedWindow.isMaximized() 
-            ? focusedWindow.unmaximize() 
+          focusedWindow.isMaximized()
+            ? focusedWindow.unmaximize()
             : focusedWindow.maximize();
           break;
         case 'close':
@@ -32,11 +44,11 @@ export class WindowManager {
     });
   }
 
-  static getWindow(name: string): BrowserWindow | undefined {
+  static getWindow(name: string): typeof BrowserWindow | undefined {
     return this.windows.get(name);
   }
 
-  static closeWindow(name: string) {
+  static closeWindow(name: string): void {
     const window = this.getWindow(name);
     if (window) {
       window.close();
@@ -44,7 +56,7 @@ export class WindowManager {
     }
   }
 
-  static closeAllWindows() {
+  static closeAllWindows(): void {
     for (const [name, window] of this.windows) {
       window.close();
       this.windows.delete(name);
