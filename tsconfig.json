@@ -23,6 +23,7 @@
   },
   "include": ["src", "electron", "shared"],
   "references": [
+    { "path": "./shared/tsconfig.json" },
     { "path": "./electron/tsconfig.json" }
   ]
 }
