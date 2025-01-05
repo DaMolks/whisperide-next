@@ -1,5 +1,7 @@
 const { contextBridge } = require('electron');
 
+export {};
+
 declare global {
   interface Window {
     splash: {
