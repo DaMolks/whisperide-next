@@ -11,12 +11,8 @@ export interface ProjectConfig {
   };
 }
 
-export interface ProjectInfo {
-  name: string;
+export interface ProjectInfo extends Pick<ProjectConfig, 'name' | 'type' | 'description' | 'version'> {
   path: string;
-  type: 'local' | 'github';
-  description?: string;
-  version?: string;
   lastOpened?: string;
   gitInfo?: {
     branch: string;
