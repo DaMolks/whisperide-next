@@ -9,6 +9,11 @@ interface ExtendedProjectConfig extends ProjectConfig {
 }
 
 interface ExtendedProjectInfo extends ProjectInfo {
+  id: string;
+  path: string;
+  name: string;
+  type: 'local' | 'github';
+  lastOpened: string;
   gitInfo?: {
     branch: string;
     remote?: string;
@@ -50,9 +55,11 @@ export class ProjectService {
     const gitInfo = await GitService.getGitInfo(projectPath);
     
     return {
+      id: Math.random().toString(36).substring(7),
       path: projectPath,
       name: projectConfig.name,
       type: projectConfig.type,
+      lastOpened: new Date().toISOString(),
       gitInfo: gitInfo.isGitRepo ? {
         branch: gitInfo.branch || 'main',
         remote: gitInfo.remotes?.[0]
@@ -65,9 +72,11 @@ export class ProjectService {
     const gitInfo = await GitService.getGitInfo(projectPath);
 
     return {
+      id: Math.random().toString(36).substring(7),
       path: projectPath,
       name: config.name,
       type: config.type,
+      lastOpened: new Date().toISOString(),
       gitInfo: gitInfo.isGitRepo ? {
         branch: gitInfo.branch || 'main',
         remote: gitInfo.remotes?.[0]
