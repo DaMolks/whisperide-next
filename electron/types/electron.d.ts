@@ -1,11 +1,29 @@
 declare namespace Electron {
-  interface IpcMainEvent {
-    reply: (channel: string, ...args: any[]) => void;
+  interface Event {
+    preventDefault(): void;
     sender: any;
   }
 
-  interface IpcMainInvokeEvent extends IpcMainEvent {
-    sender: any;
+  interface IpcMainEvent extends Event {
+    reply: (channel: string, ...args: any[]) => void;
+  }
+
+  interface IpcMainInvokeEvent extends IpcMainEvent {}
+
+  interface BrowserWindowConstructorOptions {
+    width?: number;
+    height?: number;
+    minWidth?: number;
+    minHeight?: number;
+    frame?: boolean;
+    show?: boolean;
+    backgroundColor?: string;
+    webPreferences?: {
+      nodeIntegration?: boolean;
+      contextIsolation?: boolean;
+      preload?: string;
+      devTools?: boolean;
+    };
   }
 }
 
@@ -27,21 +45,10 @@ declare module 'electron' {
     };
   }
 
-  export interface BrowserWindowConstructorOptions {
-    width?: number;
-    height?: number;
-    minWidth?: number;
-    minHeight?: number;
-    frame?: boolean;
-    show?: boolean;
-    backgroundColor?: string;
-    webPreferences?: {
-      nodeIntegration?: boolean;
-      contextIsolation?: boolean;
-      preload?: string;
-      devTools?: boolean;
-    };
-  }
+  export type BrowserWindowConstructorOptions = Electron.BrowserWindowConstructorOptions;
+  export type Event = Electron.Event;
+  export type IpcMainEvent = Electron.IpcMainEvent;
+  export type IpcMainInvokeEvent = Electron.IpcMainInvokeEvent;
 
   export const ipcMain: {
     on(channel: string, listener: (event: IpcMainEvent, ...args: any[]) => void): void;
@@ -56,7 +63,4 @@ declare module 'electron' {
     setAsDefaultProtocolClient(protocol: string, execPath?: string, args?: string[]): boolean;
     whenReady(): Promise<void>;
   };
-
-  export type IpcMainEvent = Electron.IpcMainEvent;
-  export type IpcMainInvokeEvent = Electron.IpcMainInvokeEvent;
 }
