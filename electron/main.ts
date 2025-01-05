@@ -19,7 +19,7 @@ interface ProtocolResponse {
 }
 
 class WhisperIDEApp {
-  private mainWindow: typeof BrowserWindow | null = null;
+  private mainWindow: BrowserWindow | null = null;
 
   constructor() {
     app.on('ready', this.init);
