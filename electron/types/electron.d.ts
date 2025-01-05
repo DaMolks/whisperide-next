@@ -31,7 +31,6 @@ declare module 'electron' {
 
   export interface WebContents {
     send(channel: string, ...args: any[]): void;
-    openDevTools(): void;
   }
 
   export interface BrowserWindow {
@@ -62,7 +61,6 @@ declare module 'electron' {
     isDefaultProtocolClient(protocol: string): boolean;
     setAsDefaultProtocolClient(protocol: string, execPath?: string, args?: string[]): boolean;
     whenReady(): Promise<void>;
-    requestSingleInstanceLock(): boolean;
   };
 
   export const ipcMain: {
@@ -77,4 +75,23 @@ declare module 'electron' {
                callback: (response: any) => void) => void
     ): void;
   };
+
+  export interface OpenDialogOptions {
+    title?: string;
+    defaultPath?: string;
+    properties?: Array<'openDirectory' | 'createDirectory' | 'openFile' | 'multiSelections'>;
+  }
+
+  export interface OpenDialogReturnValue {
+    canceled: boolean;
+    filePaths: string[];
+  }
+
+  export const dialog: {
+    showOpenDialog(window: BrowserWindow, options: OpenDialogOptions): Promise<OpenDialogReturnValue>;
+  };
+
+  export namespace Electron {
+    export { Event, IpcMainEvent, IpcMainInvokeEvent, BrowserWindow, BrowserWindowConstructorOptions };
+  }
 }
