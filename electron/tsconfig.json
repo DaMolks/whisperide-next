@@ -17,7 +17,9 @@
     "outDir": "../dist/electron",
     "baseUrl": "..",
     "paths": {
-      "@shared/*": ["shared/*"]
+      "@shared/*": ["shared/*"],
+      "@shared/types/git": ["shared/types/git"],
+      "electron": ["electron/types/electron.d.ts"]
     },
     "typeRoots": [
       "./types",
@@ -28,13 +30,11 @@
     "**/*.ts",
     "**/*.tsx",
     "**/*.js",
-    "**/*.jsx"
+    "**/*.jsx",
+    "../shared/types/**/*"
   ],
   "exclude": [
     "node_modules",
     "dist"
-  ],
-  "references": [
-    { "path": "../shared" }
   ]
 }
