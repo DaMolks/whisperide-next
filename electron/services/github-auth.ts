@@ -16,7 +16,7 @@ try {
   } else {
     const configPath = process.env.ELECTRON_IS_DEV 
       ? path.join(__dirname, '../config.js')
-      : path.join(process.resourcesPath, 'config.js');
+      : path.join(app.getPath('userData'), 'config.js');
     config = require(configPath);
   }
 } catch (error) {
@@ -59,7 +59,7 @@ export class GitHubAuthService {
       authWindow.loadURL(authUrl);
       authWindow.show();
 
-      authWindow.webContents.on('will-redirect', async (event, url) => {
+      authWindow.webContents.on('will-redirect', async (event: Electron.Event, url: string) => {
         try {
           const urlObj = new URL(url);
           if (urlObj.protocol === 'whisperide:') {
