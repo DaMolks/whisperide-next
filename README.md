@@ -10,39 +10,27 @@
 
 </div>
 
-## ✨ Fonctionnalités
+Voir [INSTALLATION.md](INSTALLATION.md) pour les instructions détaillées d'installation.
 
-- 🤖 Support IA intégré (Ollama, ChatGPT, Claude)
-- 💻 Capacités IDE modernes
-- 🔄 Synchronisation Git en temps réel
-- 🎨 Thème sombre élégant (option claire disponible)
-- 🚀 Gestion automatique des dépendances
+## 🚀 Démarrage Rapide
 
-## 🛠️ Développement
+### Prérequis
+- Node.js 16+
+- npm ou yarn
+- Git
 
-```bash
-# Cloner le dépôt
-git clone https://github.com/DaMolks/whisperide-next.git
-
-# Installer les dépendances
-npm install
-
-# Lancer le serveur de développement
-npm run dev
-
-# Compiler l'application
-npm run build
-```
+### Installation
+1. `git clone https://github.com/DaMolks/whisperide-next.git`
+2. `cd whisperide-next`
+3. `cp .env.example .env`
+4. `npm install`
+5. `npm run dev`
 
 ## 📚 Documentation
 
-- [Feuille de route](ROADMAP.md)
-- [Guide de contribution](CONTRIBUTING.md)
 - [Architecture](docs/ARCHITECTURE.md)
-
-## 🤝 Contribution
-
-Les contributions sont les bienvenues ! Consultez notre guide de contribution.
+- [Contribution](CONTRIBUTING.md)
+- [Roadmap](ROADMAP.md)
 
 ## 📝 Licence
 
