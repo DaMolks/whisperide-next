@@ -1,14 +1,23 @@
 {
-  "extends": "../tsconfig.json",
   "compilerOptions": {
     "module": "commonjs",
     "target": "ES2020",
     "outDir": "../dist/electron",
     "sourceMap": true,
     "esModuleInterop": true,
-    "noEmit": false
+    "noEmit": false,
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "allowJs": true,
+    "strict": true,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["../src/*"],
+      "@shared/*": ["../shared/*"]
+    }
   },
   "include": [
-    "."
+    ".",
+    "../shared/**/*"
   ]
 }
