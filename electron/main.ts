@@ -1,10 +1,6 @@
 import { app } from 'electron';
 import { AppService } from './services/app';
-import { ConfigService } from './services/config';
-import * as dotenv from 'dotenv';
-
-// Charger les variables d'environnement
-dotenv.config();
+import 'dotenv/config';
 
 class WhisperIDEApp {
   private appService: AppService | null = null;
@@ -30,9 +26,6 @@ class WhisperIDEApp {
 
     // Initialiser l'application quand elle est prête
     app.whenReady().then(async () => {
-      // Charger la configuration
-      await ConfigService.getConfig();
-      
       // Créer et initialiser le service principal
       this.appService = new AppService();
       await this.appService.initialize();
