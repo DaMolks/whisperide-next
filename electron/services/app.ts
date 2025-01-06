@@ -1,4 +1,4 @@
-import { BrowserWindow, ipcMain, protocol, IpcMainInvokeEvent } from 'electron';
+import { BrowserWindow, ipcMain, protocol, type IpcMainInvokeEvent } from 'electron';
 import * as path from 'path';
 import { GitHubAuthService } from './github-auth';
 import { ProjectService } from './project';
@@ -23,7 +23,7 @@ interface ProtocolResponse {
 }
 
 export class AppService {
-  private mainWindow: BrowserWindow | null = null;
+  private mainWindow: Electron.BrowserWindow | null = null;
 
   async initialize(): Promise<void> {
     this.registerProtocols();
