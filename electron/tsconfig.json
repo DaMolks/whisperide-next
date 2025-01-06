@@ -11,16 +11,15 @@
     "forceConsistentCasingInFileNames": true,
     "moduleResolution": "node",
     "resolveJsonModule": true,
-    "isolatedModules": true,
+    "isolatedModules": false,
     "noEmit": false,
     "jsx": "react-jsx",
     "outDir": "../dist/electron",
-    "baseUrl": ".",
+    "baseUrl": "..",
     "paths": {
-      "@/*": ["../src/*"],
-      "@shared/*": ["../shared/*"]
+      "@/*": ["src/*"],
+      "@shared/*": ["shared/*"]
     },
-    "types": ["electron", "node"],
     "typeRoots": [
       "./types",
       "../node_modules/@types"
@@ -29,7 +28,6 @@
   "include": [
     "**/*.ts",
     "**/*.tsx",
-    "types/**/*.d.ts",
     "../shared/types/**/*"
   ],
   "exclude": [
