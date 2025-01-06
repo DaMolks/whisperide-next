@@ -143,40 +143,24 @@ class WhisperIDEApp {
 
     // Git Operations
     ipcMain.handle('git-is-installed', () => GitService.isGitInstalled());
-    
     ipcMain.handle('git-info', (event, path) => GitService.getGitInfo(path));
-    
     ipcMain.handle('git-status', (event, path) => GitService.getStatus(path));
-    
     ipcMain.handle('git-stage', (event, path, files) => GitService.stage(path, files));
-    
     ipcMain.handle('git-unstage', (event, path, files) => GitService.unstage(path, files));
-    
     ipcMain.handle('git-commit', (event, path, message) => GitService.commit(path, message));
-    
     ipcMain.handle('git-branches', (event, path) => GitService.getBranches(path));
-    
     ipcMain.handle('git-create-branch', (event, path, name) => GitService.createBranch(path, name));
-    
     ipcMain.handle('git-checkout', (event, path, branch) => GitService.checkout(path, branch));
-    
     ipcMain.handle('git-history', (event, path, count) => GitService.getCommitHistory(path, count));
-    
     ipcMain.handle('git-diff', (event, path, file) => GitService.getDiff(path, file));
 
     // File Operations
     ipcMain.handle('list-files', (event, path) => FileService.list(path));
-    
     ipcMain.handle('read-file', (event, path) => FileService.read(path));
-    
     ipcMain.handle('write-file', (event, path, content) => FileService.write(path, content));
-    
     ipcMain.handle('create-file', (event, path) => FileService.createFile(path));
-    
     ipcMain.handle('create-directory', (event, path) => FileService.createDirectory(path));
-    
     ipcMain.handle('rename-file', (event, oldPath, newPath) => FileService.rename(oldPath, newPath));
-    
     ipcMain.handle('delete-file', (event, path) => FileService.delete(path));
   }
 
