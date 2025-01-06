@@ -10,40 +10,102 @@
 
 </div>
 
-## ✨ Fonctionnalités
+## 🚀 Démarrage Rapide
 
-- 🤖 Support IA intégré (Ollama, ChatGPT, Claude)
-- 💻 Capacités IDE modernes
-- 🔄 Synchronisation Git en temps réel
-- 🎨 Thème sombre élégant (option claire disponible)
-- 🚀 Gestion automatique des dépendances
+### Prérequis
+
+- Node.js 16 ou supérieur
+- npm ou yarn
+- Git
+
+### Installation pour le Développement
+
+1. Cloner le repository
+```bash
+git clone https://github.com/DaMolks/whisperide-next.git
+cd whisperide-next
+```
+
+2. Installer les dépendances
+```bash
+npm install
+```
+
+3. Configurer l'environnement
+```bash
+cp .env.example .env
+# Éditer .env avec vos configurations
+```
+
+4. Lancer en mode développement
+```bash
+npm run dev
+```
+
+### Compilation pour la Production
+
+1. S'assurer d'avoir les clés OAuth GitHub
+
+2. Compiler l'application
+```bash
+GITHUB_CLIENT_ID=votre_id GITHUB_CLIENT_SECRET=votre_secret npm run package
+```
+
+Les fichiers compilés seront disponibles dans le dossier `release`.
+
+## 📝 Configuration
+
+### GitHub OAuth
+
+1. Créer une nouvelle OAuth App sur GitHub :
+   - Aller sur GitHub → Settings → Developer settings → OAuth Apps
+   - Cliquer sur "New OAuth App"
+   - Remplir les informations :
+     - Application name: WhisperIDE
+     - Homepage URL: https://github.com/DaMolks/whisperide-next
+     - Authorization callback URL: whisperide://oauth/callback
+
+2. Obtenir les clés :
+   - Client ID : Visible directement
+   - Client Secret : Générer un nouveau secret
+
+3. Utiliser pour la compilation :
+```bash
+GITHUB_CLIENT_ID=xxx GITHUB_CLIENT_SECRET=yyy npm run package
+```
 
 ## 🛠️ Développement
 
-```bash
-# Cloner le dépôt
-git clone https://github.com/DaMolks/whisperide-next.git
+### Structure du Projet
 
-# Installer les dépendances
-npm install
-
-# Lancer le serveur de développement
-npm run dev
-
-# Compiler l'application
-npm run build
 ```
+whisperide-next/
+├── electron/        # Code principal Electron
+├── src/             # Code React
+├── shared/          # Types et configs partagés
+├── scripts/         # Scripts utilitaires
+└── tests/           # Tests
+```
+
+### Commandes Disponibles
+
+- `npm run dev` : Lancer en mode développement
+- `npm run build` : Compiler le code
+- `npm run package` : Créer l'exécutable
+- `npm test` : Lancer les tests
+- `npm run lint` : Vérifier le code
+- `npm run format` : Formater le code
 
 ## 📚 Documentation
 
-- [Feuille de route](ROADMAP.md)
 - [Guide de contribution](CONTRIBUTING.md)
-- [Architecture](docs/ARCHITECTURE.md)
+- [Documentation technique](docs/ARCHITECTURE.md)
+- [Feuille de route](ROADMAP.md)
 
 ## 🤝 Contribution
 
-Les contributions sont les bienvenues ! Consultez notre guide de contribution.
+Les contributions sont les bienvenues ! Consultez notre guide de contribution pour commencer.
 
-## 📝 Licence
+## 📄 Licence
 
 MIT
