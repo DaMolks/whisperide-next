@@ -4,7 +4,7 @@
     "module": "CommonJS",
     "lib": ["DOM", "ES2020"],
     "allowJs": true,
-    "skipLibCheck": false,
+    "skipLibCheck": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "strict": true,
@@ -15,20 +15,21 @@
     "noEmit": false,
     "jsx": "react-jsx",
     "outDir": "../dist/electron",
-    "baseUrl": "..",
+    "baseUrl": ".",
     "paths": {
-      "@shared/*": ["shared/*"],
-      "electron": ["electron/global.d.ts"]
+      "@/*": ["../src/*"],
+      "@shared/*": ["../shared/*"]
     },
+    "types": ["electron", "node"],
     "typeRoots": [
-      "../node_modules/@types",
-      "."
+      "./types",
+      "../node_modules/@types"
     ]
   },
   "include": [
     "**/*.ts",
     "**/*.tsx",
-    "global.d.ts",
+    "types/**/*.d.ts",
     "../shared/types/**/*"
   ],
   "exclude": [
