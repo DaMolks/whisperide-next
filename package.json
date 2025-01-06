@@ -1,18 +1,89 @@
 {
+  "name": "whisperide-next",
+  "version": "0.1.0",
+  "main": "./dist/electron/main.js",
   "scripts": {
-    "postbuild": "node scripts/inject-keys.js",
-    "package": "npm run build && npm run postbuild && electron-builder build"
+    "postinstall": "node scripts/install.js",
+    "clean": "rimraf dist shared/types node_modules",
+    "dev": "concurrently \"npm run dev:webpack\" \"npm run dev:electron\" \"npm run dev:types:watch\"",
+    "dev:webpack": "cross-env NODE_ENV=development webpack serve --mode development",
+    "dev:electron": "wait-on tcp:8080 && cross-env NODE_ENV=development electron .",
+    "dev:types:watch": "tsc -p shared/tsconfig.json --watch",
+    "build": "npm run build:types && npm run build:webpack && npm run build:electron",
+    "build:webpack": "cross-env NODE_ENV=production webpack --mode production",
+    "build:electron": "tsc -p electron/tsconfig.json",
+    "build:types": "tsc -p shared/tsconfig.json",
+    "start": "electron .",
+    "package": "electron-builder build",
+    "test": "jest",
+    "lint": "eslint . --ext .ts,.tsx",
+    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\""
+  },
+  "dependencies": {
+    "@emotion/react": "^11.11.1",
+    "@emotion/styled": "^11.11.0",
+    "@mui/icons-material": "^5.14.0",
+    "@mui/material": "^5.14.0",
+    "crypto": "^1.0.1",
+    "electron-store": "^8.1.0",
+    "monaco-editor": "0.44.0",
+    "monaco-editor-webpack-plugin": "^7.1.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-monaco-editor": "^0.55.0",
+    "uuid": "^9.0.1"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.22.0",
+    "@babel/preset-react": "^7.22.0",
+    "@babel/preset-typescript": "^7.22.0",
+    "@types/jest": "^29.5.0",
+    "@types/node": "^20.4.0",
+    "@types/react": "^18.2.0",
+    "@types/react-dom": "^18.2.0",
+    "@types/uuid": "^9.0.7",
+    "@typescript-eslint/eslint-plugin": "^5.62.0",
+    "@typescript-eslint/parser": "^5.62.0",
+    "babel-loader": "^9.1.0",
+    "concurrently": "^8.2.0",
+    "cross-env": "^7.0.3",
+    "css-loader": "^6.8.1",
+    "electron": "^25.0.0",
+    "electron-builder": "^24.6.0",
+    "eslint": "^8.42.0",
+    "eslint-config-prettier": "^8.8.0",
+    "eslint-plugin-react": "^7.33.0",
+    "html-webpack-plugin": "^5.5.0",
+    "jest": "^29.5.0",
+    "prettier": "^2.8.8",
+    "rimraf": "^5.0.5",
+    "style-loader": "^3.3.3",
+    "ts-jest": "^29.1.0",
+    "ts-loader": "^9.4.0",
+    "typescript": "^5.0.0",
+    "wait-on": "^7.0.1",
+    "webpack": "^5.88.0",
+    "webpack-cli": "^5.1.0",
+    "webpack-dev-server": "^4.15.0"
   },
   "build": {
+    "appId": "com.whisperide.app",
+    "productName": "WhisperIDE",
+    "directories": {
+      "output": "release"
+    },
     "files": [
       "dist/**/*",
       "package.json"
     ],
-    "extraResources": [
-      {
-        "from": "dist/electron/config.js",
-        "to": "config.js"
-      }
-    ]
+    "win": {
+      "target": ["nsis"]
+    },
+    "mac": {
+      "target": ["dmg"]
+    },
+    "linux": {
+      "target": ["AppImage"]
+    }
   }
 }
