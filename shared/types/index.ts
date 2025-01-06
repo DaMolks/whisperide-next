@@ -1,4 +1,4 @@
-import type { GitInfo } from './git';
+export * from './git';
 
 export interface FileEntry {
   path: string;
@@ -8,19 +8,16 @@ export interface FileEntry {
 
 export type ProjectType = 'local' | 'github';
 
-export interface BaseConfig {
+export interface ProjectConfig {
   name: string;
   type: ProjectType;
   description: string;
   version: string;
-}
-
-export interface ProjectConfig extends BaseConfig {
   gitInit?: boolean;
   gitRemote?: string;
 }
 
-export interface ProjectInfo extends BaseConfig {
+export interface ProjectInfo extends ProjectConfig {
   path: string;
   lastOpened?: string;
   gitInfo?: {
