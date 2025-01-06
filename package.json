@@ -41,7 +41,6 @@
     "@types/electron": "^1.6.10",
     "@types/jest": "^29.5.0",
     "@types/node": "^20.4.0",
-    "@types/portfinder": "^1.0.2",
     "@types/react": "^18.2.0",
     "@types/react-dom": "^18.2.0",
     "@types/uuid": "^9.0.7",
