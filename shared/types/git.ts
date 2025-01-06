@@ -1,3 +1,10 @@
+export interface GitInfo {
+  isGitRepo: boolean;
+  branch?: string;
+  remotes?: string[];
+  hasChanges?: boolean;
+}
+
 export interface GitStatus {
   staged: string[];
   modified: string[];
@@ -18,11 +25,4 @@ export interface GitCommitInfo {
   date: string;
   author: string;
   message: string;
-}
-
-export interface GitInfo {
-  isGitRepo: boolean;
-  branch?: string;
-  remotes?: string[];
-  hasChanges?: boolean;
 }

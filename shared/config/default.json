@@ -1,0 +1,19 @@
+{
+  "theme": "dark",
+  "recentProjects": [],
+  "gitPath": "git",
+  "preferences": {
+    "editor": {
+      "fontSize": 14,
+      "fontFamily": "Fira Code, monospace",
+      "tabSize": 2,
+      "insertSpaces": true,
+      "wordWrap": "on"
+    },
+    "terminal": {
+      "fontSize": 14,
+      "fontFamily": "Consolas, monospace",
+      "shell": "system-default"
+    }
+  }
+}

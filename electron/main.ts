@@ -1,155 +1,58 @@
-import { app, BrowserWindow, ipcMain, protocol, dialog } from 'electron';
-import type { IpcMainEvent } from 'electron';
-import * as path from 'path';
-import { GitHubAuthService } from './services/github-auth';
-import { ProjectService } from './services/project';
+import { app } from 'electron';
+import { AppService } from './services/app';
+import { ConfigService } from './services/config';
+import * as dotenv from 'dotenv';
 
-interface ProtocolRequest {
-  url: string;
-  referrer: string;
-  method: string;
-  uploadData?: any[];
-}
-
-interface ProtocolResponse {
-  error?: number;
-  statusCode?: number;
-  data?: Buffer | string | ReadableStream;
-  headers?: Record<string, string | string[]>;
-  mimeType?: string;
-  charset?: string;
-}
+// Charger les variables d'environnement
+dotenv.config();
 
 class WhisperIDEApp {
-  private mainWindow: BrowserWindow | null = null;
+  private appService: AppService | null = null;
 
   constructor() {
-    app.on('ready', this.init);
-    app.on('window-all-closed', this.handleWindowsClosed);
-    this.setupIPC();
+    this.initialize();
   }
 
-  private init = () => {
-    this.registerProtocol();
-    this.createMainWindow();
-  }
-
-  private registerProtocol() {
-    if (!app.isDefaultProtocolClient('whisperide')) {
-      app.setAsDefaultProtocolClient('whisperide');
-    }
-
-    protocol.registerHttpProtocol('whisperide', (request: ProtocolRequest, callback: (response: ProtocolResponse) => void) => {
-      const url = request.url;
-      if (url.includes('/oauth/callback')) {
-        this.mainWindow?.webContents.send('oauth-callback', url);
-      }
-    });
-  }
-
-  private createMainWindow = async () => {
-    this.mainWindow = new BrowserWindow({
-      width: 1200,
-      height: 800,
-      frame: false,
-      show: false,
-      backgroundColor: '#1a1a1a',
-      webPreferences: {
-        nodeIntegration: true,
-        contextIsolation: true,
-        preload: path.join(__dirname, 'preload.js')
-      }
-    });
-
-    if (process.env.NODE_ENV === 'development') {
-      await this.mainWindow.loadURL('http://localhost:8080');
-    } else {
-      await this.mainWindow.loadFile(path.join(__dirname, '../index.html'));
-    }
-    
-    this.mainWindow.show();
-  }
-
-  private setupIPC() {
-    // Gestionnaire de sélection de dossier
-    ipcMain.handle('select-directory', async () => {
-      if (!this.mainWindow) return null;
-
-      const result = await dialog.showOpenDialog(this.mainWindow, {
-        properties: ['openDirectory', 'createDirectory'],
-        title: 'Sélectionner un dossier de projet',
-      });
-
-      if (result.canceled) return null;
-      return result.filePaths[0];
-    });
-
-    // Gestionnaires GitHub
-    ipcMain.on('github-auth', async (event: IpcMainEvent, ...args: any[]) => {
-      try {
-        const token = await GitHubAuthService.authorize();
-        event.reply('github-auth-complete', { token });
-      } catch (error) {
-        if (error instanceof Error) {
-          event.reply('github-auth-error', { error: error.message });
-        } else {
-          event.reply('github-auth-error', { error: 'Unknown error occurred' });
-        }
-      }
-    });
-
-    // Gestionnaires de fenêtre
-    ipcMain.on('window-control', (event: IpcMainEvent, command: string) => {
-      switch (command) {
-        case 'minimize':
-          this.mainWindow?.minimize();
-          break;
-        case 'maximize':
-          if (this.mainWindow?.isMaximized()) {
-            this.mainWindow.unmaximize();
-          } else {
-            this.mainWindow?.maximize();
-          }
-          break;
-        case 'close':
-          this.mainWindow?.close();
-          break;
-      }
-    });
-
-    // Gestionnaires de projets
-    ipcMain.handle('get-recent-projects', async () => {
-      try {
-        return await ProjectService.getRecentProjects();
-      } catch (error) {
-        console.error('Error getting recent projects:', error);
-        throw error;
-      }
-    });
-
-    ipcMain.handle('create-project', async (event, { path, config }: { path: string; config: any }) => {
-      try {
-        return await ProjectService.createProject(path, config);
-      } catch (error) {
-        console.error('Error creating project:', error);
-        throw error;
-      }
-    });
-
-    ipcMain.handle('open-project', async (event, path: string) => {
-      try {
-        return await ProjectService.openProject(path);
-      } catch (error) {
-        console.error('Error opening project:', error);
-        throw error;
-      }
-    });
-  }
-
-  private handleWindowsClosed = () => {
-    if (process.platform !== 'darwin') {
+  private async initialize() {
+    // S'assurer qu'une seule instance est en cours d'exécution
+    const gotTheLock = app.requestSingleInstanceLock();
+    if (!gotTheLock) {
       app.quit();
+      return;
     }
+
+    // Gérer la seconde instance
+    app.on('second-instance', () => {
+      if (this.appService) {
+        this.appService.focusMainWindow();
+      }
+    });
+
+    // Initialiser l'application quand elle est prête
+    app.whenReady().then(async () => {
+      // Charger la configuration
+      await ConfigService.getConfig();
+      
+      // Créer et initialiser le service principal
+      this.appService = new AppService();
+      await this.appService.initialize();
+    });
+
+    // Gérer la fermeture de l'application
+    app.on('window-all-closed', () => {
+      if (process.platform !== 'darwin') {
+        app.quit();
+      }
+    });
+
+    app.on('activate', async () => {
+      if (!this.appService) {
+        this.appService = new AppService();
+        await this.appService.initialize();
+      } else {
+        this.appService.createMainWindow();
+      }
+    });
   }
 }
 
