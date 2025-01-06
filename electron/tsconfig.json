@@ -15,10 +15,9 @@
     "noEmit": false,
     "jsx": "react-jsx",
     "outDir": "../dist/electron",
-    "rootDir": ".",
-    "baseUrl": ".",
+    "baseUrl": "..",
     "paths": {
-      "@shared/*": ["../shared/*"]
+      "@shared/*": ["shared/*"]
     },
     "typeRoots": [
       "./types",
@@ -29,11 +28,13 @@
     "**/*.ts",
     "**/*.tsx",
     "**/*.js",
-    "**/*.jsx",
-    "../shared/types/**/*"
+    "**/*.jsx"
   ],
   "exclude": [
     "node_modules",
     "dist"
+  ],
+  "references": [
+    { "path": "../shared" }
   ]
 }
