@@ -3,6 +3,8 @@ import type { IpcMainEvent } from 'electron';
 import * as path from 'path';
 import { GitHubAuthService } from './services/github-auth';
 import { ProjectService } from './services/project';
+import { GitService } from './services/git';
+import { FileService } from './services/file';
 
 interface ProtocolRequest {
   url: string;
@@ -55,7 +57,7 @@ class WhisperIDEApp {
       show: false,
       backgroundColor: '#1a1a1a',
       webPreferences: {
-        nodeIntegration: true,
+        nodeIntegration: false,
         contextIsolation: true,
         preload: path.join(__dirname, 'preload.js')
       }
@@ -71,7 +73,24 @@ class WhisperIDEApp {
   }
 
   private setupIPC() {
-    // Gestionnaire de sélection de dossier
+    // Window Controls
+    ipcMain.on('window-close', () => {
+      this.mainWindow?.close();
+    });
+
+    ipcMain.on('window-minimize', () => {
+      this.mainWindow?.minimize();
+    });
+
+    ipcMain.on('window-maximize', () => {
+      if (this.mainWindow?.isMaximized()) {
+        this.mainWindow.unmaximize();
+      } else {
+        this.mainWindow?.maximize();
+      }
+    });
+
+    // Directory Selection
     ipcMain.handle('select-directory', async () => {
       if (!this.mainWindow) return null;
 
@@ -84,40 +103,17 @@ class WhisperIDEApp {
       return result.filePaths[0];
     });
 
-    // Gestionnaires GitHub
-    ipcMain.on('github-auth', async (event: IpcMainEvent, ...args: any[]) => {
+    // GitHub Authentication
+    ipcMain.handle('github-auth-login', async () => {
       try {
         const token = await GitHubAuthService.authorize();
-        event.reply('github-auth-complete', { token });
+        return token;
       } catch (error) {
-        if (error instanceof Error) {
-          event.reply('github-auth-error', { error: error.message });
-        } else {
-          event.reply('github-auth-error', { error: 'Unknown error occurred' });
-        }
+        throw error;
       }
     });
 
-    // Gestionnaires de fenêtre
-    ipcMain.on('window-control', (event: IpcMainEvent, command: string) => {
-      switch (command) {
-        case 'minimize':
-          this.mainWindow?.minimize();
-          break;
-        case 'maximize':
-          if (this.mainWindow?.isMaximized()) {
-            this.mainWindow.unmaximize();
-          } else {
-            this.mainWindow?.maximize();
-          }
-          break;
-        case 'close':
-          this.mainWindow?.close();
-          break;
-      }
-    });
-
-    // Gestionnaires de projets
+    // Project Management
     ipcMain.handle('get-recent-projects', async () => {
       try {
         return await ProjectService.getRecentProjects();
@@ -127,7 +123,7 @@ class WhisperIDEApp {
       }
     });
 
-    ipcMain.handle('create-project', async (event, { path, config }: { path: string; config: any }) => {
+    ipcMain.handle('create-project', async (event, { path, config }) => {
       try {
         return await ProjectService.createProject(path, config);
       } catch (error) {
@@ -136,7 +132,7 @@ class WhisperIDEApp {
       }
     });
 
-    ipcMain.handle('open-project', async (event, path: string) => {
+    ipcMain.handle('open-project', async (event, path) => {
       try {
         return await ProjectService.openProject(path);
       } catch (error) {
@@ -144,6 +140,44 @@ class WhisperIDEApp {
         throw error;
       }
     });
+
+    // Git Operations
+    ipcMain.handle('git-is-installed', () => GitService.isGitInstalled());
+    
+    ipcMain.handle('git-info', (event, path) => GitService.getGitInfo(path));
+    
+    ipcMain.handle('git-status', (event, path) => GitService.getStatus(path));
+    
+    ipcMain.handle('git-stage', (event, path, files) => GitService.stage(path, files));
+    
+    ipcMain.handle('git-unstage', (event, path, files) => GitService.unstage(path, files));
+    
+    ipcMain.handle('git-commit', (event, path, message) => GitService.commit(path, message));
+    
+    ipcMain.handle('git-branches', (event, path) => GitService.getBranches(path));
+    
+    ipcMain.handle('git-create-branch', (event, path, name) => GitService.createBranch(path, name));
+    
+    ipcMain.handle('git-checkout', (event, path, branch) => GitService.checkout(path, branch));
+    
+    ipcMain.handle('git-history', (event, path, count) => GitService.getCommitHistory(path, count));
+    
+    ipcMain.handle('git-diff', (event, path, file) => GitService.getDiff(path, file));
+
+    // File Operations
+    ipcMain.handle('list-files', (event, path) => FileService.list(path));
+    
+    ipcMain.handle('read-file', (event, path) => FileService.read(path));
+    
+    ipcMain.handle('write-file', (event, path, content) => FileService.write(path, content));
+    
+    ipcMain.handle('create-file', (event, path) => FileService.createFile(path));
+    
+    ipcMain.handle('create-directory', (event, path) => FileService.createDirectory(path));
+    
+    ipcMain.handle('rename-file', (event, oldPath, newPath) => FileService.rename(oldPath, newPath));
+    
+    ipcMain.handle('delete-file', (event, path) => FileService.delete(path));
   }
 
   private handleWindowsClosed = () => {
