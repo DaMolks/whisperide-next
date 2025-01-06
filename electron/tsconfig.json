@@ -13,21 +13,24 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": false,
+    "jsx": "react-jsx",
     "outDir": "../dist/electron",
+    "rootDir": ".",
     "baseUrl": ".",
     "paths": {
       "@shared/*": ["../shared/*"]
     },
     "typeRoots": [
-      "../node_modules/@types",
-      "./types"
+      "./types",
+      "../node_modules/@types"
     ]
   },
   "include": [
     "**/*.ts",
     "**/*.tsx",
     "**/*.js",
-    "**/*.jsx"
+    "**/*.jsx",
+    "../shared/types/**/*"
   ],
   "exclude": [
     "node_modules",
