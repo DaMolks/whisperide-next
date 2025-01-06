@@ -1,20 +1,37 @@
-import { BrowserWindow, ipcMain, protocol } from 'electron';
+import { BrowserWindow, ipcMain, protocol, IpcMainInvokeEvent } from 'electron';
 import * as path from 'path';
 import { GitHubAuthService } from './github-auth';
 import { ProjectService } from './project';
 import { GitService } from './git';
 import { FileService } from './file';
+import type { ProjectConfig } from '@shared/types';
+
+interface ProtocolRequest {
+  url: string;
+  referrer: string;
+  method: string;
+  uploadData?: unknown[];
+}
+
+interface ProtocolResponse {
+  error?: number;
+  statusCode?: number;
+  data?: Buffer | string | ReadableStream;
+  headers?: Record<string, string | string[]>;
+  mimeType?: string;
+  charset?: string;
+}
 
 export class AppService {
   private mainWindow: BrowserWindow | null = null;
 
-  async initialize() {
+  async initialize(): Promise<void> {
     this.registerProtocols();
     await this.createMainWindow();
     this.setupIPC();
   }
 
-  createMainWindow() {
+  createMainWindow(): void {
     this.mainWindow = new BrowserWindow({
       width: 1200,
       height: 800,
@@ -37,7 +54,7 @@ export class AppService {
     this.mainWindow.show();
   }
 
-  focusMainWindow() {
+  focusMainWindow(): void {
     if (this.mainWindow) {
       if (this.mainWindow.isMinimized()) {
         this.mainWindow.restore();
@@ -46,8 +63,8 @@ export class AppService {
     }
   }
 
-  private registerProtocols() {
-    protocol.registerHttpProtocol('whisperide', (request, callback) => {
+  private registerProtocols(): void {
+    protocol.registerHttpProtocol('whisperide', (request: ProtocolRequest, callback: (response: ProtocolResponse) => void) => {
       const url = request.url;
       if (url.includes('/oauth/callback')) {
         this.mainWindow?.webContents.send('oauth-callback', url);
@@ -55,7 +72,7 @@ export class AppService {
     });
   }
 
-  private setupIPC() {
+  private setupIPC(): void {
     // Window Controls
     ipcMain.on('window-close', () => this.mainWindow?.close());
     ipcMain.on('window-minimize', () => this.mainWindow?.minimize());
@@ -72,36 +89,67 @@ export class AppService {
 
     // Project Management
     ipcMain.handle('get-recent-projects', () => ProjectService.getRecentProjects());
-    ipcMain.handle('open-project', (event, path) => ProjectService.openProject(path));
-    ipcMain.handle('create-project', (event, { path, config }) => 
-      ProjectService.createProject(path, config));
+    
+    ipcMain.handle('open-project', 
+      (event: IpcMainInvokeEvent, path: string) => ProjectService.openProject(path));
+    
+    ipcMain.handle('create-project', 
+      (event: IpcMainInvokeEvent, { path, config }: { path: string; config: ProjectConfig }) => 
+        ProjectService.createProject(path, config));
 
     // Git Operations
     ipcMain.handle('git-is-installed', () => GitService.isGitInstalled());
-    ipcMain.handle('git-info', (event, path) => GitService.getGitInfo(path));
-    ipcMain.handle('git-status', (event, path) => GitService.getStatus(path));
-    ipcMain.handle('git-stage', (event, path, files) => GitService.stage(path, files));
-    ipcMain.handle('git-unstage', (event, path, files) => GitService.unstage(path, files));
-    ipcMain.handle('git-commit', (event, path, message) => GitService.commit(path, message));
-    ipcMain.handle('git-branches', (event, path) => GitService.getBranches(path));
-    ipcMain.handle('git-create-branch', (event, path, name) => 
-      GitService.createBranch(path, name));
-    ipcMain.handle('git-checkout', (event, path, branch) => 
-      GitService.checkout(path, branch));
-    ipcMain.handle('git-history', (event, path, count) => 
-      GitService.getCommitHistory(path, count));
-    ipcMain.handle('git-diff', (event, path, file) => GitService.getDiff(path, file));
+    
+    ipcMain.handle('git-info', 
+      (event: IpcMainInvokeEvent, path: string) => GitService.getGitInfo(path));
+    
+    ipcMain.handle('git-status',
+      (event: IpcMainInvokeEvent, path: string) => GitService.getStatus(path));
+    
+    ipcMain.handle('git-stage',
+      (event: IpcMainInvokeEvent, path: string, files: string[]) => GitService.stage(path, files));
+    
+    ipcMain.handle('git-unstage',
+      (event: IpcMainInvokeEvent, path: string, files: string[]) => GitService.unstage(path, files));
+    
+    ipcMain.handle('git-commit',
+      (event: IpcMainInvokeEvent, path: string, message: string) => GitService.commit(path, message));
+    
+    ipcMain.handle('git-branches',
+      (event: IpcMainInvokeEvent, path: string) => GitService.getBranches(path));
+    
+    ipcMain.handle('git-create-branch',
+      (event: IpcMainInvokeEvent, path: string, name: string) => GitService.createBranch(path, name));
+    
+    ipcMain.handle('git-checkout',
+      (event: IpcMainInvokeEvent, path: string, branch: string) => GitService.checkout(path, branch));
+    
+    ipcMain.handle('git-history',
+      (event: IpcMainInvokeEvent, path: string, count: number) => GitService.getCommitHistory(path, count));
+    
+    ipcMain.handle('git-diff',
+      (event: IpcMainInvokeEvent, path: string, file: string) => GitService.getDiff(path, file));
 
     // File Operations
-    ipcMain.handle('list-files', (event, path) => FileService.list(path));
-    ipcMain.handle('read-file', (event, path) => FileService.read(path));
-    ipcMain.handle('write-file', (event, path, content) => 
-      FileService.write(path, content));
-    ipcMain.handle('create-file', (event, path) => FileService.createFile(path));
-    ipcMain.handle('create-directory', (event, path) => 
-      FileService.createDirectory(path));
-    ipcMain.handle('rename-file', (event, oldPath, newPath) => 
-      FileService.rename(oldPath, newPath));
-    ipcMain.handle('delete-file', (event, path) => FileService.delete(path));
+    ipcMain.handle('list-files',
+      (event: IpcMainInvokeEvent, path: string) => FileService.list(path));
+    
+    ipcMain.handle('read-file',
+      (event: IpcMainInvokeEvent, path: string) => FileService.read(path));
+    
+    ipcMain.handle('write-file',
+      (event: IpcMainInvokeEvent, path: string, content: string) => FileService.write(path, content));
+    
+    ipcMain.handle('create-file',
+      (event: IpcMainInvokeEvent, path: string) => FileService.createFile(path));
+    
+    ipcMain.handle('create-directory',
+      (event: IpcMainInvokeEvent, path: string) => FileService.createDirectory(path));
+    
+    ipcMain.handle('rename-file',
+      (event: IpcMainInvokeEvent, oldPath: string, newPath: string) => FileService.rename(oldPath, newPath));
+    
+    ipcMain.handle('delete-file',
+      (event: IpcMainInvokeEvent, path: string) => FileService.delete(path));
   }
 }
