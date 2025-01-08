@@ -1,8 +1,7 @@
 import * as fs from 'fs/promises';
 import * as path from 'path';
 import { app } from 'electron';
-import type { ProjectInfo } from '@shared/types';
-import type { GitInfo } from '@shared/types/git';
+import type { ProjectInfo } from '../../shared/types';
 
 export class ProjectManager {
   private static readonly CONFIG_DIR = path.join(app.getPath('userData'), 'projects');
