@@ -1,14 +1,8 @@
 import { exec } from 'child_process';
 import { promisify } from 'util';
-import type { GitBranch, GitCommitInfo, GitInfo, GitStatus } from '@shared/types/git';
+import type { GitBranch, GitCommitInfo, GitInfo, GitStatus } from '../../shared/types/git';
 
 const execAsync = promisify(exec);
-
-type RawGitBranch = {
-  current: boolean;
-  name: string;
-  remoteTracking: string | null;
-};
 
 export class GitService {
   static async isGitInstalled(): Promise<boolean> {
