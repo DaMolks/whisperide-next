@@ -1,4 +1,4 @@
-import { BrowserWindow, app } from 'electron';
+import { BrowserWindow, app, type WebContents } from 'electron';
 import { promises as fs } from 'fs';
 import * as path from 'path';
 import * as crypto from 'crypto';
@@ -56,12 +56,18 @@ export class GitHubAuthService {
       });
 
       const authUrl = this.getAuthUrl(state);
-      authWindow.loadURL(authUrl);
+      void authWindow.loadURL(authUrl).catch(console.error);
       authWindow.show();
 
-      authWindow.webContents.on('will-redirect', async (event: Electron.Event, url: string) => {
+      interface RedirectEvent {
+        preventDefault(): void;
+        sender: WebContents;
+        url: string;
+      }
+
+      authWindow.webContents.on('will-redirect', async (event: RedirectEvent) => {
         try {
-          const urlObj = new URL(url);
+          const urlObj = new URL(event.url);
           if (urlObj.protocol === 'whisperide:') {
             const returnedState = urlObj.searchParams.get('state');
             const code = urlObj.searchParams.get('code');
