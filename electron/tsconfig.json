@@ -20,11 +20,13 @@
       "../node_modules/@types"
     ]
   },
+  "files": [
+    "main.ts"
+  ],
   "include": [
     "**/*.ts",
     "**/*.tsx",
-    "../shared/**/*.ts",
-    "./types/**/*.d.ts"
+    "../shared/**/*.ts"
   ],
   "exclude": [
     "node_modules",
