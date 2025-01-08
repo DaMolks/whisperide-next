@@ -40,7 +40,6 @@
     "@babel/preset-typescript": "^7.22.0",
     "@testing-library/jest-dom": "^6.1.5",
     "@testing-library/react": "^14.1.2",
-    "@types/dotenv": "^8.2.0",
     "@types/jest": "^29.5.0",
     "@types/node": "^20.4.0",
     "@types/node-fetch": "^2.6.9",
