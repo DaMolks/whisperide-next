@@ -1,6 +1,6 @@
 import { contextBridge, ipcRenderer } from 'electron';
-import type { FileEntry, ProjectConfig, ProjectInfo } from '../shared/types';
-import type { GitInfo, GitStatus, GitBranch, GitCommitInfo } from '../shared/types/git';
+import type { FileEntry, ProjectConfig, ProjectInfo,
+  GitInfo, GitStatus, GitBranch, GitCommitInfo } from '../shared/types';
 
 type WindowElectronAPI = {
   window: {
