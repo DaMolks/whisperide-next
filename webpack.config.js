@@ -52,27 +52,7 @@ module.exports = {
       template: './public/index.html'
     }),
     new MonacoWebpackPlugin({
-      languages: [
-        'javascript',
-        'typescript',
-        'css',
-        'html',
-        'json',
-        'markdown',
-        'python',
-        'java',
-        'cpp',
-        'csharp',
-        'go',
-        'ruby',
-        'php',
-        'swift',
-        'kotlin',
-        'rust',
-        'sql',
-        'yaml',
-        'xml'
-      ]
+      languages: ['javascript', 'typescript', 'css', 'html', 'json', 'markdown']
     })
   ],
   devServer: {
