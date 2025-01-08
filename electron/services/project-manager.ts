@@ -1,8 +1,8 @@
 import * as fs from 'fs/promises';
 import * as path from 'path';
 import { app } from 'electron';
-import type { ProjectInfo } from '../../shared/types';
-import type { GitInfo } from '../../shared/types/git';
+import type { ProjectInfo } from '@shared/types';
+import type { GitInfo } from '@shared/types/git';
 
 export class ProjectManager {
   private static readonly CONFIG_DIR = path.join(app.getPath('userData'), 'projects');
@@ -31,12 +31,9 @@ export class ProjectManager {
       projects.unshift(project);
     }
 
-    // Garder seulement les 10 projets les plus récents
-    const recentProjects = projects.slice(0, 10);
-
     await fs.writeFile(
       this.CONFIG_FILE,
-      JSON.stringify(recentProjects, null, 2)
+      JSON.stringify(projects.slice(0, 10), null, 2)
     );
   }
 }
