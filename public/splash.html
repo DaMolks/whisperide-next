@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>WhisperIDE Loading</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: transparent;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            font-family: Arial, sans-serif;
+            color: white;
+        }
+
+        .splash-container {
+            background: rgba(18, 18, 18, 0.95);
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .logo {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+
+        .loading {
+            width: 200px;
+            height: 4px;
+            background: #1e1e1e;
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .loading-bar {
+            width: 40%;
+            height: 100%;
+            background: #90caf9;
+            border-radius: 2px;
+            animation: loading 1s infinite ease-in-out;
+        }
+
+        @keyframes loading {
+            0% {
+                transform: translateX(-100%);
+            }
+            100% {
+                transform: translateX(350%);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="splash-container">
+        <div class="logo">WhisperIDE</div>
+        <div class="loading">
+            <div class="loading-bar"></div>
+        </div>
+    </div>
+</body>
+</html>
