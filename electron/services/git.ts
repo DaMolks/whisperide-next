@@ -1,6 +1,6 @@
 import { exec } from 'child_process';
 import { promisify } from 'util';
-import type { GitBranch, GitCommitInfo, GitInfo, GitStatus } from '@shared/types/git';
+import type { GitBranch, GitCommitInfo, GitInfo, GitStatus } from '../../shared/types';
 
 const execAsync = promisify(exec);
 
