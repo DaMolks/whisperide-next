@@ -23,12 +23,14 @@
     "typeRoots": [
       "./types",
       "../node_modules/@types"
-    ]
+    ],
+    "types": ["electron", "node"]
   },
   "include": [
     "**/*.ts",
     "**/*.tsx",
-    "../shared/types/**/*"
+    "../shared/**/*.ts",
+    "./types/**/*.d.ts"
   ],
   "exclude": [
     "node_modules",
