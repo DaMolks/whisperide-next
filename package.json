@@ -1,13 +1,13 @@
 {
   "name": "whisperide-next",
   "version": "0.1.0",
-  "main": "dist/electron/main.js",
+  "main": "./dist/electron/main.js",
   "scripts": {
     "postinstall": "node scripts/install.js",
     "clean": "rimraf dist shared/types node_modules",
-    "dev": "concurrently \"npm run dev:webpack\" \"npm run dev:electron\" \"npm run dev:types:watch\"",
+    "dev": "npm run build:electron && concurrently \"npm run dev:webpack\" \"npm run dev:electron\" \"npm run dev:types:watch\"",
     "dev:webpack": "cross-env NODE_ENV=development webpack serve --mode development",
-    "dev:electron": "wait-on tcp:8080 && tsc -p electron/tsconfig.json && cross-env NODE_ENV=development electron .",
+    "dev:electron": "wait-on tcp:8080 && cross-env NODE_ENV=development electron .",
     "dev:types:watch": "tsc -p shared/tsconfig.json --watch",
     "build": "npm run build:types && npm run build:webpack && npm run build:electron",
     "build:webpack": "cross-env NODE_ENV=production webpack --mode production",
@@ -78,7 +78,17 @@
     },
     "files": [
       "dist/**/*",
-      "package.json"
+      "package.json",
+      "!**/node_modules/*/{CHANGELOG.md,README.md,README,readme.md,readme}",
+      "!**/node_modules/*/{test,__tests__,tests,powered-test,example,examples}",
+      "!**/node_modules/*.d.ts",
+      "!**/node_modules/.bin",
+      "!**/*.{iml,o,hprof,orig,pyc,pyo,rbc,swp,csproj,sln,xproj}",
+      "!.editorconfig",
+      "!**/._*",
+      "!**/{.DS_Store,.git,.hg,.svn,CVS,RCS,SCCS,.gitignore,.gitattributes}",
+      "!**/{__pycache__,thumbs.db,.flowconfig,.idea,.vs,.nyc_output}",
+      "!**/{.travis.yml,.gitlab-ci.yml,.coveralls.yml}"
     ],
     "win": {
       "target": ["nsis"]
